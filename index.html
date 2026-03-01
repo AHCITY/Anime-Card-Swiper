@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ANIME CARD BATTLE · market & common tier</title>
+  <title>ANIME CARD BATTLE · v1.0 FIXED</title>
   <!-- Swiper CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <!-- Comfortaa font -->
@@ -40,14 +40,24 @@
       background: linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 100%);
       backdrop-filter: blur(30px);
       border-radius: 30px;
-      width: min(1000px, 100%);
-      max-height: 95vh;
+      width: min(1200px, 100%);
+      max-height: 98vh;
       box-shadow: 0 0.5px 0 1px rgba(255,255,255,0.23) inset, 0 1px 0 0 rgba(255,255,255,0.66) inset, 0 4px 16px rgba(0,0,0,0.12);
       z-index: 10;
-      padding: 25px 25px 20px;
+      padding: 20px 25px 15px;
     }
 
-    /* Shards counter – top right corner */
+    /* Version tag */
+    .version-tag {
+      position: absolute;
+      bottom: 5px;
+      right: 20px;
+      color: rgba(255,255,255,0.3);
+      font-size: 0.8rem;
+      z-index: 30;
+    }
+
+    /* Shards counter */
     .shards-corner {
       position: absolute;
       top: 15px;
@@ -65,7 +75,11 @@
     }
 
     .shards-corner .reward-icon {
-      font-size: 1.8rem;
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #ffd966, #ffaa00);
+      border-radius: 50%;
+      display: inline-block;
     }
 
     .shards-corner .reward-count {
@@ -74,8 +88,8 @@
       font-size: 1.6rem;
     }
 
-    /* Market button */
-    .market-btn {
+    /* Inventory button */
+    .inventory-btn {
       position: absolute;
       top: 15px;
       left: 20px;
@@ -91,19 +105,63 @@
       z-index: 20;
     }
 
+    .inventory-btn:hover {
+      animation: gelatine 0.4s;
+      background: #ff3cac40;
+      border-color: white;
+    }
+
+    /* Market button - separate from inventory */
+    .market-btn {
+      position: absolute;
+      top: 15px;
+      left: 150px;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(8px);
+      padding: 8px 20px;
+      border-radius: 60px;
+      border: 1px solid gold;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+      z-index: 20;
+    }
+
     .market-btn:hover {
       animation: gelatine 0.4s;
       background: #ff3cac40;
       border-color: white;
     }
 
-    /* ----- top row: AI hand ----- */
+    /* Custom notification */
+    .notification {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(20, 15, 30, 0.9);
+      backdrop-filter: blur(12px);
+      padding: 15px 30px;
+      border-radius: 60px;
+      border: 2px solid #ff3cac;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(255,60,172,0.3);
+      z-index: 2000;
+      transition: opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .notification.show { opacity: 1; }
+
+    /* ----- AI hand ----- */
     .ai-row {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
-      margin-top: 60px; /* space for corner elements */
+      margin-top: 60px;
     }
 
     .ai-label {
@@ -120,23 +178,23 @@
     .ai-cards {
       display: flex;
       justify-content: center;
-      gap: 12px;
+      gap: 15px;
       flex-wrap: wrap;
       padding: 5px 10px;
-      min-height: 150px;
+      min-height: 220px;
     }
 
     .ai-card {
-      width: 95px;
-      height: 135px;
-      border-radius: 16px;
+      width: 140px;
+      height: 200px;
+      border-radius: 20px;
       border: 2px solid #ff3cac80;
       box-shadow: 0 10px 25px rgba(0,0,0,0.7);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      padding-bottom: 8px;
+      padding-bottom: 10px;
       color: white;
       font-weight: 700;
       background-size: cover !important;
@@ -147,66 +205,54 @@
     }
 
     .ai-card.thinking {
-      animation: aiThink 0.6s ease infinite alternate;
-      border-color: #ffb3ff;
+      animation: aiThink 0.4s ease infinite alternate;
     }
 
     @keyframes aiThink {
-      0% { transform: scale(1) rotate(0deg); filter: brightness(1); }
-      100% { transform: scale(1.05) rotate(1deg); filter: brightness(1.2); }
-    }
-
-    .ai-card.thinking .power-badge-small {
-      opacity: 0;
-    }
-
-    .ai-card.thinking::before {
-      content: "?";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 2.5rem;
-      color: #ffb3ff;
-      text-shadow: 0 0 10px magenta;
-      background: rgba(0,0,0,0.6);
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 16px;
-      backdrop-filter: blur(2px);
+      0% { transform: scale(1) translateY(0); }
+      100% { transform: scale(1.1) translateY(-8px); filter: brightness(1.3); }
     }
 
     .ai-card .power-badge-small {
       background: rgba(255,255,255,0.15);
       backdrop-filter: blur(4px);
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 30px;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       border: 1px solid rgba(255,255,255,0.3);
       z-index: 2;
     }
 
+    /* Last played area */
     .ai-last-played {
       display: flex;
       align-items: center;
-      gap: 10px;
-      background: rgba(0,0,0,0.4);
-      padding: 5px 20px;
+      gap: 15px;
+      background: rgba(0,0,0,0.5);
+      padding: 8px 25px;
       border-radius: 60px;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
     }
 
-    .mini-card {
-      width: 50px;
-      height: 70px;
+    .last-played-card {
+      width: 70px;
+      height: 100px;
       background: #2a1e3a;
-      border-radius: 10px;
-      border: 1px solid #ff3cac;
+      border-radius: 15px;
+      border: 2px solid #ff3cac;
       background-size: cover !important;
       background-position: center !important;
+      transition: transform 0.5s ease;
+    }
+
+    .last-played-card.spin-reveal {
+      animation: spinReveal 0.8s ease-out;
+    }
+
+    @keyframes spinReveal {
+      0% { transform: rotateY(0deg) scale(0.8); opacity: 0; }
+      50% { transform: rotateY(180deg) scale(1.1); opacity: 0.8; }
+      100% { transform: rotateY(360deg) scale(1); opacity: 1; }
     }
 
     /* battle bar */
@@ -239,6 +285,11 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-weight: 700;
+    }
+
+    /* Result display - hidden for now (fix later) */
+    .result-badge {
+      display: none; /* Hidden as requested */
     }
 
     .play-btn {
@@ -277,7 +328,7 @@
       border-radius: 30px;
       padding: 10px 20px;
       font-size: 0.9rem;
-      max-height: 70px;
+      max-height: 60px;
       overflow-y: auto;
       border: 1px solid #ff3cac40;
       margin: 5px 0;
@@ -392,6 +443,85 @@
       100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
     }
 
+    /* War Animation Overlay */
+    .war-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      transition: opacity 0.5s;
+    }
+    .war-overlay.hidden { opacity: 0; pointer-events: none; }
+
+    .war-container {
+      display: flex;
+      gap: 80px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 30px;
+    }
+
+    .war-card {
+      position: relative;
+      width: 220px;
+      height: 320px;
+      border-radius: 30px;
+      background-size: cover !important;
+      background-position: center !important;
+      box-shadow: 0 30px 50px rgba(0,0,0,0.8);
+      transform: scale(0.8) rotateY(90deg);
+      opacity: 0;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s, box-shadow 0.3s;
+      border: 4px solid transparent;
+    }
+
+    .war-card.revealed {
+      transform: scale(1) rotateY(0deg);
+      opacity: 1;
+    }
+
+    .war-card.winner {
+      border-color: gold;
+      box-shadow: 0 0 50px gold, 0 30px 50px rgba(0,0,0,0.8);
+      filter: brightness(1.2) saturate(1.3);
+    }
+
+    .war-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      text-shadow: 0 0 20px currentColor;
+      background: rgba(0,0,0,0.7);
+      padding: 8px 20px;
+      border-radius: 50px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .war-card.winner .war-label {
+      color: gold;
+    }
+
+    .war-card:not(.winner) .war-label {
+      color: #ff4444;
+    }
+
+    .war-vs {
+      font-size: 4rem;
+      color: white;
+      text-shadow: 0 0 30px #ff3cac;
+      font-weight: 700;
+    }
+
     /* Market Modal */
     .modal {
       position: fixed;
@@ -413,8 +543,8 @@
       border-radius: 48px;
       border: 2px solid #ff3cac;
       box-shadow: 0 20px 60px #ff3cac60;
-      max-width: 700px;
-      width: 90%;
+      max-width: 900px;
+      width: 95%;
       color: white;
     }
 
@@ -429,48 +559,52 @@
 
     .category-row {
       display: flex;
-      justify-content: space-around;
-      gap: 30px;
+      justify-content: center;
+      gap: 40px;
       flex-wrap: wrap;
     }
 
-    .category {
-      flex: 1;
-      min-width: 200px;
-      text-align: center;
-    }
-
-    .category h3 {
-      color: #ffb3ff;
-      margin-bottom: 20px;
-      font-size: 1.4rem;
-    }
-
-    .box {
-      background: rgba(0,0,0,0.4);
-      border: 2px solid gold;
+    .pack-card-item {
+      width: 220px;
+      height: 300px;
       border-radius: 30px;
-      padding: 30px 20px;
+      background-size: cover !important;
+      background-position: center !important;
+      border: 3px solid gold;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 20px 10px;
       cursor: pointer;
       transition: 0.3s;
-      margin-bottom: 15px;
+      box-shadow: 0 20px 30px rgba(0,0,0,0.6);
     }
 
-    .box:hover {
+    .pack-card-item:hover {
       transform: scale(1.05);
       border-color: #ff3cac;
-      box-shadow: 0 0 30px #ff3cac;
+      box-shadow: 0 0 40px #ff3cac;
     }
 
-    .box .price {
+    .pack-card-item .price {
       font-size: 2rem;
       color: gold;
       font-weight: 700;
+      background: rgba(0,0,0,0.6);
+      padding: 5px 20px;
+      border-radius: 40px;
+      backdrop-filter: blur(4px);
+      margin-bottom: 10px;
     }
 
-    .box-description {
-      color: #aaa;
-      margin-top: 10px;
+    .pack-card-item .box-description {
+      color: white;
+      background: rgba(0,0,0,0.5);
+      padding: 8px 15px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      text-align: center;
     }
 
     .close-modal {
@@ -484,6 +618,84 @@
       color: #4a2b5e;
       cursor: pointer;
       font-size: 1rem;
+    }
+
+    /* Inventory Modal */
+    .inventory-modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      backdrop-filter: blur(15px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1500;
+    }
+    .inventory-modal.hidden { display: none; }
+
+    .inventory-content {
+      background: rgba(30, 26, 43, 0.7);
+      backdrop-filter: blur(15px);
+      padding: 30px;
+      border-radius: 48px;
+      border: 2px solid #ff3cac;
+      max-width: 1000px;
+      width: 95%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .inventory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      padding: 20px 0;
+    }
+
+    .inventory-card {
+      width: 100%;
+      height: 200px;
+      border-radius: 20px;
+      background-size: cover !important;
+      background-position: center !important;
+      border: 2px solid #ff3cac;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+      position: relative;
+    }
+
+    .inventory-card.selected {
+      border: 4px solid gold;
+      box-shadow: 0 0 30px gold;
+    }
+
+    .inventory-card .power-badge {
+      background: rgba(0,0,0,0.7);
+      padding: 4px 12px;
+      border-radius: 30px;
+      color: white;
+      align-self: flex-end;
+    }
+
+    .inventory-card h4 {
+      color: white;
+      text-shadow: 2px 2px 4px black;
+      background: rgba(0,0,0,0.5);
+      padding: 4px 8px;
+      border-radius: 20px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .deck-size {
+      text-align: center;
+      margin: 10px 0;
+      color: #ffb3ff;
     }
 
     /* Pack opening modal */
@@ -607,23 +819,39 @@
       background: white;
     }
 
-    @media (max-width: 700px) {
-      .battle-bar { flex-direction: column; gap: 15px; }
-      .ai-cards { gap: 6px; }
+    /* Responsive Design */
+    @media (max-width: 800px) {
+      .game-container { padding: 15px; }
+      .ai-card { width: 100px; height: 140px; }
+      .ai-cards { gap: 8px; }
+      .battle-bar { flex-direction: column; gap: 10px; }
+      .war-container { gap: 30px; }
+      .war-card { width: 150px; height: 220px; }
+      .war-vs { font-size: 2.5rem; }
+      .pack-card-item { width: 180px; height: 250px; }
+      .inventory-btn { left: 10px; }
+      .market-btn { left: 120px; }
+    }
+
+    @media (max-width: 480px) {
       .ai-card { width: 70px; height: 100px; }
-      .shards-corner { top: 5px; right: 10px; padding: 5px 15px; }
-      .market-btn { top: 5px; left: 10px; padding: 5px 15px; }
-      .pack-cards { flex-direction: column; align-items: center; }
-      .pack-card { width: 140px; height: 200px; }
+      .shards-corner { padding: 5px 12px; }
+      .shards-corner .reward-count { font-size: 1.2rem; }
+      .inventory-btn, .market-btn { padding: 5px 12px; font-size: 0.8rem; }
+      .market-btn { left: 100px; }
+      .war-card { width: 110px; height: 160px; }
     }
   </style>
 </head>
 <body>
+  <!-- Version tag -->
+  <div class="version-tag">v1.0 · Production</div>
+
   <!-- Start overlay -->
   <div id="startOverlay" class="overlay">
     <div class="overlay-card">
       <h1>⚡ ANIME CARD BATTLE ⚡</h1>
-      <p>Start with Common Tier cards. Earn Shards and open packs to get stronger anime heroes!</p>
+      <p>Build your deck, earn shards, and defeat the adaptive AI!</p>
       <button id="startGameBtn">BEGIN BATTLE</button>
     </div>
   </div>
@@ -637,26 +865,44 @@
     </div>
   </div>
 
+  <!-- Custom Notification -->
+  <div id="notification" class="notification"></div>
+
+  <!-- War Animation Overlay -->
+  <div id="warOverlay" class="war-overlay hidden">
+    <div class="war-container">
+      <div id="warPlayerCard" class="war-card">
+        <span class="war-label"></span>
+      </div>
+      <div class="war-vs">VS</div>
+      <div id="warAiCard" class="war-card">
+        <span class="war-label"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inventory Modal -->
+  <div id="inventoryModal" class="inventory-modal hidden">
+    <div class="inventory-content">
+      <h2 style="text-align:center; color:white;">📦 YOUR INVENTORY</h2>
+      <div class="deck-size">Select up to 5 cards for your deck (click to select/deselect)</div>
+      <div id="inventoryGrid" class="inventory-grid"></div>
+      <button class="close-modal" id="closeInventoryBtn">CLOSE & SAVE DECK</button>
+    </div>
+  </div>
+
   <!-- Market Modal -->
   <div id="marketModal" class="modal hidden">
     <div class="modal-content">
       <h2>🎴 CARD MARKET</h2>
       <div class="category-row">
-        <div class="category">
-          <h3>CATEGORY 1</h3>
-          <div class="box" id="pack3Card">
-            <div class="price">100 🪙</div>
-            <div>3 random cards</div>
-            <div class="box-description">Common or higher</div>
-          </div>
+        <div class="pack-card-item" id="pack3Card" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://i.pinimg.com/736x/bc/bb/7c/bcbb7c3ab5ad402f5b0b322e69568e30.jpg');">
+          <div class="price">100 🪙</div>
+          <div class="box-description">3 cards (70% common, 30% rare+)</div>
         </div>
-        <div class="category">
-          <h3>CATEGORY 2</h3>
-          <div class="box" id="pack1Card">
-            <div class="price">50 🪙</div>
-            <div>1 guaranteed rare+</div>
-            <div class="box-description">Higher tier card</div>
-          </div>
+        <div class="pack-card-item" id="pack1Card" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://i.pinimg.com/736x/9d/31/86/9d3186a98a25b393d8cd82541aabd020.jpg');">
+          <div class="price">50 🪙</div>
+          <div class="box-description">1 guaranteed rare+ card</div>
         </div>
       </div>
       <button class="close-modal" id="closeMarketBtn">CLOSE</button>
@@ -667,9 +913,7 @@
   <div id="packOpenModal" class="pack-modal hidden">
     <div class="pack-content">
       <h2 style="color:white; margin-bottom:20px;">✨ OPENING PACK... ✨</h2>
-      <div class="pack-cards" id="packCardsContainer">
-        <!-- Cards will be injected here -->
-      </div>
+      <div class="pack-cards" id="packCardsContainer"></div>
       <button class="pack-close" id="closePackBtn">COLLECT</button>
     </div>
   </div>
@@ -678,9 +922,12 @@
     <div class="game-container">
       <!-- Shards counter -->
       <div class="shards-corner">
-        <span class="reward-icon">🪙</span>
-        <span class="reward-count" id="shardCount">0</span>
+        <span class="reward-icon"></span>
+        <span class="reward-count" id="shardCount">50</span>
       </div>
+
+      <!-- Inventory button -->
+      <div class="inventory-btn" id="inventoryBtn">📦 INVENTORY</div>
 
       <!-- Market button -->
       <div class="market-btn" id="marketBtn">🎴 MARKET</div>
@@ -690,18 +937,19 @@
         <div class="ai-label">🤖 OPPONENT · <span id="aiCardsCount">5</span> cards</div>
         <div class="ai-last-played" id="aiLastPlayedArea" style="display: none;">
           <span style="color:#ccc;">last played:</span>
-          <div class="mini-card" id="aiLastPlayedCard"></div>
+          <div class="last-played-card" id="aiLastPlayedCard"></div>
           <span id="aiLastPlayedName"></span>
         </div>
         <div class="ai-cards" id="aiHandContainer"></div>
       </div>
 
-      <!-- Battle bar -->
+      <!-- Battle bar with result display (hidden) -->
       <div class="battle-bar">
         <div class="scores">
           <div class="score-item">😎 YOU <span class="score-value" id="playerScore">0</span></div>
           <div class="score-item">🤖 AI <span class="score-value" id="aiScore">0</span></div>
         </div>
+        <div id="resultDisplay" class="result-badge" style="display: none;">⚔️</div>
         <button class="play-btn" id="playBtn">⚔️ PLAY</button>
       </div>
 
@@ -729,7 +977,14 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     (function() {
-      // ----- CARD DATABASE (split into tiers) -----
+      // ----- CARD DATABASE WITH CACHING -----
+      function preloadImages(urls) {
+        urls.forEach(url => {
+          const img = new Image();
+          img.src = url;
+        });
+      }
+
       const commonTier = [
         { name: 'Rock Lee', img: 'https://i.pinimg.com/736x/fa/9a/c8/fa9ac8c9917c3d7d078c40a85254ec6b.jpg', power: 75 },
         { name: 'Zenitsu', img: 'https://i.pinimg.com/1200x/71/4c/8f/714c8f54cbe39feada3b6783be548884.jpg', power: 74 },
@@ -754,22 +1009,30 @@
         { name: 'Toji', img: 'https://i.pinimg.com/1200x/f8/18/3a/f8183a3548c675626ad9bd4397cb9607.jpg', power: 85 }
       ];
 
-      // Full pool for AI (mixed, to keep difficulty)
-      const aiPool = [...higherTier, ...commonTier];
+      // Preload all images
+      preloadImages([...commonTier, ...higherTier].map(c => c.img));
+      preloadImages([
+        'https://i.pinimg.com/736x/bc/bb/7c/bcbb7c3ab5ad402f5b0b322e69568e30.jpg',
+        'https://i.pinimg.com/736x/9d/31/86/9d3186a98a25b393d8cd82541aabd020.jpg'
+      ]);
 
-      // Player's collection – starts with only common tier
-      let playerCollection = [...commonTier].map(c => ({ ...c }));
+      // Player's collection – starts with common only
+      let playerCollection = [...commonTier].map(c => ({ ...c, id: crypto.randomUUID() }));
+
+      // Active deck (selected cards) – default first 5
+      let activeDeckIds = playerCollection.slice(0, 5).map(c => c.id);
 
       // Game state
       let playerHand = [];
       let aiHand = [];
       let playerWins = 0;
       let aiWins = 0;
-      let animeShards = 0;
+      let animeShards = 50;
       let totalRoundsPlayed = 0;
       let gameActive = false;
       let isAITurn = false;
       let currentSwiper = null;
+      let warInProgress = false;
 
       // DOM elements
       const swiperWrapper = document.getElementById('swiperWrapper');
@@ -782,6 +1045,7 @@
       const aiLastPlayedCard = document.getElementById('aiLastPlayedCard');
       const aiLastPlayedName = document.getElementById('aiLastPlayedName');
       const roundLogDiv = document.getElementById('roundLog');
+      const resultDisplay = document.getElementById('resultDisplay');
       const playBtn = document.getElementById('playBtn');
       const startOverlay = document.getElementById('startOverlay');
       const gameOverlay = document.getElementById('gameOverlay');
@@ -790,7 +1054,11 @@
       const gameOverTitle = document.getElementById('gameOverTitle');
       const gameOverMsg = document.getElementById('gameOverMsg');
       const shardCount = document.getElementById('shardCount');
+      const inventoryBtn = document.getElementById('inventoryBtn');
       const marketBtn = document.getElementById('marketBtn');
+      const inventoryModal = document.getElementById('inventoryModal');
+      const closeInventoryBtn = document.getElementById('closeInventoryBtn');
+      const inventoryGrid = document.getElementById('inventoryGrid');
       const marketModal = document.getElementById('marketModal');
       const closeMarketBtn = document.getElementById('closeMarketBtn');
       const pack3Card = document.getElementById('pack3Card');
@@ -798,6 +1066,23 @@
       const packOpenModal = document.getElementById('packOpenModal');
       const packCardsContainer = document.getElementById('packCardsContainer');
       const closePackBtn = document.getElementById('closePackBtn');
+      const notification = document.getElementById('notification');
+      const warOverlay = document.getElementById('warOverlay');
+      const warPlayerCard = document.getElementById('warPlayerCard');
+      const warAiCard = document.getElementById('warAiCard');
+      const warLabels = document.querySelectorAll('.war-label');
+
+      // Custom notification
+      function showNotification(msg, type = 'info') {
+        notification.textContent = msg;
+        notification.classList.add('show');
+        if (type === 'success') notification.style.borderColor = 'gold';
+        else if (type === 'error') notification.style.borderColor = '#ff4444';
+        else notification.style.borderColor = '#ff3cac';
+        setTimeout(() => {
+          notification.classList.remove('show');
+        }, 2500);
+      }
 
       // Helper functions
       function log(msg) {
@@ -811,26 +1096,43 @@
         }
       }
 
+      // AI difficulty and deck composition based on player progress
       function getAIDifficultyLevel() {
-        if (totalRoundsPlayed < 6) return 'easy';
-        else if (totalRoundsPlayed < 16) return 'medium';
-        else if (totalRoundsPlayed < 30) return 'hard';
+        if (totalRoundsPlayed < 8) return 'easy';
+        else if (totalRoundsPlayed < 20) return 'medium';
+        else if (totalRoundsPlayed < 35) return 'hard';
         else return 'impossible';
       }
 
-      // Draw a random hand of 5 cards from player's collection
-      function drawPlayerHand() {
-        const shuffled = [...playerCollection].sort(() => Math.random() - 0.5);
-        return shuffled.slice(0, 5).map(c => ({ ...c }));
-      }
-
-      // Draw AI hand (5 random from aiPool)
+      // Generate AI hand that scales with player
       function drawAIHand() {
-        const shuffled = [...aiPool].sort(() => Math.random() - 0.5);
+        const level = getAIDifficultyLevel();
+        let pool = [];
+        const playerMaxPower = Math.max(...playerCollection.map(c => c.power), 0);
+        
+        if (level === 'easy') {
+          pool = [...commonTier];
+          if (playerMaxPower > 80) pool.push(...higherTier.slice(0,2));
+        } else if (level === 'medium') {
+          pool = [...commonTier, ...higherTier.slice(0,4)];
+        } else if (level === 'hard') {
+          pool = [...higherTier, ...commonTier.slice(0,3)];
+        } else {
+          pool = [...higherTier];
+        }
+        
+        const shuffled = [...pool].sort(() => Math.random() - 0.5);
         return shuffled.slice(0, 5).map(c => ({ ...c }));
       }
 
-      // Render AI hand
+      // Draw player hand from active deck
+      function drawPlayerHand() {
+        const deckCards = playerCollection.filter(c => activeDeckIds.includes(c.id));
+        if (deckCards.length === 0) return [];
+        const shuffled = [...deckCards].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, 5).map(c => ({ ...c }));
+      }
+
       function renderAIHand() {
         aiHandContainer.innerHTML = '';
         aiHand.forEach(card => {
@@ -843,7 +1145,6 @@
         aiCardsCount.textContent = aiHand.length;
       }
 
-      // Render player hand (swiper)
       function renderPlayerHand() {
         swiperWrapper.innerHTML = '';
         playerHand.forEach((card) => {
@@ -881,54 +1182,54 @@
         renderAIHand();
       }
 
-      // AI card selection (same logic)
-      function aiSelectCard(playerPower) {
-        if (aiHand.length === 0) return null;
-        const level = getAIDifficultyLevel();
-        const sorted = [...aiHand].sort((a, b) => a.power - b.power);
-        const higherCard = sorted.find(c => c.power >= playerPower);
-        let chosenIndex = Math.floor(Math.random() * aiHand.length);
+      // War animation with victory/defeat labels
+      function animateWar(playerCard, aiCard, playerWon) {
+        return new Promise((resolve) => {
+          warOverlay.classList.remove('hidden');
+          warPlayerCard.style.background = `url('${playerCard.img}') center / cover`;
+          warAiCard.style.background = `url('${aiCard.img}') center / cover`;
+          
+          // Set labels
+          const playerLabel = warPlayerCard.querySelector('.war-label');
+          const aiLabel = warAiCard.querySelector('.war-label');
+          playerLabel.textContent = playerWon ? 'VICTORY' : 'DEFEAT';
+          aiLabel.textContent = playerWon ? 'DEFEAT' : 'VICTORY';
+          
+          // Reset classes
+          warPlayerCard.className = 'war-card';
+          warAiCard.className = 'war-card';
+          
+          // Trigger reveal
+          setTimeout(() => {
+            warPlayerCard.classList.add('revealed');
+            warAiCard.classList.add('revealed');
+          }, 50);
 
-        if (level === 'easy') {
-          if (Math.random() < 0.4) {
-            chosenIndex = Math.floor(Math.random() * aiHand.length);
-          } else {
-            const lowerCards = sorted.filter(c => c.power < playerPower);
-            if (lowerCards.length > 0 && Math.random() < 0.7) {
-              const randomLower = lowerCards[Math.floor(Math.random() * lowerCards.length)];
-              chosenIndex = aiHand.findIndex(c => c.name === randomLower.name);
+          // After reveal, add winner glow
+          setTimeout(() => {
+            if (playerWon) {
+              warPlayerCard.classList.add('winner');
             } else {
-              const weakest = sorted[0];
-              chosenIndex = aiHand.findIndex(c => c.name === weakest.name);
+              warAiCard.classList.add('winner');
             }
-          }
-        } else if (level === 'medium') {
-          if (higherCard && Math.random() < 0.7) {
-            chosenIndex = aiHand.findIndex(c => c.name === higherCard.name);
-          } else {
-            chosenIndex = Math.floor(Math.random() * aiHand.length);
-          }
-        } else if (level === 'hard') {
-          if (higherCard) {
-            chosenIndex = aiHand.findIndex(c => c.name === higherCard.name);
-          } else {
-            const highest = sorted[sorted.length-1];
-            chosenIndex = aiHand.findIndex(c => c.name === highest.name);
-          }
-        } else {
-          if (higherCard) {
-            chosenIndex = aiHand.findIndex(c => c.name === higherCard.name);
-          } else {
-            const highest = sorted[sorted.length-1];
-            chosenIndex = aiHand.findIndex(c => c.name === highest.name);
-          }
-        }
-        return chosenIndex;
+          }, 900);
+
+          // Hold for a few seconds then fade out and resolve
+          setTimeout(() => {
+            warOverlay.classList.add('hidden');
+            // Reset for next use
+            setTimeout(() => {
+              warPlayerCard.className = 'war-card';
+              warAiCard.className = 'war-card';
+              resolve();
+            }, 500); // Wait for fade transition
+          }, 3500);
+        });
       }
 
-      // Start AI turn with thinking animation
-      function startAITurn() {
-        if (!gameActive || isAITurn) return;
+      // Play round
+      async function playRound() {
+        if (!gameActive || isAITurn || warInProgress) return;
         if (playerHand.length === 0 || aiHand.length === 0) {
           endGame();
           return;
@@ -938,51 +1239,100 @@
         const playerCard = playerHand[activeIndex];
         if (!playerCard) return;
 
-        const aiIndex = aiSelectCard(playerCard.power);
-        if (aiIndex === null) return;
-        const aiCard = aiHand[aiIndex];
-
         isAITurn = true;
+        warInProgress = true;
         playBtn.disabled = true;
 
+        // AI thinking animation
         const aiCardElements = document.querySelectorAll('.ai-card');
         aiCardElements.forEach(el => el.classList.add('thinking'));
 
-        setTimeout(() => {
-          aiCardElements.forEach(el => el.classList.remove('thinking'));
+        await new Promise(r => setTimeout(r, 800));
+        aiCardElements.forEach(el => el.classList.remove('thinking'));
 
-          aiLastPlayedCard.style.background = `url('${aiCard.img}') center / cover`;
-          aiLastPlayedName.textContent = `${aiCard.name} (${aiCard.power})`;
-          aiLastPlayedArea.style.display = 'flex';
+        // Determine AI's card
+        const level = getAIDifficultyLevel();
+        const sorted = [...aiHand].sort((a, b) => a.power - b.power);
+        const higherCard = sorted.find(c => c.power >= playerCard.power);
+        let aiIndex;
 
-          if (playerCard.power >= aiCard.power) {
-            playerWins++;
-            animeShards += 10;
-            log(`✅ YOU WIN +10 🪙 · ${playerCard.name} (${playerCard.power}) vs ${aiCard.name} (${aiCard.power})`);
+        if (level === 'easy') {
+          if (Math.random() < 0.4) {
+            aiIndex = Math.floor(Math.random() * aiHand.length);
           } else {
-            aiWins++;
-            log(`❌ AI WIN · ${aiCard.name} (${aiCard.power}) vs ${playerCard.name} (${playerCard.power})`);
+            const lowerCards = sorted.filter(c => c.power < playerCard.power);
+            if (lowerCards.length > 0 && Math.random() < 0.7) {
+              const randomLower = lowerCards[Math.floor(Math.random() * lowerCards.length)];
+              aiIndex = aiHand.findIndex(c => c.name === randomLower.name);
+            } else {
+              aiIndex = aiHand.findIndex(c => c.name === sorted[0].name);
+            }
           }
-
-          playerHand.splice(activeIndex, 1);
-          aiHand.splice(aiIndex, 1);
-          totalRoundsPlayed++;
-
-          renderPlayerHand();
-          renderAIHand();
-          refreshUI();
-
-          setTimeout(() => {
-            aiLastPlayedArea.style.display = 'none';
-          }, 2000);
-
-          isAITurn = false;
-          playBtn.disabled = false;
-
-          if (playerHand.length === 0 || aiHand.length === 0) {
-            endGame();
+        } else if (level === 'medium') {
+          if (higherCard && Math.random() < 0.7) {
+            aiIndex = aiHand.findIndex(c => c.name === higherCard.name);
+          } else {
+            aiIndex = Math.floor(Math.random() * aiHand.length);
           }
-        }, 700);
+        } else if (level === 'hard') {
+          if (higherCard) {
+            aiIndex = aiHand.findIndex(c => c.name === higherCard.name);
+          } else {
+            aiIndex = aiHand.findIndex(c => c.name === sorted[sorted.length-1].name);
+          }
+        } else {
+          if (higherCard) {
+            aiIndex = aiHand.findIndex(c => c.name === higherCard.name);
+          } else {
+            aiIndex = aiHand.findIndex(c => c.name === sorted[sorted.length-1].name);
+          }
+        }
+
+        const aiCard = aiHand[aiIndex];
+        const playerWon = playerCard.power >= aiCard.power;
+
+        // Show war animation
+        await animateWar(playerCard, aiCard, playerWon);
+
+        // After war, update last played
+        aiLastPlayedCard.style.background = `url('${aiCard.img}') center / cover`;
+        aiLastPlayedName.textContent = `${aiCard.name} (${aiCard.power})`;
+        aiLastPlayedArea.style.display = 'flex';
+        aiLastPlayedCard.classList.add('spin-reveal');
+        setTimeout(() => aiLastPlayedCard.classList.remove('spin-reveal'), 800);
+
+        // Update economy
+        if (playerWon) {
+          playerWins++;
+          animeShards += 10;
+          log(`✅ WIN +10 · ${playerCard.name} (${playerCard.power}) vs ${aiCard.name} (${aiCard.power})`);
+        } else {
+          aiWins++;
+          animeShards += 5;
+          log(`❌ LOSE +5 · ${aiCard.name} (${aiCard.power}) vs ${playerCard.name} (${playerCard.power})`);
+        }
+
+        // Remove cards
+        playerHand.splice(activeIndex, 1);
+        aiHand.splice(aiIndex, 1);
+        totalRoundsPlayed++;
+
+        renderPlayerHand();
+        renderAIHand();
+        refreshUI();
+
+        // Keep last played visible for 5 seconds
+        setTimeout(() => {
+          aiLastPlayedArea.style.display = 'none';
+        }, 5000);
+
+        isAITurn = false;
+        warInProgress = false;
+        playBtn.disabled = false;
+
+        if (playerHand.length === 0 || aiHand.length === 0) {
+          endGame();
+        }
       }
 
       function endGame() {
@@ -996,11 +1346,10 @@
         else winnerMsg = '🤝 IT\'S A DRAW 🤝';
 
         gameOverTitle.textContent = playerWins > aiWins ? 'VICTORY!' : 'DEFEAT';
-        gameOverMsg.innerHTML = `${winnerMsg}<br>🎯 final score: ${playerWins} : ${aiWins}<br>🪙 Shards earned: ${animeShards}`;
+        gameOverMsg.innerHTML = `${winnerMsg}<br>🎯 final score: ${playerWins} : ${aiWins}<br>🪙 Shards: ${animeShards}`;
         gameOverlay.classList.remove('hidden');
       }
 
-      // Restart game (draw fresh hands from current collection)
       function restartGame() {
         startOverlay.classList.add('hidden');
         gameOverlay.classList.add('hidden');
@@ -1010,10 +1359,10 @@
 
         playerWins = 0;
         aiWins = 0;
-        // Shards persist, totalRoundsPlayed persists
 
         gameActive = true;
         isAITurn = false;
+        warInProgress = false;
         playBtn.disabled = false;
 
         renderPlayerHand();
@@ -1023,34 +1372,65 @@
         roundLogDiv.innerHTML = '<p style="color:#aaa;">✨ new battle started</p>';
       }
 
-      // ----- MARKET FUNCTIONS -----
+      // Inventory functions
+      function openInventory() {
+        inventoryGrid.innerHTML = '';
+        playerCollection.forEach(card => {
+          const cardDiv = document.createElement('div');
+          cardDiv.className = `inventory-card ${activeDeckIds.includes(card.id) ? 'selected' : ''}`;
+          cardDiv.style.background = `linear-gradient(145deg, rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${card.img}') no-repeat center / cover`;
+          cardDiv.innerHTML = `
+            <span class="power-badge">⚡${card.power}</span>
+            <h4>${card.name}</h4>
+          `;
+          cardDiv.dataset.id = card.id;
+          cardDiv.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = card.id;
+            if (activeDeckIds.includes(id)) {
+              if (activeDeckIds.length > 1) {
+                activeDeckIds = activeDeckIds.filter(did => did !== id);
+                cardDiv.classList.remove('selected');
+              } else {
+                showNotification('Deck must have at least 1 card', 'error');
+              }
+            } else {
+              if (activeDeckIds.length < 5) {
+                activeDeckIds.push(id);
+                cardDiv.classList.add('selected');
+              } else {
+                showNotification('Deck can have at most 5 cards', 'error');
+              }
+            }
+          });
+          inventoryGrid.appendChild(cardDiv);
+        });
+        inventoryModal.classList.remove('hidden');
+      }
+
+      // Market functions
       function openPack(cardCount, price) {
         if (animeShards < price) {
-          alert(`Not enough shards! You need ${price} 🪙`);
+          showNotification(`Not enough shards! Need ${price} 🪙`, 'error');
           return false;
         }
 
-        // Deduct shards
         animeShards -= price;
         refreshUI();
 
-        // Generate new cards
         const newCards = [];
         for (let i = 0; i < cardCount; i++) {
-          // For category 2 (1 card), guarantee from higher tier. For category 1, mix.
           let sourcePool;
           if (cardCount === 1) {
-            sourcePool = higherTier; // guaranteed rare+
+            sourcePool = higherTier;
           } else {
-            // 70% chance from common, 30% from higher for 3-card pack
             sourcePool = Math.random() < 0.7 ? commonTier : higherTier;
           }
-          const randomCard = { ...sourcePool[Math.floor(Math.random() * sourcePool.length)] };
+          const randomCard = { ...sourcePool[Math.floor(Math.random() * sourcePool.length)], id: crypto.randomUUID() };
           newCards.push(randomCard);
           playerCollection.push(randomCard);
         }
 
-        // Show opening animation
         packCardsContainer.innerHTML = '';
         newCards.forEach(card => {
           const cardDiv = document.createElement('div');
@@ -1060,13 +1440,23 @@
         });
 
         packOpenModal.classList.remove('hidden');
+        showNotification(`Pack opened! +${cardCount} cards`, 'success');
         return true;
       }
 
       // Event listeners
-      playBtn.addEventListener('click', startAITurn);
+      playBtn.addEventListener('click', playRound);
       startGameBtn.addEventListener('click', restartGame);
       restartOverlayBtn.addEventListener('click', restartGame);
+
+      inventoryBtn.addEventListener('click', openInventory);
+      closeInventoryBtn.addEventListener('click', () => {
+        inventoryModal.classList.add('hidden');
+        if (gameActive) {
+          playerHand = drawPlayerHand();
+          renderPlayerHand();
+        }
+      });
 
       marketBtn.addEventListener('click', () => {
         marketModal.classList.remove('hidden');
@@ -1088,14 +1478,13 @@
 
       closePackBtn.addEventListener('click', () => {
         packOpenModal.classList.add('hidden');
-        // Redraw player hand to possibly include new cards (optional, but nice)
         if (gameActive) {
           playerHand = drawPlayerHand();
           renderPlayerHand();
         }
       });
 
-      // Initial setup (start with common cards only)
+      // Initial setup
       playerHand = drawPlayerHand();
       aiHand = drawAIHand();
       renderPlayerHand();
