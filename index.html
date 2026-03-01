@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANIME CARD BATTLE · market & common tier</title>
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <!-- Comfortaa font -->
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Comfortaa', cursive;
+    }
+
+    body {
+      background: #1a1a1a;
+    }
+
+    .game-section {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #262626;
+      overflow: hidden;
+      padding: 1rem;
+    }
+
+    /* main glass container */
+    .game-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 100%);
+      backdrop-filter: blur(30px);
+      border-radius: 30px;
+      width: min(1000px, 100%);
+      max-height: 95vh;
+      box-shadow: 0 0.5px 0 1px rgba(255,255,255,0.23) inset, 0 1px 0 0 rgba(255,255,255,0.66) inset, 0 4px 16px rgba(0,0,0,0.12);
+      z-index: 10;
+      padding: 25px 25px 20px;
+    }
+
+    /* Shards counter – top right corner */
+    .shards-corner {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(8px);
+      padding: 8px 20px;
+      border-radius: 60px;
+      border: 1px solid gold;
+      box-shadow: 0 4px 15px rgba(255,215,0,0.3);
+      z-index: 20;
+    }
+
+    .shards-corner .reward-icon {
+      font-size: 1.8rem;
+    }
+
+    .shards-corner .reward-count {
+      font-weight: 700;
+      color: gold;
+      font-size: 1.6rem;
+    }
+
+    /* Market button */
+    .market-btn {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(8px);
+      padding: 8px 20px;
+      border-radius: 60px;
+      border: 1px solid #ff3cac;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+      z-index: 20;
+    }
+
+    .market-btn:hover {
+      animation: gelatine 0.4s;
+      background: #ff3cac40;
+      border-color: white;
+    }
+
+    /* ----- top row: AI hand ----- */
+    .ai-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-top: 60px; /* space for corner elements */
+    }
+
+    .ai-label {
+      color: #ffb3ff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      background: rgba(0,0,0,0.3);
+      padding: 5px 20px;
+      border-radius: 40px;
+      backdrop-filter: blur(4px);
+    }
+
+    .ai-cards {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 5px 10px;
+      min-height: 150px;
+    }
+
+    .ai-card {
+      width: 95px;
+      height: 135px;
+      border-radius: 16px;
+      border: 2px solid #ff3cac80;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 8px;
+      color: white;
+      font-weight: 700;
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+      position: relative;
+      transition: transform 0.2s;
+    }
+
+    .ai-card.thinking {
+      animation: aiThink 0.6s ease infinite alternate;
+      border-color: #ffb3ff;
+    }
+
+    @keyframes aiThink {
+      0% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+      100% { transform: scale(1.05) rotate(1deg); filter: brightness(1.2); }
+    }
+
+    .ai-card.thinking .power-badge-small {
+      opacity: 0;
+    }
+
+    .ai-card.thinking::before {
+      content: "?";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.5rem;
+      color: #ffb3ff;
+      text-shadow: 0 0 10px magenta;
+      background: rgba(0,0,0,0.6);
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      backdrop-filter: blur(2px);
+    }
+
+    .ai-card .power-badge-small {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(4px);
+      padding: 4px 10px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(255,255,255,0.3);
+      z-index: 2;
+    }
+
+    .ai-last-played {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0,0,0,0.4);
+      padding: 5px 20px;
+      border-radius: 60px;
+      margin-bottom: 5px;
+    }
+
+    .mini-card {
+      width: 50px;
+      height: 70px;
+      background: #2a1e3a;
+      border-radius: 10px;
+      border: 1px solid #ff3cac;
+      background-size: cover !important;
+      background-position: center !important;
+    }
+
+    /* battle bar */
+    .battle-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.2);
+      border-radius: 80px;
+      padding: 15px 30px;
+      margin: 10px 0;
+      backdrop-filter: blur(8px);
+    }
+
+    .scores {
+      display: flex;
+      gap: 40px;
+    }
+
+    .score-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+    }
+
+    .score-value {
+      font-size: 2rem;
+      background: linear-gradient(225deg, #ff3cac, #784ba0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
+
+    .play-btn {
+      background: rgba(255,255,255,0.9);
+      border: none;
+      padding: 12px 40px;
+      border-radius: 60px;
+      font-weight: 700;
+      color: #4a2b5e;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: 0.2s;
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+
+    .play-btn:hover:not(:disabled) {
+      animation: gelatine 0.4s;
+      background: white;
+    }
+
+    .play-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    @keyframes gelatine {
+      0%,100% { transform: scale(1); }
+      25% { transform: scale(0.9,1.1); }
+      50% { transform: scale(1.1,0.9); }
+      75% { transform: scale(0.95,1.05); }
+    }
+
+    .round-log {
+      background: rgba(0,0,0,0.3);
+      border-radius: 30px;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      max-height: 70px;
+      overflow-y: auto;
+      border: 1px solid #ff3cac40;
+      margin: 5px 0;
+      color: #ddd;
+    }
+
+    /* player hand */
+    .player-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .player-label {
+      color: #ffb3ff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      background: rgba(0,0,0,0.3);
+      padding: 5px 20px;
+      border-radius: 40px;
+      backdrop-filter: blur(4px);
+      margin-bottom: 10px;
+    }
+
+    .swiper {
+      width: 260px;
+      height: 380px;
+      padding: 10px 0;
+    }
+
+    .swiper-slide {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+    }
+
+    .swiper-slide .power-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      padding: 6px 16px;
+      border-radius: 30px;
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      border: 1px solid rgba(255,255,255,0.3);
+      z-index: 2;
+    }
+
+    .swiper-slide h4 {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 600;
+      text-shadow: 2px 2px 5px black;
+      z-index: 2;
+      max-width: 70%;
+    }
+
+    .swiper-slide::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, #0f2027, transparent 50%);
+      pointer-events: none;
+    }
+
+    /* floating circles */
+    .circles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .circles li {
+      position: absolute;
+      display: block;
+      list-style: none;
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(225deg, #ff3cac, #784ba0, #2b86c5);
+      animation: float 25s linear infinite;
+      bottom: -150px;
+    }
+
+    .circles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+    .circles li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+    .circles li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+    .circles li:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+    .circles li:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+    .circles li:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
+    .circles li:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
+    .circles li:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
+    .circles li:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
+    .circles li:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
+
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
+      100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
+    }
+
+    /* Market Modal */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.3s;
+    }
+    .modal.hidden { opacity: 0; pointer-events: none; }
+
+    .modal-content {
+      background: rgba(30, 26, 43, 0.7);
+      backdrop-filter: blur(15px);
+      padding: 40px;
+      border-radius: 48px;
+      border: 2px solid #ff3cac;
+      box-shadow: 0 20px 60px #ff3cac60;
+      max-width: 700px;
+      width: 90%;
+      color: white;
+    }
+
+    .modal-content h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 30px;
+      background: linear-gradient(225deg, #ff3cac, #784ba0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .category-row {
+      display: flex;
+      justify-content: space-around;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .category {
+      flex: 1;
+      min-width: 200px;
+      text-align: center;
+    }
+
+    .category h3 {
+      color: #ffb3ff;
+      margin-bottom: 20px;
+      font-size: 1.4rem;
+    }
+
+    .box {
+      background: rgba(0,0,0,0.4);
+      border: 2px solid gold;
+      border-radius: 30px;
+      padding: 30px 20px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-bottom: 15px;
+    }
+
+    .box:hover {
+      transform: scale(1.05);
+      border-color: #ff3cac;
+      box-shadow: 0 0 30px #ff3cac;
+    }
+
+    .box .price {
+      font-size: 2rem;
+      color: gold;
+      font-weight: 700;
+    }
+
+    .box-description {
+      color: #aaa;
+      margin-top: 10px;
+    }
+
+    .close-modal {
+      display: block;
+      margin: 30px auto 0;
+      background: rgba(255,255,255,0.9);
+      border: none;
+      padding: 12px 40px;
+      border-radius: 60px;
+      font-weight: 700;
+      color: #4a2b5e;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    /* Pack opening modal */
+    .pack-modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      backdrop-filter: blur(15px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1100;
+    }
+    .pack-modal.hidden { display: none; }
+
+    .pack-content {
+      text-align: center;
+    }
+
+    .pack-cards {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      margin: 40px 0;
+      perspective: 1000px;
+    }
+
+    .pack-card {
+      width: 180px;
+      height: 250px;
+      background: #2a1e3a;
+      border-radius: 20px;
+      border: 3px solid #ff3cac;
+      background-size: cover !important;
+      background-position: center !important;
+      transform: rotateY(90deg);
+      animation: flipIn 0.5s forwards;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+    }
+
+    .pack-card:nth-child(2) { animation-delay: 0.2s; }
+    .pack-card:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes flipIn {
+      0% { transform: rotateY(90deg); }
+      100% { transform: rotateY(0deg); }
+    }
+
+    .pack-close {
+      background: rgba(255,255,255,0.9);
+      border: none;
+      padding: 12px 40px;
+      border-radius: 60px;
+      font-weight: 700;
+      color: #4a2b5e;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 20px;
+    }
+
+    /* Overlays */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      transition: opacity 0.4s;
+    }
+    .overlay.hidden { opacity: 0; pointer-events: none; }
+
+    .overlay-card {
+      background: rgba(30, 26, 43, 0.7);
+      backdrop-filter: blur(15px);
+      padding: 40px;
+      border-radius: 48px;
+      text-align: center;
+      border: 2px solid #ff3cac;
+      box-shadow: 0 20px 60px #ff3cac60;
+      max-width: 400px;
+      color: white;
+    }
+    .overlay-card h1 { 
+      font-size: 2.5rem; 
+      background: linear-gradient(225deg, #ff3cac, #784ba0, #2b86c5); 
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
+      margin-bottom: 20px;
+    }
+    .overlay-card h2 {
+      font-size: 2rem;
+      margin-bottom: 15px;
+      background: linear-gradient(225deg, #ff3cac, #784ba0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .overlay-card p {
+      font-size: 1.1rem;
+      margin: 20px 0;
+      color: #ddd;
+    }
+    .overlay-card button {
+      background: rgba(255,255,255,0.9);
+      border: none;
+      padding: 12px 40px;
+      border-radius: 60px;
+      font-weight: 700;
+      color: #4a2b5e;
+      cursor: pointer;
+      font-size: 1.2rem;
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      margin-top: 20px;
+      transition: 0.2s;
+    }
+    .overlay-card button:hover {
+      animation: gelatine 0.4s;
+      background: white;
+    }
+
+    @media (max-width: 700px) {
+      .battle-bar { flex-direction: column; gap: 15px; }
+      .ai-cards { gap: 6px; }
+      .ai-card { width: 70px; height: 100px; }
+      .shards-corner { top: 5px; right: 10px; padding: 5px 15px; }
+      .market-btn { top: 5px; left: 10px; padding: 5px 15px; }
+      .pack-cards { flex-direction: column; align-items: center; }
+      .pack-card { width: 140px; height: 200px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Start overlay -->
+  <div id="startOverlay" class="overlay">
+    <div class="overlay-card">
+      <h1>⚡ ANIME CARD BATTLE ⚡</h1>
+      <p>Start with Common Tier cards. Earn Shards and open packs to get stronger anime heroes!</p>
+      <button id="startGameBtn">BEGIN BATTLE</button>
+    </div>
+  </div>
+
+  <!-- Game over overlay -->
+  <div id="gameOverlay" class="overlay hidden">
+    <div class="overlay-card" id="gameOverCard">
+      <h2 id="gameOverTitle">GAME OVER</h2>
+      <p id="gameOverMsg"></p>
+      <button id="restartFromOverlay">PLAY AGAIN</button>
+    </div>
+  </div>
+
+  <!-- Market Modal -->
+  <div id="marketModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>🎴 CARD MARKET</h2>
+      <div class="category-row">
+        <div class="category">
+          <h3>CATEGORY 1</h3>
+          <div class="box" id="pack3Card">
+            <div class="price">100 🪙</div>
+            <div>3 random cards</div>
+            <div class="box-description">Common or higher</div>
+          </div>
+        </div>
+        <div class="category">
+          <h3>CATEGORY 2</h3>
+          <div class="box" id="pack1Card">
+            <div class="price">50 🪙</div>
+            <div>1 guaranteed rare+</div>
+            <div class="box-description">Higher tier card</div>
+          </div>
+        </div>
+      </div>
+      <button class="close-modal" id="closeMarketBtn">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- Pack Opening Modal -->
+  <div id="packOpenModal" class="pack-modal hidden">
+    <div class="pack-content">
+      <h2 style="color:white; margin-bottom:20px;">✨ OPENING PACK... ✨</h2>
+      <div class="pack-cards" id="packCardsContainer">
+        <!-- Cards will be injected here -->
+      </div>
+      <button class="pack-close" id="closePackBtn">COLLECT</button>
+    </div>
+  </div>
+
+  <section class="game-section">
+    <div class="game-container">
+      <!-- Shards counter -->
+      <div class="shards-corner">
+        <span class="reward-icon">🪙</span>
+        <span class="reward-count" id="shardCount">0</span>
+      </div>
+
+      <!-- Market button -->
+      <div class="market-btn" id="marketBtn">🎴 MARKET</div>
+
+      <!-- AI hand -->
+      <div class="ai-row">
+        <div class="ai-label">🤖 OPPONENT · <span id="aiCardsCount">5</span> cards</div>
+        <div class="ai-last-played" id="aiLastPlayedArea" style="display: none;">
+          <span style="color:#ccc;">last played:</span>
+          <div class="mini-card" id="aiLastPlayedCard"></div>
+          <span id="aiLastPlayedName"></span>
+        </div>
+        <div class="ai-cards" id="aiHandContainer"></div>
+      </div>
+
+      <!-- Battle bar -->
+      <div class="battle-bar">
+        <div class="scores">
+          <div class="score-item">😎 YOU <span class="score-value" id="playerScore">0</span></div>
+          <div class="score-item">🤖 AI <span class="score-value" id="aiScore">0</span></div>
+        </div>
+        <button class="play-btn" id="playBtn">⚔️ PLAY</button>
+      </div>
+
+      <!-- Round log -->
+      <div class="round-log" id="roundLog">
+        <p style="color:#aaa;">✨ select a card and press PLAY</p>
+      </div>
+
+      <!-- Player hand -->
+      <div class="player-row">
+        <div class="player-label">😎 YOUR HAND · <span id="playerCardsCount">5</span></div>
+        <div class="swiper mySwiper" id="playerSwiper">
+          <div class="swiper-wrapper" id="swiperWrapper"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Animated background -->
+    <ul class="circles">
+      <li></li><li></li><li></li><li></li><li></li>
+      <li></li><li></li><li></li><li></li><li></li>
+    </ul>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    (function() {
+      // ----- CARD DATABASE (split into tiers) -----
+      const commonTier = [
+        { name: 'Rock Lee', img: 'https://i.pinimg.com/736x/fa/9a/c8/fa9ac8c9917c3d7d078c40a85254ec6b.jpg', power: 75 },
+        { name: 'Zenitsu', img: 'https://i.pinimg.com/1200x/71/4c/8f/714c8f54cbe39feada3b6783be548884.jpg', power: 74 },
+        { name: 'Mikasa', img: 'https://i.pinimg.com/736x/aa/f7/d3/aaf7d38155710b3b0a794b3763bfe844.jpg', power: 73 },
+        { name: 'Yuji', img: 'https://i.pinimg.com/736x/c6/84/a3/c684a36311093b31b918173de8210335.jpg', power: 72 },
+        { name: 'Killua', img: 'https://i.pinimg.com/736x/22/12/d1/2212d1d95942599372dcded62167c67c.jpg', power: 71 },
+        { name: 'Takemichi', img: 'https://i.pinimg.com/1200x/aa/fa/91/aafa91e13d222a89989c4d070582515a.jpg', power: 55 },
+        { name: 'Asta', img: 'https://i.pinimg.com/736x/33/f1/40/33f1406484b5cd7702b0ea9153b4b6fa.jpg', power: 65 },
+        { name: 'Bakugo', img: 'https://i.pinimg.com/736x/1a/2c/3c/1a2c3c082ca23a56883217ad3bf9484a.jpg', power: 69 },
+        { name: 'Todoroki', img: 'https://i.pinimg.com/1200x/c3/3c/06/c33c0674a81ee21c71326e2784723ec3.jpg', power: 69 }
+      ];
+
+      const higherTier = [
+        { name: 'Goku', img: 'https://i.pinimg.com/1200x/49/72/ce/4972cec18bdca9f7f72e106cd277a21f.jpg', power: 98 },
+        { name: 'Gojo', img: 'https://i.pinimg.com/736x/63/5c/1e/635c1e20b3da0d7c2ab04705ebd0cf89.jpg', power: 96 },
+        { name: 'Madara', img: 'https://i.pinimg.com/736x/47/c4/16/47c416ab4a1887607de96e16e9d5797f.jpg', power: 95 },
+        { name: 'Sung Jin-Woo', img: 'https://i.pinimg.com/736x/eb/59/4a/eb594a38d39a16aa7ee5d94684c8d43c.jpg', power: 94 },
+        { name: 'Luffy', img: 'https://i.pinimg.com/1200x/a8/9c/90/a89c904ec3b11b39f3ee5dcf371666ec.jpg', power: 93 },
+        { name: 'Sukuna', img: 'https://i.pinimg.com/1200x/19/7f/76/197f7651e3d1e112ccddc15e5cf0ae01.jpg', power: 92 },
+        { name: 'Sasuke', img: 'https://i.pinimg.com/736x/cd/b1/f4/cdb1f448dae5933fb5dba3f27611f978.jpg', power: 91 },
+        { name: 'Igris', img: 'https://i.pinimg.com/1200x/4c/21/12/4c211288a5f0ffed22bc1193389f604e.jpg', power: 88 },
+        { name: 'Toji', img: 'https://i.pinimg.com/1200x/f8/18/3a/f8183a3548c675626ad9bd4397cb9607.jpg', power: 85 }
+      ];
+
+      // Full pool for AI (mixed, to keep difficulty)
+      const aiPool = [...higherTier, ...commonTier];
+
+      // Player's collection – starts with only common tier
+      let playerCollection = [...commonTier].map(c => ({ ...c }));
+
+      // Game state
+      let playerHand = [];
+      let aiHand = [];
+      let playerWins = 0;
+      let aiWins = 0;
+      let animeShards = 0;
+      let totalRoundsPlayed = 0;
+      let gameActive = false;
+      let isAITurn = false;
+      let currentSwiper = null;
+
+      // DOM elements
+      const swiperWrapper = document.getElementById('swiperWrapper');
+      const playerScoreSpan = document.getElementById('playerScore');
+      const aiScoreSpan = document.getElementById('aiScore');
+      const playerCardsCount = document.getElementById('playerCardsCount');
+      const aiCardsCount = document.getElementById('aiCardsCount');
+      const aiHandContainer = document.getElementById('aiHandContainer');
+      const aiLastPlayedArea = document.getElementById('aiLastPlayedArea');
+      const aiLastPlayedCard = document.getElementById('aiLastPlayedCard');
+      const aiLastPlayedName = document.getElementById('aiLastPlayedName');
+      const roundLogDiv = document.getElementById('roundLog');
+      const playBtn = document.getElementById('playBtn');
+      const startOverlay = document.getElementById('startOverlay');
+      const gameOverlay = document.getElementById('gameOverlay');
+      const startGameBtn = document.getElementById('startGameBtn');
+      const restartOverlayBtn = document.getElementById('restartFromOverlay');
+      const gameOverTitle = document.getElementById('gameOverTitle');
+      const gameOverMsg = document.getElementById('gameOverMsg');
+      const shardCount = document.getElementById('shardCount');
+      const marketBtn = document.getElementById('marketBtn');
+      const marketModal = document.getElementById('marketModal');
+      const closeMarketBtn = document.getElementById('closeMarketBtn');
+      const pack3Card = document.getElementById('pack3Card');
+      const pack1Card = document.getElementById('pack1Card');
+      const packOpenModal = document.getElementById('packOpenModal');
+      const packCardsContainer = document.getElementById('packCardsContainer');
+      const closePackBtn = document.getElementById('closePackBtn');
+
+      // Helper functions
+      function log(msg) {
+        const p = document.createElement('p');
+        p.textContent = msg;
+        p.style.margin = '2px 0';
+        roundLogDiv.appendChild(p);
+        roundLogDiv.scrollTop = roundLogDiv.scrollHeight;
+        if (roundLogDiv.children.length > 5) {
+          roundLogDiv.removeChild(roundLogDiv.children[0]);
+        }
+      }
+
+      function getAIDifficultyLevel() {
+        if (totalRoundsPlayed < 6) return 'easy';
+        else if (totalRoundsPlayed < 16) return 'medium';
+        else if (totalRoundsPlayed < 30) return 'hard';
+        else return 'impossible';
+      }
+
+      // Draw a random hand of 5 cards from player's collection
+      function drawPlayerHand() {
+        const shuffled = [...playerCollection].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, 5).map(c => ({ ...c }));
+      }
+
+      // Draw AI hand (5 random from aiPool)
+      function drawAIHand() {
+        const shuffled = [...aiPool].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, 5).map(c => ({ ...c }));
+      }
+
+      // Render AI hand
+      function renderAIHand() {
+        aiHandContainer.innerHTML = '';
+        aiHand.forEach(card => {
+          const cardDiv = document.createElement('div');
+          cardDiv.className = 'ai-card';
+          cardDiv.style.background = `linear-gradient(145deg, rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${card.img}') no-repeat center / cover`;
+          cardDiv.innerHTML = `<span class="power-badge-small">⚡${card.power}</span>`;
+          aiHandContainer.appendChild(cardDiv);
+        });
+        aiCardsCount.textContent = aiHand.length;
+      }
+
+      // Render player hand (swiper)
+      function renderPlayerHand() {
+        swiperWrapper.innerHTML = '';
+        playerHand.forEach((card) => {
+          const slide = document.createElement('div');
+          slide.className = 'swiper-slide';
+          slide.style.background = `linear-gradient(to top, #0f2027, transparent, transparent), url('${card.img}') no-repeat center / cover`;
+          slide.innerHTML = `
+            <span class="power-badge">⚡${card.power}</span>
+            <h4>${card.name}</h4>
+          `;
+          swiperWrapper.appendChild(slide);
+        });
+
+        if (currentSwiper) {
+          currentSwiper.destroy(true, true);
+          currentSwiper = null;
+        }
+        currentSwiper = new Swiper(".mySwiper", {
+          effect: "cards",
+          grabCursor: true,
+          initialSlide: 0,
+          loop: false,
+          rotate: true,
+          speed: 400,
+        });
+        playerCardsCount.textContent = playerHand.length;
+      }
+
+      function refreshUI() {
+        playerScoreSpan.textContent = playerWins;
+        aiScoreSpan.textContent = aiWins;
+        shardCount.textContent = animeShards;
+        playerCardsCount.textContent = playerHand.length;
+        aiCardsCount.textContent = aiHand.length;
+        renderAIHand();
+      }
+
+      // AI card selection (same logic)
+      function aiSelectCard(playerPower) {
+        if (aiHand.length === 0) return null;
+        const level = getAIDifficultyLevel();
+        const sorted = [...aiHand].sort((a, b) => a.power - b.power);
+        const higherCard = sorted.find(c => c.power >= playerPower);
+        let chosenIndex = Math.floor(Math.random() * aiHand.length);
+
+        if (level === 'easy') {
+          if (Math.random() < 0.4) {
+            chosenIndex = Math.floor(Math.random() * aiHand.length);
+          } else {
+            const lowerCards = sorted.filter(c => c.power < playerPower);
+            if (lowerCards.length > 0 && Math.random() < 0.7) {
+              const randomLower = lowerCards[Math.floor(Math.random() * lowerCards.length)];
+              chosenIndex = aiHand.findIndex(c => c.name === randomLower.name);
+            } else {
+              const weakest = sorted[0];
+              chosenIndex = aiHand.findIndex(c => c.name === weakest.name);
+            }
+          }
+        } else if (level === 'medium') {
+          if (higherCard && Math.random() < 0.7) {
+            chosenIndex = aiHand.findIndex(c => c.name === higherCard.name);
+          } else {
+            chosenIndex = Math.floor(Math.random() * aiHand.length);
+          }
+        } else if (level === 'hard') {
+          if (higherCard) {
+            chosenIndex = aiHand.findIndex(c => c.name === higherCard.name);
+          } else {
+            const highest = sorted[sorted.length-1];
+            chosenIndex = aiHand.findIndex(c => c.name === highest.name);
+          }
+        } else {
+          if (higherCard) {
+            chosenIndex = aiHand.findIndex(c => c.name === higherCard.name);
+          } else {
+            const highest = sorted[sorted.length-1];
+            chosenIndex = aiHand.findIndex(c => c.name === highest.name);
+          }
+        }
+        return chosenIndex;
+      }
+
+      // Start AI turn with thinking animation
+      function startAITurn() {
+        if (!gameActive || isAITurn) return;
+        if (playerHand.length === 0 || aiHand.length === 0) {
+          endGame();
+          return;
+        }
+
+        const activeIndex = currentSwiper ? currentSwiper.activeIndex : 0;
+        const playerCard = playerHand[activeIndex];
+        if (!playerCard) return;
+
+        const aiIndex = aiSelectCard(playerCard.power);
+        if (aiIndex === null) return;
+        const aiCard = aiHand[aiIndex];
+
+        isAITurn = true;
+        playBtn.disabled = true;
+
+        const aiCardElements = document.querySelectorAll('.ai-card');
+        aiCardElements.forEach(el => el.classList.add('thinking'));
+
+        setTimeout(() => {
+          aiCardElements.forEach(el => el.classList.remove('thinking'));
+
+          aiLastPlayedCard.style.background = `url('${aiCard.img}') center / cover`;
+          aiLastPlayedName.textContent = `${aiCard.name} (${aiCard.power})`;
+          aiLastPlayedArea.style.display = 'flex';
+
+          if (playerCard.power >= aiCard.power) {
+            playerWins++;
+            animeShards += 10;
+            log(`✅ YOU WIN +10 🪙 · ${playerCard.name} (${playerCard.power}) vs ${aiCard.name} (${aiCard.power})`);
+          } else {
+            aiWins++;
+            log(`❌ AI WIN · ${aiCard.name} (${aiCard.power}) vs ${playerCard.name} (${playerCard.power})`);
+          }
+
+          playerHand.splice(activeIndex, 1);
+          aiHand.splice(aiIndex, 1);
+          totalRoundsPlayed++;
+
+          renderPlayerHand();
+          renderAIHand();
+          refreshUI();
+
+          setTimeout(() => {
+            aiLastPlayedArea.style.display = 'none';
+          }, 2000);
+
+          isAITurn = false;
+          playBtn.disabled = false;
+
+          if (playerHand.length === 0 || aiHand.length === 0) {
+            endGame();
+          }
+        }, 700);
+      }
+
+      function endGame() {
+        gameActive = false;
+        isAITurn = false;
+        playBtn.disabled = true;
+
+        let winnerMsg = '';
+        if (playerWins > aiWins) winnerMsg = '🏆 YOU DEFEATED THE AI! 🏆';
+        else if (aiWins > playerWins) winnerMsg = '💀 AI VICTORY ... TRY AGAIN 💀';
+        else winnerMsg = '🤝 IT\'S A DRAW 🤝';
+
+        gameOverTitle.textContent = playerWins > aiWins ? 'VICTORY!' : 'DEFEAT';
+        gameOverMsg.innerHTML = `${winnerMsg}<br>🎯 final score: ${playerWins} : ${aiWins}<br>🪙 Shards earned: ${animeShards}`;
+        gameOverlay.classList.remove('hidden');
+      }
+
+      // Restart game (draw fresh hands from current collection)
+      function restartGame() {
+        startOverlay.classList.add('hidden');
+        gameOverlay.classList.add('hidden');
+
+        playerHand = drawPlayerHand();
+        aiHand = drawAIHand();
+
+        playerWins = 0;
+        aiWins = 0;
+        // Shards persist, totalRoundsPlayed persists
+
+        gameActive = true;
+        isAITurn = false;
+        playBtn.disabled = false;
+
+        renderPlayerHand();
+        renderAIHand();
+        refreshUI();
+        aiLastPlayedArea.style.display = 'none';
+        roundLogDiv.innerHTML = '<p style="color:#aaa;">✨ new battle started</p>';
+      }
+
+      // ----- MARKET FUNCTIONS -----
+      function openPack(cardCount, price) {
+        if (animeShards < price) {
+          alert(`Not enough shards! You need ${price} 🪙`);
+          return false;
+        }
+
+        // Deduct shards
+        animeShards -= price;
+        refreshUI();
+
+        // Generate new cards
+        const newCards = [];
+        for (let i = 0; i < cardCount; i++) {
+          // For category 2 (1 card), guarantee from higher tier. For category 1, mix.
+          let sourcePool;
+          if (cardCount === 1) {
+            sourcePool = higherTier; // guaranteed rare+
+          } else {
+            // 70% chance from common, 30% from higher for 3-card pack
+            sourcePool = Math.random() < 0.7 ? commonTier : higherTier;
+          }
+          const randomCard = { ...sourcePool[Math.floor(Math.random() * sourcePool.length)] };
+          newCards.push(randomCard);
+          playerCollection.push(randomCard);
+        }
+
+        // Show opening animation
+        packCardsContainer.innerHTML = '';
+        newCards.forEach(card => {
+          const cardDiv = document.createElement('div');
+          cardDiv.className = 'pack-card';
+          cardDiv.style.background = `url('${card.img}') center / cover`;
+          packCardsContainer.appendChild(cardDiv);
+        });
+
+        packOpenModal.classList.remove('hidden');
+        return true;
+      }
+
+      // Event listeners
+      playBtn.addEventListener('click', startAITurn);
+      startGameBtn.addEventListener('click', restartGame);
+      restartOverlayBtn.addEventListener('click', restartGame);
+
+      marketBtn.addEventListener('click', () => {
+        marketModal.classList.remove('hidden');
+      });
+
+      closeMarketBtn.addEventListener('click', () => {
+        marketModal.classList.add('hidden');
+      });
+
+      pack3Card.addEventListener('click', () => {
+        openPack(3, 100);
+        marketModal.classList.add('hidden');
+      });
+
+      pack1Card.addEventListener('click', () => {
+        openPack(1, 50);
+        marketModal.classList.add('hidden');
+      });
+
+      closePackBtn.addEventListener('click', () => {
+        packOpenModal.classList.add('hidden');
+        // Redraw player hand to possibly include new cards (optional, but nice)
+        if (gameActive) {
+          playerHand = drawPlayerHand();
+          renderPlayerHand();
+        }
+      });
+
+      // Initial setup (start with common cards only)
+      playerHand = drawPlayerHand();
+      aiHand = drawAIHand();
+      renderPlayerHand();
+      renderAIHand();
+      refreshUI();
+      gameActive = false;
+      playBtn.disabled = true;
+    })();
+  </script>
+</body>
+</html>
