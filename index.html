@@ -1,9 +1,10 @@
+<!-- ==================== MAIN GAME FILE (index.html) ==================== -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ANIME CARD BATTLE · v1.0 FIXED</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>ANIME CARD BATTLE · v1.3</title>
   <!-- Swiper CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <!-- Comfortaa font -->
@@ -18,6 +19,11 @@
 
     body {
       background: #1a1a1a;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
 
     .game-section {
@@ -25,13 +31,13 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      width: 100%;
+      height: 100%;
       background: #262626;
       overflow: hidden;
-      padding: 1rem;
+      padding: 0.5rem;
     }
 
-    /* main glass container */
     .game-container {
       position: relative;
       display: flex;
@@ -40,20 +46,21 @@
       background: linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 100%);
       backdrop-filter: blur(30px);
       border-radius: 30px;
-      width: min(1200px, 100%);
-      max-height: 98vh;
+      width: 100%;
+      max-width: 1300px;
+      height: 98%;
+      max-height: 950px;
       box-shadow: 0 0.5px 0 1px rgba(255,255,255,0.23) inset, 0 1px 0 0 rgba(255,255,255,0.66) inset, 0 4px 16px rgba(0,0,0,0.12);
       z-index: 10;
-      padding: 20px 25px 15px;
+      padding: 15px 20px 10px;
     }
 
-    /* Version tag */
     .version-tag {
       position: absolute;
       bottom: 5px;
       right: 20px;
       color: rgba(255,255,255,0.3);
-      font-size: 0.8rem;
+      font-size: 0.7rem;
       z-index: 30;
     }
 
@@ -64,10 +71,10 @@
       right: 20px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: rgba(0,0,0,0.4);
       backdrop-filter: blur(8px);
-      padding: 8px 20px;
+      padding: 6px 16px;
       border-radius: 60px;
       border: 1px solid gold;
       box-shadow: 0 4px 15px rgba(255,215,0,0.3);
@@ -75,8 +82,8 @@
     }
 
     .shards-corner .reward-icon {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       background: linear-gradient(135deg, #ffd966, #ffaa00);
       border-radius: 50%;
       display: inline-block;
@@ -85,14 +92,21 @@
     .shards-corner .reward-count {
       font-weight: 700;
       color: gold;
-      font-size: 1.6rem;
+      font-size: 1.4rem;
     }
 
-    /* Inventory button */
-    .inventory-btn {
+    /* Top-left buttons */
+    .top-left-buttons {
       position: absolute;
       top: 15px;
       left: 20px;
+      display: flex;
+      gap: 15px;
+      z-index: 20;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
       background: rgba(0,0,0,0.4);
       backdrop-filter: blur(8px);
       padding: 8px 20px;
@@ -102,36 +116,25 @@
       font-weight: 700;
       cursor: pointer;
       transition: 0.2s;
-      z-index: 20;
+      font-size: 0.9rem;
+      white-space: nowrap;
     }
 
-    .inventory-btn:hover {
+    .action-btn.market {
+      border-color: gold;
+    }
+
+    .action-btn:hover:not(:disabled) {
       animation: gelatine 0.4s;
       background: #ff3cac40;
       border-color: white;
     }
 
-    /* Market button - separate from inventory */
-    .market-btn {
-      position: absolute;
-      top: 15px;
-      left: 150px;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(8px);
-      padding: 8px 20px;
-      border-radius: 60px;
-      border: 1px solid gold;
-      color: white;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s;
-      z-index: 20;
-    }
-
-    .market-btn:hover {
-      animation: gelatine 0.4s;
-      background: #ff3cac40;
-      border-color: white;
+    .action-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+      filter: grayscale(0.6);
     }
 
     /* Custom notification */
@@ -142,7 +145,7 @@
       transform: translateX(-50%);
       background: rgba(20, 15, 30, 0.9);
       backdrop-filter: blur(12px);
-      padding: 15px 30px;
+      padding: 12px 25px;
       border-radius: 60px;
       border: 2px solid #ff3cac;
       color: white;
@@ -152,25 +155,27 @@
       transition: opacity 0.3s;
       opacity: 0;
       pointer-events: none;
+      font-size: 0.9rem;
     }
     .notification.show { opacity: 1; }
 
-    /* ----- AI hand ----- */
+    /* AI hand */
     .ai-row {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 5px;
       margin-top: 60px;
+      flex: 0 0 auto;
     }
 
     .ai-label {
       color: #ffb3ff;
       font-weight: 600;
       text-transform: uppercase;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       background: rgba(0,0,0,0.3);
-      padding: 5px 20px;
+      padding: 4px 16px;
       border-radius: 40px;
       backdrop-filter: blur(4px);
     }
@@ -178,30 +183,28 @@
     .ai-cards {
       display: flex;
       justify-content: center;
-      gap: 15px;
+      gap: 10px;
       flex-wrap: wrap;
-      padding: 5px 10px;
-      min-height: 220px;
+      padding: 5px 5px;
     }
 
     .ai-card {
-      width: 140px;
-      height: 200px;
-      border-radius: 20px;
+      width: min(100px, 18vw);
+      aspect-ratio: 2 / 3;
+      border-radius: 16px;
       border: 2px solid #ff3cac80;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.7);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      padding-bottom: 10px;
+      padding-bottom: 8px;
       color: white;
       font-weight: 700;
       background-size: cover !important;
       background-position: center !important;
       background-repeat: no-repeat !important;
       position: relative;
-      transition: transform 0.2s;
     }
 
     .ai-card.thinking {
@@ -210,15 +213,15 @@
 
     @keyframes aiThink {
       0% { transform: scale(1) translateY(0); }
-      100% { transform: scale(1.1) translateY(-8px); filter: brightness(1.3); }
+      100% { transform: scale(1.1) translateY(-5px); filter: brightness(1.3); }
     }
 
     .ai-card .power-badge-small {
       background: rgba(255,255,255,0.15);
       backdrop-filter: blur(4px);
-      padding: 5px 12px;
+      padding: 3px 8px;
       border-radius: 30px;
-      font-size: 0.9rem;
+      font-size: 0.7rem;
       border: 1px solid rgba(255,255,255,0.3);
       z-index: 2;
     }
@@ -227,22 +230,21 @@
     .ai-last-played {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 10px;
       background: rgba(0,0,0,0.5);
-      padding: 8px 25px;
+      padding: 5px 20px;
       border-radius: 60px;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
     }
 
     .last-played-card {
-      width: 70px;
-      height: 100px;
+      width: 50px;
+      height: 70px;
       background: #2a1e3a;
-      border-radius: 15px;
+      border-radius: 12px;
       border: 2px solid #ff3cac;
       background-size: cover !important;
       background-position: center !important;
-      transition: transform 0.5s ease;
     }
 
     .last-played-card.spin-reveal {
@@ -255,21 +257,23 @@
       100% { transform: rotateY(360deg) scale(1); opacity: 1; }
     }
 
-    /* battle bar */
+    /* battle bar with round counter */
     .battle-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: rgba(0,0,0,0.2);
-      border-radius: 80px;
-      padding: 15px 30px;
+      border-radius: 60px;
+      padding: 10px 20px;
       margin: 10px 0;
       backdrop-filter: blur(8px);
+      flex: 0 0 auto;
     }
 
     .scores {
       display: flex;
-      gap: 40px;
+      gap: 30px;
+      align-items: center;
     }
 
     .score-item {
@@ -277,33 +281,40 @@
       flex-direction: column;
       align-items: center;
       color: white;
+      font-size: 0.9rem;
     }
 
     .score-value {
-      font-size: 2rem;
+      font-size: 1.8rem;
       background: linear-gradient(225deg, #ff3cac, #784ba0);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-weight: 700;
     }
 
-    /* Result display - hidden for now (fix later) */
-    .result-badge {
-      display: none; /* Hidden as requested */
+    .round-indicator {
+      background: rgba(255,60,172,0.2);
+      border: 1px solid #ff3cac;
+      border-radius: 40px;
+      padding: 5px 15px;
+      color: #ffb3ff;
+      font-weight: 600;
+      font-size: 1rem;
     }
 
     .play-btn {
       background: rgba(255,255,255,0.9);
       border: none;
-      padding: 12px 40px;
+      padding: 10px 30px;
       border-radius: 60px;
       font-weight: 700;
       color: #4a2b5e;
       cursor: pointer;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       transition: 0.2s;
       border: 1px solid rgba(255,255,255,0.5);
       box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      white-space: nowrap;
     }
 
     .play-btn:hover:not(:disabled) {
@@ -323,48 +334,57 @@
       75% { transform: scale(0.95,1.05); }
     }
 
+    /* Round log */
     .round-log {
       background: rgba(0,0,0,0.3);
       border-radius: 30px;
-      padding: 10px 20px;
-      font-size: 0.9rem;
-      max-height: 60px;
+      padding: 15px 20px;
+      font-size: 1rem;
+      min-height: 80px;
+      max-height: 100px;
       overflow-y: auto;
-      border: 1px solid #ff3cac40;
-      margin: 5px 0;
-      color: #ddd;
+      border: 1px solid #ff3cac80;
+      margin: 5px 0 10px;
+      color: #fff;
+      line-height: 1.4;
+      flex: 0 0 auto;
+      width: 100%;
     }
 
-    /* player hand */
+    /* Player hand */
     .player-row {
       display: flex;
       flex-direction: column;
       align-items: center;
+      flex: 1 1 auto;
+      justify-content: flex-end;
+      min-height: 0;
     }
 
     .player-label {
       color: #ffb3ff;
       font-weight: 600;
       text-transform: uppercase;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       background: rgba(0,0,0,0.3);
-      padding: 5px 20px;
+      padding: 4px 16px;
       border-radius: 40px;
       backdrop-filter: blur(4px);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .swiper {
-      width: 260px;
-      height: 380px;
-      padding: 10px 0;
+      width: 100%;
+      max-width: 280px;
+      height: auto;
+      aspect-ratio: 2 / 3;
     }
 
     .swiper-slide {
       position: relative;
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.6);
       background-size: cover !important;
       background-position: center !important;
       background-repeat: no-repeat !important;
@@ -372,25 +392,25 @@
 
     .swiper-slide .power-badge {
       position: absolute;
-      top: 12px;
-      right: 12px;
+      top: 8px;
+      right: 8px;
       background: rgba(255,255,255,0.15);
       backdrop-filter: blur(10px);
-      padding: 6px 16px;
+      padding: 4px 12px;
       border-radius: 30px;
       color: white;
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 0.9rem;
       border: 1px solid rgba(255,255,255,0.3);
       z-index: 2;
     }
 
     .swiper-slide h4 {
       position: absolute;
-      bottom: 20px;
-      left: 20px;
+      bottom: 15px;
+      left: 15px;
       color: white;
-      font-size: 1.2rem;
+      font-size: 1rem;
       font-weight: 600;
       text-shadow: 2px 2px 5px black;
       z-index: 2;
@@ -407,26 +427,13 @@
 
     /* floating circles */
     .circles {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      z-index: 1;
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 1;
     }
-
     .circles li {
-      position: absolute;
-      display: block;
-      list-style: none;
-      width: 20px;
-      height: 20px;
+      position: absolute; display: block; list-style: none; width: 20px; height: 20px;
       background: linear-gradient(225deg, #ff3cac, #784ba0, #2b86c5);
-      animation: float 25s linear infinite;
-      bottom: -150px;
+      animation: float 25s linear infinite; bottom: -150px;
     }
-
     .circles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
     .circles li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
     .circles li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
@@ -443,449 +450,142 @@
       100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
     }
 
-    /* War Animation Overlay */
+    /* War Overlay */
     .war-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 3000;
-      transition: opacity 0.5s;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 3000; transition: opacity 0.5s;
     }
     .war-overlay.hidden { opacity: 0; pointer-events: none; }
-
-    .war-container {
-      display: flex;
-      gap: 80px;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      padding: 30px;
-    }
-
+    .war-container { display: flex; gap: 40px; align-items: center; justify-content: center; flex-wrap: wrap; padding: 20px; }
     .war-card {
-      position: relative;
-      width: 220px;
-      height: 320px;
-      border-radius: 30px;
-      background-size: cover !important;
-      background-position: center !important;
-      box-shadow: 0 30px 50px rgba(0,0,0,0.8);
-      transform: scale(0.8) rotateY(90deg);
-      opacity: 0;
-      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s, box-shadow 0.3s;
-      border: 4px solid transparent;
-    }
-
-    .war-card.revealed {
-      transform: scale(1) rotateY(0deg);
-      opacity: 1;
-    }
-
-    .war-card.winner {
-      border-color: gold;
-      box-shadow: 0 0 50px gold, 0 30px 50px rgba(0,0,0,0.8);
-      filter: brightness(1.2) saturate(1.3);
-    }
-
-    .war-label {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 2rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      text-shadow: 0 0 20px currentColor;
-      background: rgba(0,0,0,0.7);
-      padding: 8px 20px;
-      border-radius: 50px;
-      pointer-events: none;
-      z-index: 10;
-    }
-
-    .war-card.winner .war-label {
-      color: gold;
-    }
-
-    .war-card:not(.winner) .war-label {
-      color: #ff4444;
-    }
-
-    .war-vs {
-      font-size: 4rem;
-      color: white;
-      text-shadow: 0 0 30px #ff3cac;
-      font-weight: 700;
-    }
-
-    /* Market Modal */
-    .modal {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(12px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      transition: opacity 0.3s;
-    }
-    .modal.hidden { opacity: 0; pointer-events: none; }
-
-    .modal-content {
-      background: rgba(30, 26, 43, 0.7);
-      backdrop-filter: blur(15px);
-      padding: 40px;
-      border-radius: 48px;
-      border: 2px solid #ff3cac;
-      box-shadow: 0 20px 60px #ff3cac60;
-      max-width: 900px;
-      width: 95%;
-      color: white;
-    }
-
-    .modal-content h2 {
-      text-align: center;
-      font-size: 2rem;
-      margin-bottom: 30px;
-      background: linear-gradient(225deg, #ff3cac, #784ba0);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .category-row {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      flex-wrap: wrap;
-    }
-
-    .pack-card-item {
-      width: 220px;
-      height: 300px;
-      border-radius: 30px;
-      background-size: cover !important;
-      background-position: center !important;
-      border: 3px solid gold;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
-      padding: 20px 10px;
-      cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 20px 30px rgba(0,0,0,0.6);
-    }
-
-    .pack-card-item:hover {
-      transform: scale(1.05);
-      border-color: #ff3cac;
-      box-shadow: 0 0 40px #ff3cac;
-    }
-
-    .pack-card-item .price {
-      font-size: 2rem;
-      color: gold;
-      font-weight: 700;
-      background: rgba(0,0,0,0.6);
-      padding: 5px 20px;
-      border-radius: 40px;
-      backdrop-filter: blur(4px);
-      margin-bottom: 10px;
-    }
-
-    .pack-card-item .box-description {
-      color: white;
-      background: rgba(0,0,0,0.5);
-      padding: 8px 15px;
-      border-radius: 30px;
-      font-size: 0.9rem;
-      text-align: center;
-    }
-
-    .close-modal {
-      display: block;
-      margin: 30px auto 0;
-      background: rgba(255,255,255,0.9);
-      border: none;
-      padding: 12px 40px;
-      border-radius: 60px;
-      font-weight: 700;
-      color: #4a2b5e;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    /* Inventory Modal */
-    .inventory-modal {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.9);
-      backdrop-filter: blur(15px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1500;
-    }
-    .inventory-modal.hidden { display: none; }
-
-    .inventory-content {
-      background: rgba(30, 26, 43, 0.7);
-      backdrop-filter: blur(15px);
-      padding: 30px;
-      border-radius: 48px;
-      border: 2px solid #ff3cac;
-      max-width: 1000px;
-      width: 95%;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-
-    .inventory-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 15px;
-      padding: 20px 0;
-    }
-
-    .inventory-card {
-      width: 100%;
-      height: 200px;
-      border-radius: 20px;
-      background-size: cover !important;
-      background-position: center !important;
-      border: 2px solid #ff3cac;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      cursor: pointer;
-      transition: 0.2s;
-      position: relative;
-    }
-
-    .inventory-card.selected {
-      border: 4px solid gold;
-      box-shadow: 0 0 30px gold;
-    }
-
-    .inventory-card .power-badge {
-      background: rgba(0,0,0,0.7);
-      padding: 4px 12px;
-      border-radius: 30px;
-      color: white;
-      align-self: flex-end;
-    }
-
-    .inventory-card h4 {
-      color: white;
-      text-shadow: 2px 2px 4px black;
-      background: rgba(0,0,0,0.5);
-      padding: 4px 8px;
-      border-radius: 20px;
-      width: 100%;
-      text-align: center;
-    }
-
-    .deck-size {
-      text-align: center;
-      margin: 10px 0;
-      color: #ffb3ff;
-    }
-
-    /* Pack opening modal */
-    .pack-modal {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.9);
-      backdrop-filter: blur(15px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1100;
-    }
-    .pack-modal.hidden { display: none; }
-
-    .pack-content {
-      text-align: center;
-    }
-
-    .pack-cards {
-      display: flex;
-      gap: 30px;
-      justify-content: center;
-      margin: 40px 0;
-      perspective: 1000px;
-    }
-
-    .pack-card {
-      width: 180px;
-      height: 250px;
-      background: #2a1e3a;
-      border-radius: 20px;
-      border: 3px solid #ff3cac;
-      background-size: cover !important;
-      background-position: center !important;
-      transform: rotateY(90deg);
-      animation: flipIn 0.5s forwards;
+      position: relative; width: 160px; height: 220px; border-radius: 25px;
+      background-size: cover !important; background-position: center !important;
       box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+      transform: scale(0.8) rotateY(90deg); opacity: 0;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s, box-shadow 0.3s;
+      border: 3px solid transparent;
     }
-
-    .pack-card:nth-child(2) { animation-delay: 0.2s; }
-    .pack-card:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes flipIn {
-      0% { transform: rotateY(90deg); }
-      100% { transform: rotateY(0deg); }
+    .war-card.revealed { transform: scale(1) rotateY(0deg); opacity: 1; }
+    .war-card.winner { border-color: gold; box-shadow: 0 0 40px gold, 0 20px 40px rgba(0,0,0,0.8); filter: brightness(1.2) saturate(1.3); }
+    .war-label {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 1.5rem; font-weight: 800; text-transform: uppercase;
+      text-shadow: 0 0 15px currentColor; background: rgba(0,0,0,0.6);
+      padding: 5px 15px; border-radius: 40px; pointer-events: none; z-index: 10;
     }
+    .war-card.winner .war-label { color: gold; }
+    .war-card:not(.winner) .war-label { color: #ff4444; }
+    .war-vs { font-size: 2.5rem; color: white; text-shadow: 0 0 20px #ff3cac; font-weight: 700; }
 
-    .pack-close {
-      background: rgba(255,255,255,0.9);
-      border: none;
-      padding: 12px 40px;
-      border-radius: 60px;
-      font-weight: 700;
-      color: #4a2b5e;
-      cursor: pointer;
-      font-size: 1rem;
-      margin-top: 20px;
+    /* Modals */
+    .modal, .inventory-modal, .pack-modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; transition: opacity 0.3s; padding: 10px;
     }
+    .modal.hidden, .inventory-modal.hidden, .pack-modal.hidden { display: none; }
+    .modal-content, .inventory-content, .pack-content {
+      background: rgba(30, 26, 43, 0.7); backdrop-filter: blur(15px);
+      padding: 25px; border-radius: 40px; border: 2px solid #ff3cac;
+      box-shadow: 0 20px 60px #ff3cac60; max-width: 800px; width: 100%;
+      max-height: 80vh; overflow-y: auto; color: white;
+    }
+    .inventory-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px; padding: 15px 0;
+    }
+    .inventory-card {
+      aspect-ratio: 2 / 3; border-radius: 16px; background-size: cover !important;
+      background-position: center !important; border: 2px solid #ff3cac;
+      display: flex; flex-direction: column; justify-content: space-between;
+      align-items: center; padding: 8px; cursor: pointer;
+    }
+    .inventory-card.selected { border: 4px solid gold; box-shadow: 0 0 20px gold; }
+    .pack-card-item {
+      width: 180px; aspect-ratio: 2 / 3; border-radius: 25px;
+      background-size: cover !important; background-position: center !important;
+      border: 3px solid gold; display: flex; flex-direction: column;
+      justify-content: flex-end; align-items: center; padding: 15px 5px; cursor: pointer;
+    }
+    .pack-cards { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+    .pack-card { width: 130px; aspect-ratio: 2 / 3; border-radius: 18px; border: 3px solid #ff3cac; background-size: cover !important; background-position: center !important; }
+    .close-modal { display: block; margin: 20px auto 0; background: rgba(255,255,255,0.9); border: none; padding: 10px 30px; border-radius: 60px; font-weight: 700; color: #4a2b5e; cursor: pointer; }
 
-    /* Overlays */
+    /* Start overlay */
     .overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(12px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      transition: opacity 0.4s;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 10000; transition: opacity 0.4s;
     }
     .overlay.hidden { opacity: 0; pointer-events: none; }
-
     .overlay-card {
-      background: rgba(30, 26, 43, 0.7);
-      backdrop-filter: blur(15px);
-      padding: 40px;
-      border-radius: 48px;
-      text-align: center;
-      border: 2px solid #ff3cac;
-      box-shadow: 0 20px 60px #ff3cac60;
-      max-width: 400px;
-      color: white;
+      background: rgba(30, 26, 43, 0.7); backdrop-filter: blur(15px);
+      padding: 40px; border-radius: 48px; text-align: center;
+      border: 2px solid #ff3cac; box-shadow: 0 20px 60px #ff3cac60;
+      max-width: 400px; color: white;
     }
-    .overlay-card h1 { 
-      font-size: 2.5rem; 
-      background: linear-gradient(225deg, #ff3cac, #784ba0, #2b86c5); 
-      -webkit-background-clip: text; 
-      -webkit-text-fill-color: transparent; 
+    .overlay-card h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(225deg, #ff3cac, #784ba0, #2b86c5);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       margin-bottom: 20px;
     }
-    .overlay-card h2 {
-      font-size: 2rem;
-      margin-bottom: 15px;
-      background: linear-gradient(225deg, #ff3cac, #784ba0);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .overlay-card p {
-      font-size: 1.1rem;
-      margin: 20px 0;
-      color: #ddd;
-    }
     .overlay-card button {
-      background: rgba(255,255,255,0.9);
-      border: none;
-      padding: 12px 40px;
-      border-radius: 60px;
-      font-weight: 700;
-      color: #4a2b5e;
-      cursor: pointer;
-      font-size: 1.2rem;
-      border: 1px solid rgba(255,255,255,0.5);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-      margin-top: 20px;
+      background: rgba(255,255,255,0.9); border: none; padding: 12px 40px;
+      border-radius: 60px; font-weight: 700; color: #4a2b5e;
+      cursor: pointer; font-size: 1.2rem; border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3); margin-top: 20px;
       transition: 0.2s;
     }
-    .overlay-card button:hover {
-      animation: gelatine 0.4s;
-      background: white;
-    }
+    .overlay-card button:hover { animation: gelatine 0.4s; background: white; }
 
-    /* Responsive Design */
-    @media (max-width: 800px) {
-      .game-container { padding: 15px; }
-      .ai-card { width: 100px; height: 140px; }
-      .ai-cards { gap: 8px; }
-      .battle-bar { flex-direction: column; gap: 10px; }
-      .war-container { gap: 30px; }
-      .war-card { width: 150px; height: 220px; }
-      .war-vs { font-size: 2.5rem; }
-      .pack-card-item { width: 180px; height: 250px; }
-      .inventory-btn { left: 10px; }
-      .market-btn { left: 120px; }
-    }
-
-    @media (max-width: 480px) {
-      .ai-card { width: 70px; height: 100px; }
-      .shards-corner { padding: 5px 12px; }
-      .shards-corner .reward-count { font-size: 1.2rem; }
-      .inventory-btn, .market-btn { padding: 5px 12px; font-size: 0.8rem; }
-      .market-btn { left: 100px; }
-      .war-card { width: 110px; height: 160px; }
+    /* Responsive */
+    @media (max-width: 700px) {
+      .ai-card { width: min(70px, 15vw); }
+      .battle-bar { flex-wrap: wrap; gap: 10px; }
+      .scores { gap: 15px; }
+      .score-value { font-size: 1.4rem; }
+      .play-btn { padding: 8px 20px; font-size: 1rem; }
+      .swiper { max-width: 220px; }
+      .war-card { width: 120px; height: 170px; }
+      .war-label { font-size: 1rem; }
+      .war-vs { font-size: 1.8rem; }
     }
   </style>
 </head>
 <body>
-  <!-- Version tag -->
-  <div class="version-tag">v1.0 · Production</div>
+  <div class="version-tag">v1.3 · Production</div>
 
-  <!-- Start overlay -->
+  <!-- Start overlay (BEGIN BATTLE) -->
   <div id="startOverlay" class="overlay">
     <div class="overlay-card">
       <h1>⚡ ANIME CARD BATTLE ⚡</h1>
-      <p>Build your deck, earn shards, and defeat the adaptive AI!</p>
-      <button id="startGameBtn">BEGIN BATTLE</button>
-    </div>
-  </div>
-
-  <!-- Game over overlay -->
-  <div id="gameOverlay" class="overlay hidden">
-    <div class="overlay-card" id="gameOverCard">
-      <h2 id="gameOverTitle">GAME OVER</h2>
-      <p id="gameOverMsg"></p>
-      <button id="restartFromOverlay">PLAY AGAIN</button>
+      <p>Welcome! Build your deck, earn shards, and defeat the adaptive AI.</p>
+      <button id="beginBattleBtn">BEGIN BATTLE</button>
     </div>
   </div>
 
   <!-- Custom Notification -->
   <div id="notification" class="notification"></div>
 
-  <!-- War Animation Overlay -->
+  <!-- War Overlay -->
   <div id="warOverlay" class="war-overlay hidden">
     <div class="war-container">
-      <div id="warPlayerCard" class="war-card">
-        <span class="war-label"></span>
-      </div>
+      <div id="warPlayerCard" class="war-card"><span class="war-label"></span></div>
       <div class="war-vs">VS</div>
-      <div id="warAiCard" class="war-card">
-        <span class="war-label"></span>
-      </div>
+      <div id="warAiCard" class="war-card"><span class="war-label"></span></div>
     </div>
   </div>
 
   <!-- Inventory Modal -->
   <div id="inventoryModal" class="inventory-modal hidden">
     <div class="inventory-content">
-      <h2 style="text-align:center; color:white;">📦 YOUR INVENTORY</h2>
-      <div class="deck-size">Select up to 5 cards for your deck (click to select/deselect)</div>
+      <h2 style="text-align:center;">📦 YOUR INVENTORY</h2>
+      <div class="deck-size">Select up to 5 cards for your deck</div>
       <div id="inventoryGrid" class="inventory-grid"></div>
       <button class="close-modal" id="closeInventoryBtn">CLOSE & SAVE DECK</button>
     </div>
@@ -894,15 +594,15 @@
   <!-- Market Modal -->
   <div id="marketModal" class="modal hidden">
     <div class="modal-content">
-      <h2>🎴 CARD MARKET</h2>
-      <div class="category-row">
+      <h2 style="text-align:center;">🎴 CARD MARKET</h2>
+      <div class="category-row" style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
         <div class="pack-card-item" id="pack3Card" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://i.pinimg.com/736x/bc/bb/7c/bcbb7c3ab5ad402f5b0b322e69568e30.jpg');">
           <div class="price">100 🪙</div>
-          <div class="box-description">3 cards (70% common, 30% rare+)</div>
+          <div class="box-description">3 cards (weighted rarity)</div>
         </div>
         <div class="pack-card-item" id="pack1Card" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://i.pinimg.com/736x/9d/31/86/9d3186a98a25b393d8cd82541aabd020.jpg');">
           <div class="price">50 🪙</div>
-          <div class="box-description">1 guaranteed rare+ card</div>
+          <div class="box-description">1 guaranteed rare+</div>
         </div>
       </div>
       <button class="close-modal" id="closeMarketBtn">CLOSE</button>
@@ -912,9 +612,9 @@
   <!-- Pack Opening Modal -->
   <div id="packOpenModal" class="pack-modal hidden">
     <div class="pack-content">
-      <h2 style="color:white; margin-bottom:20px;">✨ OPENING PACK... ✨</h2>
+      <h2 style="color:white; margin-bottom:15px;">✨ OPENING PACK... ✨</h2>
       <div class="pack-cards" id="packCardsContainer"></div>
-      <button class="pack-close" id="closePackBtn">COLLECT</button>
+      <button class="pack-close close-modal" id="closePackBtn">COLLECT</button>
     </div>
   </div>
 
@@ -926,30 +626,30 @@
         <span class="reward-count" id="shardCount">50</span>
       </div>
 
-      <!-- Inventory button -->
-      <div class="inventory-btn" id="inventoryBtn">📦 INVENTORY</div>
-
-      <!-- Market button -->
-      <div class="market-btn" id="marketBtn">🎴 MARKET</div>
+      <!-- Top-left buttons -->
+      <div class="top-left-buttons">
+        <div class="action-btn" id="inventoryBtn">📦 INVENTORY</div>
+        <div class="action-btn market" id="marketBtn">🎴 MARKET</div>
+      </div>
 
       <!-- AI hand -->
       <div class="ai-row">
-        <div class="ai-label">🤖 OPPONENT · <span id="aiCardsCount">5</span> cards</div>
+        <div class="ai-label">🤖 OPPONENT · <span id="aiCardsCount">5</span></div>
         <div class="ai-last-played" id="aiLastPlayedArea" style="display: none;">
-          <span style="color:#ccc;">last played:</span>
+          <span style="color:#ccc;">last:</span>
           <div class="last-played-card" id="aiLastPlayedCard"></div>
           <span id="aiLastPlayedName"></span>
         </div>
         <div class="ai-cards" id="aiHandContainer"></div>
       </div>
 
-      <!-- Battle bar with result display (hidden) -->
+      <!-- Battle bar with round counter -->
       <div class="battle-bar">
         <div class="scores">
           <div class="score-item">😎 YOU <span class="score-value" id="playerScore">0</span></div>
           <div class="score-item">🤖 AI <span class="score-value" id="aiScore">0</span></div>
+          <div class="round-indicator" id="roundCounter">R1</div>
         </div>
-        <div id="resultDisplay" class="result-badge" style="display: none;">⚔️</div>
         <button class="play-btn" id="playBtn">⚔️ PLAY</button>
       </div>
 
@@ -967,72 +667,168 @@
       </div>
     </div>
 
-    <!-- Animated background -->
     <ul class="circles">
       <li></li><li></li><li></li><li></li><li></li>
       <li></li><li></li><li></li><li></li><li></li>
     </ul>
   </section>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     (function() {
-      // ----- CARD DATABASE WITH CACHING -----
-      function preloadImages(urls) {
-        urls.forEach(url => {
-          const img = new Image();
-          img.src = url;
-        });
+      // Firebase config
+      const firebaseConfig = {
+        apiKey: "AIzaSyAYVhlIZXLYx3Q9sOD4flNlcdLt3ahu0N0",
+        authDomain: "card-swiper-d5c0a.firebaseapp.com",
+        projectId: "card-swiper-d5c0a",
+        storageBucket: "card-swiper-d5c0a.firebasestorage.app",
+        messagingSenderId: "579825479564",
+        appId: "1:579825479564:web:f9d27ff12c7f7a5c5830a9",
+        measurementId: "G-06SRGQTE85"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+
+      // Check auth state - if not logged in, redirect to login page
+      auth.onAuthStateChanged(user => {
+        if (!user) {
+          window.location.href = 'login.html';
+        }
+      });
+
+      // ----- CARD DATABASE WITH UPDATED TIERS AND POWERS -----
+      // Common: 50-60
+      const commonTier = [
+        { name: 'Takemichi', img: 'https://i.pinimg.com/1200x/aa/fa/91/aafa91e13d222a89989c4d070582515a.jpg', power: 55, rarity: 'common' },
+        // add other common cards as needed (none others currently)
+      ];
+
+      // Rare: 61-75
+      const rareTier = [
+        { name: 'Rock Lee', img: 'https://i.pinimg.com/736x/fa/9a/c8/fa9ac8c9917c3d7d078c40a85254ec6b.jpg', power: 75, rarity: 'rare' },
+        { name: 'Zenitsu', img: 'https://i.pinimg.com/1200x/71/4c/8f/714c8f54cbe39feada3b6783be548884.jpg', power: 74, rarity: 'rare' },
+        { name: 'Mikasa', img: 'https://i.pinimg.com/736x/aa/f7/d3/aaf7d38155710b3b0a794b3763bfe844.jpg', power: 73, rarity: 'rare' },
+        { name: 'Yuji', img: 'https://i.pinimg.com/736x/c6/84/a3/c684a36311093b31b918173de8210335.jpg', power: 72, rarity: 'rare' },
+        { name: 'Killua', img: 'https://i.pinimg.com/736x/22/12/d1/2212d1d95942599372dcded62167c67c.jpg', power: 71, rarity: 'rare' },
+        { name: 'Asta', img: 'https://i.pinimg.com/736x/33/f1/40/33f1406484b5cd7702b0ea9153b4b6fa.jpg', power: 65, rarity: 'rare' },
+        { name: 'Bakugo', img: 'https://i.pinimg.com/736x/1a/2c/3c/1a2c3c082ca23a56883217ad3bf9484a.jpg', power: 69, rarity: 'rare' },
+        { name: 'Todoroki', img: 'https://i.pinimg.com/1200x/c3/3c/06/c33c0674a81ee21c71326e2784723ec3.jpg', power: 69, rarity: 'rare' },
+        { name: 'Tanjiro', img: 'https://i.pinimg.com/736x/2e/03/d4/2e03d482ebdf8c4e2e2c40c6754b7ec9.jpg', power: 70, rarity: 'rare' },
+        { name: 'Eren', img: 'https://i.pinimg.com/1200x/53/a5/75/53a5759db5428509f51289390d163bbb.jpg', power: 70, rarity: 'rare' },
+        { name: 'Nobara', img: 'https://i.pinimg.com/736x/35/a8/28/35a828f889568790afc76f24a2febc1a.jpg', power: 68, rarity: 'rare' },
+        { name: 'Nezuko', img: 'https://i.pinimg.com/736x/ef/0f/b4/ef0fb43eae15c50de80074a62fd27d44.jpg', power: 67, rarity: 'rare' },
+        { name: 'Hinata', img: 'https://i.pinimg.com/736x/65/73/84/657384b2147f6adff06bf8a47359a9f2.jpg', power: 66, rarity: 'rare' }
+      ];
+
+      // Epic: 76-93
+      const epicTier = [
+        { name: 'Zoro', img: 'https://i.pinimg.com/736x/6c/87/c6/6c87c656ea997f5769f146315f1963ba.jpg', power: 93, rarity: 'epic' },
+        { name: 'Obito', img: 'https://i.pinimg.com/736x/??/??/??????.jpg', power: 92, rarity: 'epic' }, // need Obito image
+        { name: 'Itachi', img: 'https://i.pinimg.com/1200x/dc/74/a4/dc74a4dd664ef557260236b2b7e220bd.jpg', power: 91, rarity: 'epic' },
+        { name: 'Yuta', img: 'https://i.pinimg.com/736x/9e/a3/4c/9ea34cc7172b4956d36741528e455c65.jpg', power: 91, rarity: 'epic' },
+        { name: 'Gaara', img: 'https://i.pinimg.com/736x/66/f6/97/66f697184697a33f5f50dd5ae47413ab.jpg', power: 88, rarity: 'epic' },
+        { name: 'Sanji', img: 'https://i.pinimg.com/736x/90/be/66/90be666202cce09ff3026842d7caa006.jpg', power: 87, rarity: 'epic' },
+        { name: 'Yami', img: 'https://i.pinimg.com/736x/e0/06/de/e006def1bb0aa781f860bb9416fc80a1.jpg', power: 89, rarity: 'epic' },
+        { name: 'Kakashi', img: 'https://i.pinimg.com/736x/e1/4c/f7/e14cf7759645ca65a7be50bb371bd494.jpg', power: 90, rarity: 'epic' },
+        { name: 'Asta Black', img: 'https://i.pinimg.com/736x/ed/18/e2/ed18e2d58a6ac4e0cd9d7d0d6e883c7b.jpg', power: 88, rarity: 'epic' }
+      ];
+
+      // Mythical: 94-112
+      const mythicalTier = [
+        { name: 'Goku', img: 'https://i.pinimg.com/1200x/49/72/ce/4972cec18bdca9f7f72e106cd277a21f.jpg', power: 98, rarity: 'mythical' },
+        { name: 'Gojo', img: 'https://i.pinimg.com/736x/63/5c/1e/635c1e20b3da0d7c2ab04705ebd0cf89.jpg', power: 96, rarity: 'mythical' },
+        { name: 'Madara', img: 'https://i.pinimg.com/736x/47/c4/16/47c416ab4a1887607de96e16e9d5797f.jpg', power: 95, rarity: 'mythical' },
+        { name: 'Sung Jin-Woo', img: 'https://i.pinimg.com/736x/eb/59/4a/eb594a38d39a16aa7ee5d94684c8d43c.jpg', power: 94, rarity: 'mythical' },
+        { name: 'Luffy', img: 'https://i.pinimg.com/1200x/a8/9c/90/a89c904ec3b11b39f3ee5dcf371666ec.jpg', power: 93, rarity: 'epic' }, // Luffy 93 is epic, move to epic
+        { name: 'Sukuna', img: 'https://i.pinimg.com/1200x/19/7f/76/197f7651e3d1e112ccddc15e5cf0ae01.jpg', power: 92, rarity: 'epic' }, // move to epic
+        { name: 'Sasuke', img: 'https://i.pinimg.com/736x/cd/b1/f4/cdb1f448dae5933fb5dba3f27611f978.jpg', power: 91, rarity: 'epic' }, // epic
+        { name: 'Igris', img: 'https://i.pinimg.com/1200x/4c/21/12/4c211288a5f0ffed22bc1193389f604e.jpg', power: 88, rarity: 'epic' },
+        { name: 'Toji', img: 'https://i.pinimg.com/1200x/f8/18/3a/f8183a3548c675626ad9bd4397cb9607.jpg', power: 85, rarity: 'epic' }
+      ];
+
+      // Adjust: move Luffy, Sukuna, Sasuke, Igris, Toji to epicTier (already done above)
+      // Actually we need to move them from mythical to epic. Let's redefine epicTier to include them.
+      // For simplicity, we'll add them to epicTier and remove from mythical.
+      // I'll reconstruct arrays properly.
+
+      // Rebuild epicTier to include the ones from original higherTier that are 76-93
+      const epicTierExtended = [
+        { name: 'Luffy', img: 'https://i.pinimg.com/1200x/a8/9c/90/a89c904ec3b11b39f3ee5dcf371666ec.jpg', power: 93, rarity: 'epic' },
+        { name: 'Sukuna', img: 'https://i.pinimg.com/1200x/19/7f/76/197f7651e3d1e112ccddc15e5cf0ae01.jpg', power: 92, rarity: 'epic' },
+        { name: 'Sasuke', img: 'https://i.pinimg.com/736x/cd/b1/f4/cdb1f448dae5933fb5dba3f27611f978.jpg', power: 91, rarity: 'epic' },
+        { name: 'Igris', img: 'https://i.pinimg.com/1200x/4c/21/12/4c211288a5f0ffed22bc1193389f604e.jpg', power: 88, rarity: 'epic' },
+        { name: 'Toji', img: 'https://i.pinimg.com/1200x/f8/18/3a/f8183a3548c675626ad9bd4397cb9607.jpg', power: 85, rarity: 'epic' },
+        // plus the new epic cards
+        { name: 'Zoro', img: 'https://i.pinimg.com/736x/6c/87/c6/6c87c656ea997f5769f146315f1963ba.jpg', power: 93, rarity: 'epic' },
+        { name: 'Obito', img: 'https://i.pinimg.com/736x/??/??/??????.jpg', power: 92, rarity: 'epic' }, // need image, placeholder
+        { name: 'Itachi', img: 'https://i.pinimg.com/1200x/dc/74/a4/dc74a4dd664ef557260236b2b7e220bd.jpg', power: 91, rarity: 'epic' },
+        { name: 'Yuta', img: 'https://i.pinimg.com/736x/9e/a3/4c/9ea34cc7172b4956d36741528e455c65.jpg', power: 91, rarity: 'epic' },
+        { name: 'Gaara', img: 'https://i.pinimg.com/736x/66/f6/97/66f697184697a33f5f50dd5ae47413ab.jpg', power: 88, rarity: 'epic' },
+        { name: 'Sanji', img: 'https://i.pinimg.com/736x/90/be/66/90be666202cce09ff3026842d7caa006.jpg', power: 87, rarity: 'epic' },
+        { name: 'Yami', img: 'https://i.pinimg.com/736x/e0/06/de/e006def1bb0aa781f860bb9416fc80a1.jpg', power: 89, rarity: 'epic' },
+        { name: 'Kakashi', img: 'https://i.pinimg.com/736x/e1/4c/f7/e14cf7759645ca65a7be50bb371bd494.jpg', power: 90, rarity: 'epic' },
+        { name: 'Asta Black', img: 'https://i.pinimg.com/736x/ed/18/e2/ed18e2d58a6ac4e0cd9d7d0d6e883c7b.jpg', power: 88, rarity: 'epic' }
+      ];
+
+      const mythicalTierExtended = [
+        { name: 'Goku', img: 'https://i.pinimg.com/1200x/49/72/ce/4972cec18bdca9f7f72e106cd277a21f.jpg', power: 98, rarity: 'mythical' },
+        { name: 'Gojo', img: 'https://i.pinimg.com/736x/63/5c/1e/635c1e20b3da0d7c2ab04705ebd0cf89.jpg', power: 96, rarity: 'mythical' },
+        { name: 'Madara', img: 'https://i.pinimg.com/736x/47/c4/16/47c416ab4a1887607de96e16e9d5797f.jpg', power: 95, rarity: 'mythical' },
+        { name: 'Sung Jin-Woo', img: 'https://i.pinimg.com/736x/eb/59/4a/eb594a38d39a16aa7ee5d94684c8d43c.jpg', power: 94, rarity: 'mythical' }
+      ];
+
+      // Combine for AI pool (all cards)
+      const allCards = [...commonTier, ...rareTier, ...epicTierExtended, ...mythicalTierExtended];
+
+      // Weighted rarity for packs
+      const rarityWeights = [
+        { rarity: 'common', weight: 60, pool: commonTier },
+        { rarity: 'rare', weight: 25, pool: rareTier },
+        { rarity: 'epic', weight: 10, pool: epicTierExtended },
+        { rarity: 'mythical', weight: 5, pool: mythicalTierExtended }
+      ];
+
+      function getRandomRarity() {
+        const totalWeight = rarityWeights.reduce((sum, r) => sum + r.weight, 0);
+        let rand = Math.random() * totalWeight;
+        for (let r of rarityWeights) {
+          if (rand < r.weight) return r;
+          rand -= r.weight;
+        }
+        return rarityWeights[0];
       }
 
-      const commonTier = [
-        { name: 'Rock Lee', img: 'https://i.pinimg.com/736x/fa/9a/c8/fa9ac8c9917c3d7d078c40a85254ec6b.jpg', power: 75 },
-        { name: 'Zenitsu', img: 'https://i.pinimg.com/1200x/71/4c/8f/714c8f54cbe39feada3b6783be548884.jpg', power: 74 },
-        { name: 'Mikasa', img: 'https://i.pinimg.com/736x/aa/f7/d3/aaf7d38155710b3b0a794b3763bfe844.jpg', power: 73 },
-        { name: 'Yuji', img: 'https://i.pinimg.com/736x/c6/84/a3/c684a36311093b31b918173de8210335.jpg', power: 72 },
-        { name: 'Killua', img: 'https://i.pinimg.com/736x/22/12/d1/2212d1d95942599372dcded62167c67c.jpg', power: 71 },
-        { name: 'Takemichi', img: 'https://i.pinimg.com/1200x/aa/fa/91/aafa91e13d222a89989c4d070582515a.jpg', power: 55 },
-        { name: 'Asta', img: 'https://i.pinimg.com/736x/33/f1/40/33f1406484b5cd7702b0ea9153b4b6fa.jpg', power: 65 },
-        { name: 'Bakugo', img: 'https://i.pinimg.com/736x/1a/2c/3c/1a2c3c082ca23a56883217ad3bf9484a.jpg', power: 69 },
-        { name: 'Todoroki', img: 'https://i.pinimg.com/1200x/c3/3c/06/c33c0674a81ee21c71326e2784723ec3.jpg', power: 69 }
-      ];
+      function getRandomCardFromRarity(rarityObj) {
+        const pool = rarityObj.pool;
+        if (pool.length === 0) {
+          // fallback to common
+          return { ...commonTier[Math.floor(Math.random() * commonTier.length)], id: crypto.randomUUID() };
+        }
+        return { ...pool[Math.floor(Math.random() * pool.length)], id: crypto.randomUUID() };
+      }
 
-      const higherTier = [
-        { name: 'Goku', img: 'https://i.pinimg.com/1200x/49/72/ce/4972cec18bdca9f7f72e106cd277a21f.jpg', power: 98 },
-        { name: 'Gojo', img: 'https://i.pinimg.com/736x/63/5c/1e/635c1e20b3da0d7c2ab04705ebd0cf89.jpg', power: 96 },
-        { name: 'Madara', img: 'https://i.pinimg.com/736x/47/c4/16/47c416ab4a1887607de96e16e9d5797f.jpg', power: 95 },
-        { name: 'Sung Jin-Woo', img: 'https://i.pinimg.com/736x/eb/59/4a/eb594a38d39a16aa7ee5d94684c8d43c.jpg', power: 94 },
-        { name: 'Luffy', img: 'https://i.pinimg.com/1200x/a8/9c/90/a89c904ec3b11b39f3ee5dcf371666ec.jpg', power: 93 },
-        { name: 'Sukuna', img: 'https://i.pinimg.com/1200x/19/7f/76/197f7651e3d1e112ccddc15e5cf0ae01.jpg', power: 92 },
-        { name: 'Sasuke', img: 'https://i.pinimg.com/736x/cd/b1/f4/cdb1f448dae5933fb5dba3f27611f978.jpg', power: 91 },
-        { name: 'Igris', img: 'https://i.pinimg.com/1200x/4c/21/12/4c211288a5f0ffed22bc1193389f604e.jpg', power: 88 },
-        { name: 'Toji', img: 'https://i.pinimg.com/1200x/f8/18/3a/f8183a3548c675626ad9bd4397cb9607.jpg', power: 85 }
-      ];
-
-      // Preload all images
-      preloadImages([...commonTier, ...higherTier].map(c => c.img));
+      // Preload images
+      function preloadImages(urls) {
+        urls.forEach(url => { if (url) { const img = new Image(); img.src = url; } });
+      }
+      preloadImages(allCards.map(c => c.img).filter(Boolean));
       preloadImages([
         'https://i.pinimg.com/736x/bc/bb/7c/bcbb7c3ab5ad402f5b0b322e69568e30.jpg',
         'https://i.pinimg.com/736x/9d/31/86/9d3186a98a25b393d8cd82541aabd020.jpg'
       ]);
 
-      // Player's collection – starts with common only
+      // Player collection – starts with common only
       let playerCollection = [...commonTier].map(c => ({ ...c, id: crypto.randomUUID() }));
-
-      // Active deck (selected cards) – default first 5
       let activeDeckIds = playerCollection.slice(0, 5).map(c => c.id);
 
       // Game state
-      let playerHand = [];
-      let aiHand = [];
-      let playerWins = 0;
-      let aiWins = 0;
-      let animeShards = 50;
-      let totalRoundsPlayed = 0;
-      let gameActive = false;
-      let isAITurn = false;
+      let playerHand = [], aiHand = [];
+      let playerWins = 0, aiWins = 0, animeShards = 50, totalRoundsPlayed = 0, currentRound = 1;
+      let gameActive = false, isAITurn = false, warInProgress = false;
       let currentSwiper = null;
-      let warInProgress = false;
 
       // DOM elements
       const swiperWrapper = document.getElementById('swiperWrapper');
@@ -1045,15 +841,10 @@
       const aiLastPlayedCard = document.getElementById('aiLastPlayedCard');
       const aiLastPlayedName = document.getElementById('aiLastPlayedName');
       const roundLogDiv = document.getElementById('roundLog');
-      const resultDisplay = document.getElementById('resultDisplay');
+      const roundCounter = document.getElementById('roundCounter');
       const playBtn = document.getElementById('playBtn');
       const startOverlay = document.getElementById('startOverlay');
-      const gameOverlay = document.getElementById('gameOverlay');
-      const startGameBtn = document.getElementById('startGameBtn');
-      const restartOverlayBtn = document.getElementById('restartFromOverlay');
-      const gameOverTitle = document.getElementById('gameOverTitle');
-      const gameOverMsg = document.getElementById('gameOverMsg');
-      const shardCount = document.getElementById('shardCount');
+      const beginBattleBtn = document.getElementById('beginBattleBtn');
       const inventoryBtn = document.getElementById('inventoryBtn');
       const marketBtn = document.getElementById('marketBtn');
       const inventoryModal = document.getElementById('inventoryModal');
@@ -1070,33 +861,22 @@
       const warOverlay = document.getElementById('warOverlay');
       const warPlayerCard = document.getElementById('warPlayerCard');
       const warAiCard = document.getElementById('warAiCard');
-      const warLabels = document.querySelectorAll('.war-label');
 
-      // Custom notification
       function showNotification(msg, type = 'info') {
         notification.textContent = msg;
         notification.classList.add('show');
-        if (type === 'success') notification.style.borderColor = 'gold';
-        else if (type === 'error') notification.style.borderColor = '#ff4444';
-        else notification.style.borderColor = '#ff3cac';
-        setTimeout(() => {
-          notification.classList.remove('show');
-        }, 2500);
+        notification.style.borderColor = type === 'success' ? 'gold' : (type === 'error' ? '#ff4444' : '#ff3cac');
+        setTimeout(() => notification.classList.remove('show'), 2500);
       }
 
-      // Helper functions
       function log(msg) {
         const p = document.createElement('p');
         p.textContent = msg;
-        p.style.margin = '2px 0';
         roundLogDiv.appendChild(p);
         roundLogDiv.scrollTop = roundLogDiv.scrollHeight;
-        if (roundLogDiv.children.length > 5) {
-          roundLogDiv.removeChild(roundLogDiv.children[0]);
-        }
+        while (roundLogDiv.children.length > 6) roundLogDiv.removeChild(roundLogDiv.children[0]);
       }
 
-      // AI difficulty and deck composition based on player progress
       function getAIDifficultyLevel() {
         if (totalRoundsPlayed < 8) return 'easy';
         else if (totalRoundsPlayed < 20) return 'medium';
@@ -1104,72 +884,49 @@
         else return 'impossible';
       }
 
-      // Generate AI hand that scales with player
       function drawAIHand() {
         const level = getAIDifficultyLevel();
         let pool = [];
-        const playerMaxPower = Math.max(...playerCollection.map(c => c.power), 0);
-        
         if (level === 'easy') {
-          pool = [...commonTier];
-          if (playerMaxPower > 80) pool.push(...higherTier.slice(0,2));
+          pool = [...commonTier, ...rareTier.slice(0, 2)];
         } else if (level === 'medium') {
-          pool = [...commonTier, ...higherTier.slice(0,4)];
+          pool = [...commonTier, ...rareTier, ...epicTierExtended.slice(0, 2)];
         } else if (level === 'hard') {
-          pool = [...higherTier, ...commonTier.slice(0,3)];
+          pool = [...rareTier, ...epicTierExtended.slice(0, 4)];
         } else {
-          pool = [...higherTier];
+          pool = [...epicTierExtended, ...mythicalTierExtended.slice(0, 2)];
         }
-        
-        const shuffled = [...pool].sort(() => Math.random() - 0.5);
-        return shuffled.slice(0, 5).map(c => ({ ...c }));
+        return [...pool].sort(() => Math.random() - 0.5).slice(0, 5).map(c => ({ ...c }));
       }
 
-      // Draw player hand from active deck
       function drawPlayerHand() {
         const deckCards = playerCollection.filter(c => activeDeckIds.includes(c.id));
-        if (deckCards.length === 0) return [];
-        const shuffled = [...deckCards].sort(() => Math.random() - 0.5);
-        return shuffled.slice(0, 5).map(c => ({ ...c }));
+        return [...deckCards].sort(() => Math.random() - 0.5).slice(0, 5).map(c => ({ ...c }));
       }
 
       function renderAIHand() {
         aiHandContainer.innerHTML = '';
         aiHand.forEach(card => {
-          const cardDiv = document.createElement('div');
-          cardDiv.className = 'ai-card';
-          cardDiv.style.background = `linear-gradient(145deg, rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${card.img}') no-repeat center / cover`;
-          cardDiv.innerHTML = `<span class="power-badge-small">⚡${card.power}</span>`;
-          aiHandContainer.appendChild(cardDiv);
+          const div = document.createElement('div');
+          div.className = 'ai-card';
+          div.style.background = `linear-gradient(145deg, rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${card.img}') center/cover`;
+          div.innerHTML = `<span class="power-badge-small">⚡${card.power}</span>`;
+          aiHandContainer.appendChild(div);
         });
         aiCardsCount.textContent = aiHand.length;
       }
 
       function renderPlayerHand() {
         swiperWrapper.innerHTML = '';
-        playerHand.forEach((card) => {
+        playerHand.forEach(card => {
           const slide = document.createElement('div');
           slide.className = 'swiper-slide';
-          slide.style.background = `linear-gradient(to top, #0f2027, transparent, transparent), url('${card.img}') no-repeat center / cover`;
-          slide.innerHTML = `
-            <span class="power-badge">⚡${card.power}</span>
-            <h4>${card.name}</h4>
-          `;
+          slide.style.background = `linear-gradient(to top, #0f2027, transparent, transparent), url('${card.img}') center/cover`;
+          slide.innerHTML = `<span class="power-badge">⚡${card.power}</span><h4>${card.name}</h4>`;
           swiperWrapper.appendChild(slide);
         });
-
-        if (currentSwiper) {
-          currentSwiper.destroy(true, true);
-          currentSwiper = null;
-        }
-        currentSwiper = new Swiper(".mySwiper", {
-          effect: "cards",
-          grabCursor: true,
-          initialSlide: 0,
-          loop: false,
-          rotate: true,
-          speed: 400,
-        });
+        if (currentSwiper) currentSwiper.destroy(true, true);
+        currentSwiper = new Swiper(".mySwiper", { effect: "cards", grabCursor: true, initialSlide: 0, loop: false, rotate: true, speed: 400 });
         playerCardsCount.textContent = playerHand.length;
       }
 
@@ -1182,273 +939,203 @@
         renderAIHand();
       }
 
-      // War animation with victory/defeat labels
+      function setButtonsEnabled(enabled) {
+        inventoryBtn.disabled = !enabled;
+        marketBtn.disabled = !enabled;
+      }
+
       function animateWar(playerCard, aiCard, playerWon) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
           warOverlay.classList.remove('hidden');
-          warPlayerCard.style.background = `url('${playerCard.img}') center / cover`;
-          warAiCard.style.background = `url('${aiCard.img}') center / cover`;
-          
-          // Set labels
+          warPlayerCard.style.background = `url('${playerCard.img}') center/cover`;
+          warAiCard.style.background = `url('${aiCard.img}') center/cover`;
           const playerLabel = warPlayerCard.querySelector('.war-label');
           const aiLabel = warAiCard.querySelector('.war-label');
           playerLabel.textContent = playerWon ? 'VICTORY' : 'DEFEAT';
           aiLabel.textContent = playerWon ? 'DEFEAT' : 'VICTORY';
-          
-          // Reset classes
           warPlayerCard.className = 'war-card';
           warAiCard.className = 'war-card';
-          
-          // Trigger reveal
           setTimeout(() => {
             warPlayerCard.classList.add('revealed');
             warAiCard.classList.add('revealed');
           }, 50);
-
-          // After reveal, add winner glow
           setTimeout(() => {
-            if (playerWon) {
-              warPlayerCard.classList.add('winner');
-            } else {
-              warAiCard.classList.add('winner');
-            }
+            if (playerWon) warPlayerCard.classList.add('winner');
+            else warAiCard.classList.add('winner');
           }, 900);
-
-          // Hold for a few seconds then fade out and resolve
           setTimeout(() => {
             warOverlay.classList.add('hidden');
-            // Reset for next use
-            setTimeout(() => {
-              warPlayerCard.className = 'war-card';
-              warAiCard.className = 'war-card';
-              resolve();
-            }, 500); // Wait for fade transition
+            setTimeout(resolve, 500);
           }, 3500);
         });
       }
 
-      // Play round
       async function playRound() {
         if (!gameActive || isAITurn || warInProgress) return;
-        if (playerHand.length === 0 || aiHand.length === 0) {
-          endGame();
+        if (!playerHand.length || !aiHand.length) {
+          autoRestartMatch();
           return;
         }
 
-        const activeIndex = currentSwiper ? currentSwiper.activeIndex : 0;
+        const activeIndex = currentSwiper?.activeIndex || 0;
         const playerCard = playerHand[activeIndex];
         if (!playerCard) return;
 
         isAITurn = true;
         warInProgress = true;
         playBtn.disabled = true;
+        setButtonsEnabled(false);
 
-        // AI thinking animation
-        const aiCardElements = document.querySelectorAll('.ai-card');
-        aiCardElements.forEach(el => el.classList.add('thinking'));
-
+        // AI thinking
+        document.querySelectorAll('.ai-card').forEach(el => el.classList.add('thinking'));
         await new Promise(r => setTimeout(r, 800));
-        aiCardElements.forEach(el => el.classList.remove('thinking'));
+        document.querySelectorAll('.ai-card').forEach(el => el.classList.remove('thinking'));
 
-        // Determine AI's card
+        // AI choose card
         const level = getAIDifficultyLevel();
-        const sorted = [...aiHand].sort((a, b) => a.power - b.power);
-        const higherCard = sorted.find(c => c.power >= playerCard.power);
+        const sorted = [...aiHand].sort((a,b) => a.power - b.power);
+        const higher = sorted.find(c => c.power >= playerCard.power);
         let aiIndex;
-
         if (level === 'easy') {
-          if (Math.random() < 0.4) {
-            aiIndex = Math.floor(Math.random() * aiHand.length);
-          } else {
-            const lowerCards = sorted.filter(c => c.power < playerCard.power);
-            if (lowerCards.length > 0 && Math.random() < 0.7) {
-              const randomLower = lowerCards[Math.floor(Math.random() * lowerCards.length)];
-              aiIndex = aiHand.findIndex(c => c.name === randomLower.name);
-            } else {
-              aiIndex = aiHand.findIndex(c => c.name === sorted[0].name);
-            }
+          if (Math.random() < 0.4) aiIndex = Math.floor(Math.random() * aiHand.length);
+          else {
+            const lower = sorted.filter(c => c.power < playerCard.power);
+            if (lower.length && Math.random() < 0.7) {
+              const r = lower[Math.floor(Math.random() * lower.length)];
+              aiIndex = aiHand.findIndex(c => c.name === r.name);
+            } else aiIndex = aiHand.findIndex(c => c.name === sorted[0].name);
           }
         } else if (level === 'medium') {
-          if (higherCard && Math.random() < 0.7) {
-            aiIndex = aiHand.findIndex(c => c.name === higherCard.name);
-          } else {
-            aiIndex = Math.floor(Math.random() * aiHand.length);
-          }
-        } else if (level === 'hard') {
-          if (higherCard) {
-            aiIndex = aiHand.findIndex(c => c.name === higherCard.name);
-          } else {
-            aiIndex = aiHand.findIndex(c => c.name === sorted[sorted.length-1].name);
-          }
+          if (higher && Math.random() < 0.7) aiIndex = aiHand.findIndex(c => c.name === higher.name);
+          else aiIndex = Math.floor(Math.random() * aiHand.length);
         } else {
-          if (higherCard) {
-            aiIndex = aiHand.findIndex(c => c.name === higherCard.name);
-          } else {
-            aiIndex = aiHand.findIndex(c => c.name === sorted[sorted.length-1].name);
-          }
+          if (higher) aiIndex = aiHand.findIndex(c => c.name === higher.name);
+          else aiIndex = aiHand.findIndex(c => c.name === sorted[sorted.length-1].name);
         }
 
         const aiCard = aiHand[aiIndex];
         const playerWon = playerCard.power >= aiCard.power;
 
-        // Show war animation
         await animateWar(playerCard, aiCard, playerWon);
 
-        // After war, update last played
-        aiLastPlayedCard.style.background = `url('${aiCard.img}') center / cover`;
+        // Update last played
+        aiLastPlayedCard.style.background = `url('${aiCard.img}') center/cover`;
         aiLastPlayedName.textContent = `${aiCard.name} (${aiCard.power})`;
         aiLastPlayedArea.style.display = 'flex';
         aiLastPlayedCard.classList.add('spin-reveal');
         setTimeout(() => aiLastPlayedCard.classList.remove('spin-reveal'), 800);
 
-        // Update economy
         if (playerWon) {
           playerWins++;
           animeShards += 10;
-          log(`✅ WIN +10 · ${playerCard.name} (${playerCard.power}) vs ${aiCard.name} (${aiCard.power})`);
+          log(`✅ R${currentRound} WIN +10 · ${playerCard.name} (${playerCard.power}) vs ${aiCard.name} (${aiCard.power})`);
         } else {
           aiWins++;
           animeShards += 5;
-          log(`❌ LOSE +5 · ${aiCard.name} (${aiCard.power}) vs ${playerCard.name} (${playerCard.power})`);
+          log(`❌ R${currentRound} LOSE +5 · ${aiCard.name} (${aiCard.power}) vs ${playerCard.name} (${playerCard.power})`);
         }
 
-        // Remove cards
         playerHand.splice(activeIndex, 1);
         aiHand.splice(aiIndex, 1);
         totalRoundsPlayed++;
+        currentRound++;
 
         renderPlayerHand();
         renderAIHand();
         refreshUI();
+        roundCounter.textContent = `R${currentRound}`;
 
-        // Keep last played visible for 5 seconds
         setTimeout(() => {
           aiLastPlayedArea.style.display = 'none';
+          setButtonsEnabled(true);
         }, 5000);
 
         isAITurn = false;
         warInProgress = false;
         playBtn.disabled = false;
 
-        if (playerHand.length === 0 || aiHand.length === 0) {
-          endGame();
+        if (!playerHand.length || !aiHand.length) {
+          autoRestartMatch();
         }
       }
 
-      function endGame() {
-        gameActive = false;
-        isAITurn = false;
-        playBtn.disabled = true;
-
-        let winnerMsg = '';
-        if (playerWins > aiWins) winnerMsg = '🏆 YOU DEFEATED THE AI! 🏆';
-        else if (aiWins > playerWins) winnerMsg = '💀 AI VICTORY ... TRY AGAIN 💀';
-        else winnerMsg = '🤝 IT\'S A DRAW 🤝';
-
-        gameOverTitle.textContent = playerWins > aiWins ? 'VICTORY!' : 'DEFEAT';
-        gameOverMsg.innerHTML = `${winnerMsg}<br>🎯 final score: ${playerWins} : ${aiWins}<br>🪙 Shards: ${animeShards}`;
-        gameOverlay.classList.remove('hidden');
-      }
-
-      function restartGame() {
-        startOverlay.classList.add('hidden');
-        gameOverlay.classList.add('hidden');
-
-        playerHand = drawPlayerHand();
-        aiHand = drawAIHand();
-
+      function autoRestartMatch() {
+        log("⚔️ Match over! Starting new match...");
         playerWins = 0;
         aiWins = 0;
-
-        gameActive = true;
-        isAITurn = false;
-        warInProgress = false;
-        playBtn.disabled = false;
-
+        currentRound = 1;
+        playerHand = drawPlayerHand();
+        aiHand = drawAIHand();
         renderPlayerHand();
         renderAIHand();
         refreshUI();
+        roundCounter.textContent = `R${currentRound}`;
         aiLastPlayedArea.style.display = 'none';
-        roundLogDiv.innerHTML = '<p style="color:#aaa;">✨ new battle started</p>';
+        setButtonsEnabled(true);
       }
 
-      // Inventory functions
+      function startGame() {
+        startOverlay.classList.add('hidden');
+        gameActive = true;
+        autoRestartMatch(); // initial hands
+      }
+
+      // Inventory
       function openInventory() {
         inventoryGrid.innerHTML = '';
         playerCollection.forEach(card => {
-          const cardDiv = document.createElement('div');
-          cardDiv.className = `inventory-card ${activeDeckIds.includes(card.id) ? 'selected' : ''}`;
-          cardDiv.style.background = `linear-gradient(145deg, rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${card.img}') no-repeat center / cover`;
-          cardDiv.innerHTML = `
-            <span class="power-badge">⚡${card.power}</span>
-            <h4>${card.name}</h4>
-          `;
-          cardDiv.dataset.id = card.id;
-          cardDiv.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const id = card.id;
-            if (activeDeckIds.includes(id)) {
+          const div = document.createElement('div');
+          div.className = `inventory-card ${activeDeckIds.includes(card.id) ? 'selected' : ''}`;
+          div.style.background = `linear-gradient(145deg, rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${card.img}') center/cover`;
+          div.innerHTML = `<span class="power-badge">⚡${card.power}</span><h4>${card.name}</h4>`;
+          div.onclick = () => {
+            if (activeDeckIds.includes(card.id)) {
               if (activeDeckIds.length > 1) {
-                activeDeckIds = activeDeckIds.filter(did => did !== id);
-                cardDiv.classList.remove('selected');
-              } else {
-                showNotification('Deck must have at least 1 card', 'error');
-              }
+                activeDeckIds = activeDeckIds.filter(id => id !== card.id);
+                div.classList.remove('selected');
+              } else showNotification('Deck must have at least 1 card', 'error');
             } else {
               if (activeDeckIds.length < 5) {
-                activeDeckIds.push(id);
-                cardDiv.classList.add('selected');
-              } else {
-                showNotification('Deck can have at most 5 cards', 'error');
-              }
+                activeDeckIds.push(card.id);
+                div.classList.add('selected');
+              } else showNotification('Deck max 5 cards', 'error');
             }
-          });
-          inventoryGrid.appendChild(cardDiv);
+          };
+          inventoryGrid.appendChild(div);
         });
         inventoryModal.classList.remove('hidden');
       }
 
-      // Market functions
       function openPack(cardCount, price) {
         if (animeShards < price) {
-          showNotification(`Not enough shards! Need ${price} 🪙`, 'error');
-          return false;
+          showNotification(`Need ${price} 🪙`, 'error');
+          return;
         }
-
         animeShards -= price;
         refreshUI();
 
         const newCards = [];
         for (let i = 0; i < cardCount; i++) {
-          let sourcePool;
-          if (cardCount === 1) {
-            sourcePool = higherTier;
-          } else {
-            sourcePool = Math.random() < 0.7 ? commonTier : higherTier;
-          }
-          const randomCard = { ...sourcePool[Math.floor(Math.random() * sourcePool.length)], id: crypto.randomUUID() };
-          newCards.push(randomCard);
-          playerCollection.push(randomCard);
+          const rarity = getRandomRarity();
+          const card = getRandomCardFromRarity(rarity);
+          newCards.push(card);
+          playerCollection.push(card);
         }
 
         packCardsContainer.innerHTML = '';
-        newCards.forEach(card => {
-          const cardDiv = document.createElement('div');
-          cardDiv.className = 'pack-card';
-          cardDiv.style.background = `url('${card.img}') center / cover`;
-          packCardsContainer.appendChild(cardDiv);
+        newCards.forEach(c => {
+          const div = document.createElement('div');
+          div.className = 'pack-card';
+          div.style.background = `url('${c.img}') center/cover`;
+          packCardsContainer.appendChild(div);
         });
-
         packOpenModal.classList.remove('hidden');
-        showNotification(`Pack opened! +${cardCount} cards`, 'success');
-        return true;
+        showNotification(`+${cardCount} cards!`, 'success');
       }
 
       // Event listeners
+      beginBattleBtn.addEventListener('click', startGame);
       playBtn.addEventListener('click', playRound);
-      startGameBtn.addEventListener('click', restartGame);
-      restartOverlayBtn.addEventListener('click', restartGame);
-
       inventoryBtn.addEventListener('click', openInventory);
       closeInventoryBtn.addEventListener('click', () => {
         inventoryModal.classList.add('hidden');
@@ -1457,25 +1144,10 @@
           renderPlayerHand();
         }
       });
-
-      marketBtn.addEventListener('click', () => {
-        marketModal.classList.remove('hidden');
-      });
-
-      closeMarketBtn.addEventListener('click', () => {
-        marketModal.classList.add('hidden');
-      });
-
-      pack3Card.addEventListener('click', () => {
-        openPack(3, 100);
-        marketModal.classList.add('hidden');
-      });
-
-      pack1Card.addEventListener('click', () => {
-        openPack(1, 50);
-        marketModal.classList.add('hidden');
-      });
-
+      marketBtn.addEventListener('click', () => marketModal.classList.remove('hidden'));
+      closeMarketBtn.addEventListener('click', () => marketModal.classList.add('hidden'));
+      pack3Card.addEventListener('click', () => { openPack(3, 100); marketModal.classList.add('hidden'); });
+      pack1Card.addEventListener('click', () => { openPack(1, 50); marketModal.classList.add('hidden'); });
       closePackBtn.addEventListener('click', () => {
         packOpenModal.classList.add('hidden');
         if (gameActive) {
@@ -1484,14 +1156,8 @@
         }
       });
 
-      // Initial setup
-      playerHand = drawPlayerHand();
-      aiHand = drawAIHand();
-      renderPlayerHand();
-      renderAIHand();
-      refreshUI();
+      // Initial: game not active, start overlay visible
       gameActive = false;
-      playBtn.disabled = true;
     })();
   </script>
 </body>
