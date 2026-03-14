@@ -1,0 +1,56 @@
+/* Swiper (player cards) */
+.swiper {
+    width: 100%;
+    max-width: 260px;
+    height: 380px;
+}
+.swiper-slide {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 12px 25px rgba(0,0,0,0.6);
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    transition: transform 0.3s ease;
+    border: 3px solid var(--card-border);
+    will-change: transform;
+}
+.swiper-slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15,32,39,0.4), transparent 60%);
+    pointer-events: none;
+}
+.swiper-slide.swiper-slide-active {
+    box-shadow: 0 15px 35px rgba(255,60,172,0.3);
+    transform: scale(1.05);
+    border-color: rgba(255,255,255,0.8);
+    z-index: 10;
+}
+.swiper-slide .power-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    padding: 4px 10px;
+    border-radius: 30px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.8rem;
+    border: 1px solid rgba(255,255,255,0.5);
+    z-index: 2;
+}
+.swiper-slide h4 {
+    position: absolute;
+    bottom: 12px; left: 12px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    text-shadow: 2px 2px 5px black;
+    z-index: 2;
+    max-width: 70%;
+}
+
+/* Inventory card & pack card styles are in inventory.css and market.css including rarity borders */

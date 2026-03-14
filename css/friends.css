@@ -1,0 +1,374 @@
+/* Profile Modal */
+.profile-content {
+    border: 2px solid #2b86c5;
+    box-shadow: 0 20px 60px #2b86c560;
+    max-width: 550px;
+}
+.profile-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; }
+.profile-stat {
+    background: rgba(0,0,0,0.3);
+    padding: 15px;
+    border-radius: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+.profile-stat:hover { transform: scale(1.05); background: rgba(0,0,0,0.4); }
+.profile-stat .value { font-size: 1.5rem; font-weight: 700; color: #2b86c5; }
+.profile-stat .label { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-top: 5px; }
+.profile-email-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(0,0,0,0.3);
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 15px;
+    word-break: break-all;
+    text-align: center;
+    max-width: 100%;
+}
+.profile-email { transition: filter 0.3s ease; }
+.profile-email.blurred { filter: blur(5px); user-select: none; }
+.toggle-email-btn {
+    background: none;
+    border: none;
+    color: #2b86c5;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.2s;
+}
+.toggle-email-btn:hover { transform: scale(1.2); color: white; }
+.profile-username-section { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; justify-content: center; }
+.profile-username-input {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid #2b86c5;
+    border-radius: 30px;
+    padding: 10px 20px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    flex: 1;
+    max-width: 250px;
+    text-align: center;
+}
+.profile-username-input:focus { border-color: #4ade80; box-shadow: 0 0 15px rgba(74,222,128,0.3); }
+.profile-username-save {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    border: none;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex; align-items: center; justify-content: center;
+}
+.profile-username-save:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(74,222,128,0.5); }
+.profile-username-save.saved { background: linear-gradient(135deg, #22c55e, #16a34a); }
+.profile-username-save:disabled {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none;
+    box-shadow: none;
+}
+.profile-last-online {
+    background: rgba(0,0,0,0.3);
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 20px;
+    text-align: center;
+}
+.save-status { text-align: center; font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 15px; transition: all 0.3s ease; }
+.save-status.saved { color: #4ade80; text-shadow: 0 0 10px #4ade80; }
+.profile-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.logout-btn {
+    background: rgba(255,68,68,0.2);
+    border: 1px solid #ff4444;
+    color: #ff4444;
+    padding: 10px 30px;
+    border-radius: 60px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.logout-btn:hover { background: rgba(255,68,68,0.4); transform: scale(1.05); box-shadow: 0 5px 20px rgba(255,68,68,0.4); }
+.save-btn {
+    background: rgba(74,222,128,0.2);
+    border: 1px solid #4ade80;
+    color: #4ade80;
+    padding: 10px 30px;
+    border-radius: 60px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.save-btn:hover { background: rgba(74,222,128,0.4); transform: scale(1.05); box-shadow: 0 5px 20px rgba(74,222,128,0.4); }
+
+/* Settings Modal (base in main.css) */
+.settings-content {
+    max-width: 500px;
+    text-align: center;
+}
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.3);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+.quality-toggle, .wallpaper-toggle {
+    display: flex;
+    gap: 10px;
+}
+.quality-btn, .wallpaper-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.quality-btn.active, .wallpaper-btn.active {
+    background: #2b86c5;
+    border-color: #2b86c5;
+    box-shadow: 0 0 10px #2b86c5;
+}
+.blur-slider-container {
+    margin: 20px 0;
+    text-align: left;
+}
+.blur-slider-container label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.8);
+}
+.blur-slider {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.2);
+    outline: none;
+    -webkit-appearance: none;
+}
+.blur-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff3cac, #784ba0);
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(255,60,172,0.5);
+}
+.wallpaper-preview {
+    width: 100%;
+    height: 150px;
+    border-radius: 15px;
+    background-size: cover;
+    background-position: center;
+    margin: 15px 0;
+    border: 2px solid rgba(255,255,255,0.2);
+}
+.upload-btn {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    border: none;
+    padding: 10px 25px;
+    border-radius: 30px;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+.upload-btn:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(74,222,128,0.5); }
+
+/* Friends Modal */
+.friends-content {
+    border: 2px solid #4ade80;
+    box-shadow: 0 20px 60px #4ade8060;
+    max-width: 700px;
+}
+.friends-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+.friends-tab {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 10px 25px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 600;
+}
+.friends-tab.active {
+    background: #4ade80;
+    border-color: #4ade80;
+    box-shadow: 0 0 15px rgba(74,222,128,0.5);
+}
+.friends-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+.friend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0,0,0,0.3);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+.friend-item:hover {
+    background: rgba(0,0,0,0.4);
+    transform: translateX(5px);
+}
+.friend-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.friend-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: white;
+}
+.friend-details h4 {
+    font-size: 1rem;
+    margin-bottom: 3px;
+}
+.friend-details p {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.6);
+}
+.friend-actions {
+    display: flex;
+    gap: 10px;
+}
+.friend-action-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.85rem;
+}
+.friend-action-btn.add {
+    background: rgba(74,222,128,0.3);
+    border: 1px solid #4ade80;
+}
+.friend-action-btn.add:hover {
+    background: #4ade80;
+    box-shadow: 0 0 15px rgba(74,222,128,0.5);
+}
+.friend-action-btn.view {
+    background: rgba(43,134,197,0.3);
+    border: 1px solid #2b86c5;
+}
+.friend-action-btn.view:hover {
+    background: #2b86c5;
+    box-shadow: 0 0 15px rgba(43,134,197,0.5);
+}
+.friend-action-btn.remove {
+    background: rgba(255,68,68,0.3);
+    border: 1px solid #ff4444;
+}
+.friend-action-btn.remove:hover {
+    background: #ff4444;
+    box-shadow: 0 0 15px rgba(255,68,68,0.5);
+}
+.friend-search-container {
+    margin-bottom: 20px;
+}
+.friend-search-input {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid #4ade8080;
+    border-radius: 30px;
+    padding: 12px 20px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+}
+.friend-search-input:focus { border-color: #4ade80; box-shadow: 0 0 15px rgba(74,222,128,0.3); }
+
+/* Friend Profile View Modal */
+.friend-profile-modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0);
+    backdrop-filter: blur(0px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1500;
+    transition: all 0.4s ease;
+    padding: 10px;
+    opacity: 0;
+    pointer-events: none;
+}
+.friend-profile-modal:not(.hidden) {
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(12px);
+    opacity: 1;
+    pointer-events: auto;
+}
+.friend-profile-modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+.friend-profile-content {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    padding: 30px; border-radius: 48px; border: 2px solid #4ade80;
+    box-shadow: 0 20px 60px #4ade8060; max-width: 500px; width: 95%;
+    color: white;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transform: scale(0.9);
+    opacity: 0;
+    text-align: center;
+}
+.friend-profile-modal:not(.hidden) .friend-profile-content {
+    transform: scale(1);
+    opacity: 1;
+}
+.friend-profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: white;
+    margin: 0 auto 20px;
+    box-shadow: 0 10px 30px rgba(74,222,128,0.5);
+}
+.friend-profile-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}

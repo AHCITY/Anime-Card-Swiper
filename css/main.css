@@ -1,0 +1,225 @@
+:root {
+    --primary-glow: #ff3cac;
+    --secondary-glow: #784ba0;
+    --accent-blue: #2b86c5;
+    --glass-bg: rgba(30, 26, 43, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --card-border: #ffffff;
+    --wallpaper-blur: 0px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Comfortaa', cursive;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background: #1a1a1a;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* Custom Wallpaper Background */
+.wallpaper-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f0f23 100%);
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+    transition: filter 0.3s ease;
+    filter: blur(var(--wallpaper-blur));
+}
+
+/* Selectable Areas Exception */
+.round-log, .profile-email, .profile-username-input, .auth-input, .reset-email-input, .friend-search-input {
+    user-select: text !important;
+}
+
+/* Low Quality Mode - Lightweight Animations */
+body.low-quality .game-container,
+body.low-quality .modal-content,
+body.low-quality .profile-content,
+body.low-quality .friends-content,
+body.low-quality .settings-content {
+    backdrop-filter: none !important;
+    background: rgba(30, 26, 43, 0.95) !important;
+}
+body.low-quality .circles { display: none; }
+body.low-quality * {
+    transition: transform 0.15s ease, opacity 0.15s ease !important;
+    animation-duration: 0.3s !important;
+}
+body.low-quality .play-btn:hover,
+body.low-quality .action-btn:hover,
+body.low-quality .inventory-card:hover {
+    transform: scale(1.02) !important;
+}
+
+/* Version Tag */
+.version-tag {
+    position: absolute;
+    bottom: 5px;
+    right: 20px;
+    color: rgba(255,255,255,0.3);
+    font-size: 0.7rem;
+    z-index: 30;
+    pointer-events: none;
+}
+
+/* Custom notification */
+.notification {
+    position: fixed;
+    top: 80px; left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: rgba(20, 15, 30, 0.9);
+    backdrop-filter: blur(12px);
+    padding: 12px 25px;
+    border-radius: 60px;
+    border: 2px solid #ff3cac;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(255,60,172,0.3);
+    z-index: 2000;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    opacity: 0;
+    pointer-events: none;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+.notification.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Modals (shared base) */
+.modal, .inventory-modal, .pack-modal, .profile-modal, .settings-modal, .reset-modal, .friends-modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0);
+    backdrop-filter: blur(0px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    transition: all 0.4s ease;
+    padding: 10px;
+    opacity: 0;
+    pointer-events: none;
+}
+.modal:not(.hidden), .inventory-modal:not(.hidden), .pack-modal:not(.hidden), .profile-modal:not(.hidden), .settings-modal:not(.hidden), .reset-modal:not(.hidden), .friends-modal:not(.hidden) {
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(12px);
+    opacity: 1;
+    pointer-events: auto;
+}
+.modal.hidden, .inventory-modal.hidden, .pack-modal.hidden, .profile-modal.hidden, .settings-modal.hidden, .reset-modal.hidden, .friends-modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-content, .inventory-content, .pack-content, .profile-content, .settings-content, .reset-content, .friends-content {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    padding: 25px; border-radius: 48px; border: 2px solid var(--glass-border);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5); max-width: 900px; width: 95%;
+    max-height: 80vh; overflow-y: auto; color: white;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transform: scale(0.9);
+    opacity: 0;
+}
+
+/* Profile Modal base variants & Friends variants extend this; see friends.css */
+
+/* Scrollbars */
+.inventory-content::-webkit-scrollbar,
+.profile-content::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar,
+.round-log::-webkit-scrollbar,
+.settings-content::-webkit-scrollbar,
+.friends-content::-webkit-scrollbar {
+    width: 8px;
+}
+.inventory-content::-webkit-scrollbar-track,
+.profile-content::-webkit-scrollbar-track,
+.modal-content::-webkit-scrollbar-track,
+.round-log::-webkit-scrollbar-track,
+.settings-content::-webkit-scrollbar-track,
+.friends-content::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+}
+.inventory-content::-webkit-scrollbar-thumb,
+.profile-content::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb,
+.round-log::-webkit-scrollbar-thumb,
+.settings-content::-webkit-scrollbar-thumb,
+.friends-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff3cac, #784ba0);
+    border-radius: 10px;
+    border: 2px solid rgba(0,0,0,0.3);
+}
+.inventory-content::-webkit-scrollbar-thumb:hover,
+.profile-content::-webkit-scrollbar-thumb:hover,
+.modal-content::-webkit-scrollbar-thumb:hover,
+.round-log::-webkit-scrollbar-thumb:hover,
+.settings-content::-webkit-scrollbar-thumb:hover,
+.friends-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ff5cb8, #9060c0);
+}
+
+/* Close modal button */
+.close-modal {
+    display: block; margin: 20px auto 0; background: rgba(255,255,255,0.9);
+    border: none; padding: 10px 30px; border-radius: 60px;
+    font-weight: 700; color: #4a2b5e; cursor: pointer;
+    transition: all 0.3s ease;
+}
+.close-modal:hover {
+    background: white;
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(255,255,255,0.4);
+}
+
+/* Generic animations */
+@keyframes gelatine {
+    0%,100% { transform: scale(1); }
+    25% { transform: scale(0.9,1.1); }
+    50% { transform: scale(1.1,0.9); }
+    75% { transform: scale(0.95,1.05); }
+}
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+@keyframes scorePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+@keyframes roundPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(255,60,172,0); }
+    50% { transform: scale(1.2); box-shadow: 0 0 20px rgba(255,60,172,0.6); }
+}
+@keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes float {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
+    100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
+}
+@keyframes aiThink {
+    0% { transform: scale(1) translateY(0); filter: brightness(1); }
+    100% { transform: scale(1.1) translateY(-5px); filter: brightness(1.3); }
+}
+@keyframes swapCards {
+    0% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(12px) rotate(3deg); }
+    50% { transform: translateX(-12px) rotate(-3deg); }
+    100% { transform: translateX(0) rotate(0deg); }
+}
+@keyframes spinReveal {
+    0% { transform: rotateY(0deg) scale(0.8); opacity: 0; }
+    50% { transform: rotateY(180deg) scale(1.1); opacity: 0.8; }
+    100% { transform: rotateY(360deg) scale(1); opacity: 1; }
+}
+@keyframes packReveal {
+    0% { opacity: 0; transform: scale(0.8) rotateY(90deg); }
+    60% { opacity: 1; transform: scale(1.05) rotateY(0deg); box-shadow: 0 0 30px currentColor; }
+    100% { opacity: 1; transform: scale(1) rotateY(0deg); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+}

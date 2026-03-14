@@ -1,0 +1,53 @@
+/* Market Cards - VIBRANT Borders */
+.pack-card-item {
+    width: 180px; aspect-ratio: 2 / 3; border-radius: 25px;
+    background-size: cover !important; background-position: center !important;
+    border: 3px solid gold; display: flex; flex-direction: column;
+    justify-content: flex-end; align-items: center; padding: 15px 5px; cursor: pointer;
+    transition: all 0.3s ease;
+}
+.pack-card-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(255,215,0,0.5);
+}
+.pack-cards {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+.pack-card {
+    width: 140px;
+    aspect-ratio: 2 / 3;
+    border-radius: 20px;
+    background-size: cover !important;
+    background-position: center !important;
+    opacity: 0;
+    transform: scale(0.8);
+    animation: packReveal 0.6s forwards;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    transition: box-shadow 0.3s, border-color 0.3s;
+    border: 4px solid;
+}
+.pack-card:nth-child(2) { animation-delay: 0.15s; }
+.pack-card:nth-child(3) { animation-delay: 0.3s; }
+
+/* VIBRANT Rarity border colors - ENHANCED BRIGHTNESS */
+.pack-card.common {
+    border-color: #ffffff;
+    box-shadow: 0 0 35px #ffffff, 0 5px 20px rgba(255,255,255,0.8);
+}
+.pack-card.rare {
+    border-color: #60a5fa;
+    box-shadow: 0 0 35px #60a5fa, 0 5px 20px rgba(96,165,250,0.8);
+}
+.pack-card.epic {
+    border-color: #c084fc;
+    box-shadow: 0 0 35px #c084fc, 0 5px 20px rgba(192,132,252,0.8);
+}
+.pack-card.mythical {
+    border-color: #fcd34d;
+    box-shadow: 0 0 35px #fcd34d, 0 5px 20px rgba(252,211,77,0.8);
+}
+
