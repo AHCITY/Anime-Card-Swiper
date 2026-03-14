@@ -2,19 +2,33 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<title>ANIME CARD BATTLE · v0.1.8</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ANIME CARD BATTLE · v0.2.0</title>
 <!-- Swiper CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 <!-- Comfortaa font -->
 <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!-- Font Awesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
+:root {
+    --primary-glow: #ff3cac;
+    --secondary-glow: #784ba0;
+    --accent-blue: #2b86c5;
+    --glass-bg: rgba(30, 26, 43, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --card-border: #ffffff;
+    --wallpaper-blur: 0px;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Comfortaa', cursive;
+    -webkit-tap-highlight-color: transparent;
 }
+
 body {
     background: #1a1a1a;
     height: 100vh;
@@ -22,7 +36,29 @@ body {
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    user-select: none;
 }
+
+/* Custom Wallpaper Background */
+.wallpaper-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f0f23 100%);
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+    transition: filter 0.3s ease;
+    filter: blur(var(--wallpaper-blur));
+}
+
+/* Selectable Areas Exception */
+.round-log, .profile-email, .profile-username-input, .auth-input, .reset-email-input, .friend-search-input {
+    user-select: text !important;
+}
+
 .game-section {
     position: relative;
     display: flex;
@@ -30,17 +66,19 @@ body {
     align-items: center;
     width: 100%;
     height: 100%;
-    background: #262626;
+    background: transparent;
     overflow: hidden;
     padding: 0.5rem;
+    z-index: 1;
 }
+
 .game-container {
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background: linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 100%);
-    backdrop-filter: blur(30px);
+    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
+    backdrop-filter: blur(20px);
     border-radius: 30px;
     width: 100%;
     max-width: 1300px;
@@ -49,7 +87,29 @@ body {
     box-shadow: 0 0.5px 0 1px rgba(255,255,255,0.23) inset, 0 1px 0 0 rgba(255,255,255,0.66) inset, 0 4px 16px rgba(0,0,0,0.12);
     z-index: 10;
     padding: 15px 20px 10px;
+    transition: backdrop-filter 0.3s ease;
 }
+
+/* Low Quality Mode - Lightweight Animations */
+body.low-quality .game-container,
+body.low-quality .modal-content,
+body.low-quality .profile-content,
+body.low-quality .friends-content,
+body.low-quality .settings-content {
+    backdrop-filter: none !important;
+    background: rgba(30, 26, 43, 0.95) !important;
+}
+body.low-quality .circles { display: none; }
+body.low-quality * { 
+    transition: transform 0.15s ease, opacity 0.15s ease !important;
+    animation-duration: 0.3s !important;
+}
+body.low-quality .play-btn:hover,
+body.low-quality .action-btn:hover,
+body.low-quality .inventory-card:hover {
+    transform: scale(1.02) !important;
+}
+
 .version-tag {
     position: absolute;
     bottom: 5px;
@@ -57,7 +117,9 @@ body {
     color: rgba(255,255,255,0.3);
     font-size: 0.7rem;
     z-index: 30;
+    pointer-events: none;
 }
+
 /* Shards counter */
 .shards-corner {
     position: absolute;
@@ -74,27 +136,19 @@ body {
     box-shadow: 0 4px 15px rgba(255,215,0,0.3);
     z-index: 20;
     transition: transform 0.3s ease;
+    pointer-events: auto;
 }
-.shards-corner:hover {
-    transform: scale(1.05);
-}
+.shards-corner:hover { transform: scale(1.05); }
 .shards-corner .reward-icon {
-    width: 28px;
-    height: 28px;
+    width: 28px; height: 28px;
     background: linear-gradient(135deg, #ffd966, #ffaa00);
     border-radius: 50%;
     display: inline-block;
     animation: pulse 2s ease infinite;
 }
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-.shards-corner .reward-count {
-    font-weight: 700;
-    color: gold;
-    font-size: 1.4rem;
-}
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+.shards-corner .reward-count { font-weight: 700; color: gold; font-size: 1.4rem; }
+
 /* Top-left buttons */
 .top-left-buttons {
     position: absolute;
@@ -114,31 +168,31 @@ body {
     color: white;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
     font-size: 0.9rem;
     white-space: nowrap;
     position: relative;
     overflow: hidden;
+    will-change: transform;
+}
+.action-btn.settings-btn {
+    border-color: #2b86c5;
+    padding: 8px 12px;
+}
+.action-btn.friends-btn {
+    border-color: #4ade80;
 }
 .action-btn::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
     transition: left 0.5s ease;
 }
-.action-btn:hover::before {
-    left: 100%;
-}
-.action-btn.market {
-    border-color: gold;
-}
-.action-btn.profile-btn {
-    border-color: #2b86c5;
-}
+.action-btn:hover::before { left: 100%; }
+.action-btn.market { border-color: gold; }
+.action-btn.profile-btn { border-color: #2b86c5; }
 .action-btn:hover:not(:disabled) {
     animation: gelatine 0.4s;
     background: #ff3cac40;
@@ -146,20 +200,20 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(255,60,172,0.4);
 }
-.action-btn:active:not(:disabled) {
-    transform: translateY(0);
+.action-btn:active:not(:disabled) { transform: translateY(0); }
+.action-btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; filter: grayscale(0.6); }
+
+@keyframes gelatine {
+    0%,100% { transform: scale(1); }
+    25% { transform: scale(0.9,1.1); }
+    50% { transform: scale(1.1,0.9); }
+    75% { transform: scale(0.95,1.05); }
 }
-.action-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    pointer-events: none;
-    filter: grayscale(0.6);
-}
+
 /* Custom notification */
 .notification {
     position: fixed;
-    top: 80px;
-    left: 50%;
+    top: 80px; left: 50%;
     transform: translateX(-50%) translateY(-20px);
     background: rgba(20, 15, 30, 0.9);
     backdrop-filter: blur(12px);
@@ -174,11 +228,10 @@ body {
     opacity: 0;
     pointer-events: none;
     font-size: 0.9rem;
+    white-space: nowrap;
 }
-.notification.show { 
-    opacity: 1; 
-    transform: translateX(-50%) translateY(0);
-}
+.notification.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
 /* AI hand */
 .ai-row {
     display: flex;
@@ -224,21 +277,18 @@ body {
     background-repeat: no-repeat !important;
     position: relative;
     transition: all 0.3s ease;
+    will-change: transform;
 }
 .ai-card:hover {
     transform: translateY(-5px) scale(1.05);
     box-shadow: 0 10px 25px rgba(255,60,172,0.5);
 }
-.ai-card.thinking {
-    animation: aiThink 0.4s ease infinite alternate;
-}
+.ai-card.thinking { animation: aiThink 0.4s ease infinite alternate; }
 @keyframes aiThink {
     0% { transform: scale(1) translateY(0); filter: brightness(1); }
     100% { transform: scale(1.1) translateY(-5px); filter: brightness(1.3); }
 }
-.ai-card.swapping {
-    animation: swapCards 0.5s ease;
-}
+.ai-card.swapping { animation: swapCards 0.5s ease; }
 @keyframes swapCards {
     0% { transform: translateX(0) rotate(0deg); }
     25% { transform: translateX(12px) rotate(3deg); }
@@ -254,6 +304,7 @@ body {
     border: 1px solid rgba(255,255,255,0.3);
     z-index: 2;
 }
+
 /* Last played area */
 .ai-last-played {
     display: flex;
@@ -266,8 +317,7 @@ body {
     transition: all 0.4s ease;
 }
 .last-played-card {
-    width: 50px;
-    height: 70px;
+    width: 50px; height: 70px;
     background: #2a1e3a;
     border-radius: 12px;
     border: 2px solid #ff3cac;
@@ -275,14 +325,13 @@ body {
     background-position: center !important;
     transition: transform 0.5s ease;
 }
-.last-played-card.spin-reveal {
-    animation: spinReveal 0.8s ease-out;
-}
+.last-played-card.spin-reveal { animation: spinReveal 0.8s ease-out; }
 @keyframes spinReveal {
     0% { transform: rotateY(0deg) scale(0.8); opacity: 0; }
     50% { transform: rotateY(180deg) scale(1.1); opacity: 0.8; }
     100% { transform: rotateY(360deg) scale(1); opacity: 1; }
 }
+
 /* battle bar */
 .battle-bar {
     display: flex;
@@ -296,21 +345,9 @@ body {
     flex: 0 0 auto;
     transition: all 0.3s ease;
 }
-.battle-bar:hover {
-    background: rgba(0,0,0,0.3);
-}
-.scores {
-    display: flex;
-    gap: 30px;
-    align-items: center;
-}
-.score-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: white;
-    font-size: 0.9rem;
-}
+.battle-bar:hover { background: rgba(0,0,0,0.3); }
+.scores { display: flex; gap: 30px; align-items: center; }
+.score-item { display: flex; flex-direction: column; align-items: center; color: white; font-size: 0.9rem; }
 .score-value {
     font-size: 1.8rem;
     background: linear-gradient(225deg, #ff3cac, #784ba0);
@@ -319,13 +356,8 @@ body {
     font-weight: 700;
     transition: all 0.3s ease;
 }
-.score-value.score-change {
-    animation: scorePulse 0.5s ease;
-}
-@keyframes scorePulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-}
+.score-value.score-change { animation: scorePulse 0.5s ease; }
+@keyframes scorePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
 .round-indicator {
     background: rgba(255,60,172,0.2);
     border: 1px solid #ff3cac;
@@ -336,9 +368,7 @@ body {
     font-size: 1rem;
     transition: all 0.3s ease;
 }
-.round-indicator.round-change {
-    animation: roundPulse 0.5s ease;
-}
+.round-indicator.round-change { animation: roundPulse 0.5s ease; }
 @keyframes roundPulse {
     0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(255,60,172,0); }
     50% { transform: scale(1.2); box-shadow: 0 0 20px rgba(255,60,172,0.6); }
@@ -358,43 +388,28 @@ body {
     white-space: nowrap;
     position: relative;
     overflow: hidden;
+    will-change: transform;
 }
 .play-btn::before {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
     background: rgba(255,255,255,0.5);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     transition: width 0.6s ease, height 0.6s ease;
 }
-.play-btn:hover::before {
-    width: 300px;
-    height: 300px;
-}
+.play-btn:hover::before { width: 300px; height: 300px; }
 .play-btn:hover:not(:disabled) {
     animation: gelatine 0.4s;
     background: white;
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(255,255,255,0.4);
 }
-.play-btn:active:not(:disabled) {
-    transform: translateY(0);
-}
-.play-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    filter: grayscale(0.8);
-}
-@keyframes gelatine {
-    0%,100% { transform: scale(1); }
-    25% { transform: scale(0.9,1.1); }
-    50% { transform: scale(1.1,0.9); }
-    75% { transform: scale(0.95,1.05); }
-}
+.play-btn:active:not(:disabled) { transform: translateY(0); }
+.play-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.8); }
+
 /* Round log */
 .round-log {
     background: rgba(0,0,0,0.3);
@@ -412,18 +427,11 @@ body {
     width: 100%;
     transition: all 0.3s ease;
 }
-.round-log:hover {
-    border-color: #ff3cac;
-}
-.round-log p {
-    transition: all 0.3s ease;
-    animation: slideIn 0.4s ease;
-}
-@keyframes slideIn {
-    from { opacity: 0; transform: translateX(-20px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-/* Player hand - FIXED SIZE */
+.round-log:hover { border-color: #ff3cac; }
+.round-log p { transition: all 0.3s ease; animation: slideIn 0.4s ease; }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+
+/* Player hand */
 .player-row {
     display: flex;
     flex-direction: column;
@@ -446,8 +454,8 @@ body {
 }
 .swiper {
     width: 100%;
-    max-width: 240px;
-    height: 360px;
+    max-width: 260px;
+    height: 380px;
 }
 .swiper-slide {
     position: relative;
@@ -458,31 +466,38 @@ body {
     background-position: center !important;
     background-repeat: no-repeat !important;
     transition: transform 0.3s ease;
-    border: 2px solid rgba(255,255,255,0.1);
+    border: 3px solid var(--card-border);
+    will-change: transform;
+}
+.swiper-slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15,32,39,0.4), transparent 60%);
+    pointer-events: none;
 }
 .swiper-slide.swiper-slide-active {
     box-shadow: 0 15px 35px rgba(255,60,172,0.3);
     transform: scale(1.05);
-    border-color: rgba(255,255,255,0.3);
+    border-color: rgba(255,255,255,0.8);
+    z-index: 10;
 }
 .swiper-slide .power-badge {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    background: rgba(255,255,255,0.15);
+    top: 8px; right: 8px;
+    background: rgba(255,255,255,0.2);
     backdrop-filter: blur(10px);
     padding: 4px 10px;
     border-radius: 30px;
     color: white;
     font-weight: 700;
     font-size: 0.8rem;
-    border: 1px solid rgba(255,255,255,0.3);
+    border: 1px solid rgba(255,255,255,0.5);
     z-index: 2;
 }
 .swiper-slide h4 {
     position: absolute;
-    bottom: 12px;
-    left: 12px;
+    bottom: 12px; left: 12px;
     color: white;
     font-size: 1rem;
     font-weight: 600;
@@ -490,16 +505,11 @@ body {
     z-index: 2;
     max-width: 70%;
 }
-.swiper-slide::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(15,32,39,0.8), transparent 50%);
-    pointer-events: none;
-}
+
 /* floating circles */
 .circles {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 1;
+    pointer-events: none;
 }
 .circles li {
     position: absolute; display: block; list-style: none; width: 20px; height: 20px;
@@ -520,6 +530,7 @@ body {
     0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
     100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
 }
+
 /* War Overlay */
 .war-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -548,63 +559,88 @@ body {
 .war-card.winner .war-label { color: gold; }
 .war-card:not(.winner) .war-label { color: #ff4444; }
 .war-vs { font-size: 3rem; color: white; text-shadow: 0 0 30px #ff3cac; font-weight: 700; }
-/* Modals - FIXED FADE ANIMATION */
-.modal, .inventory-modal, .pack-modal, .profile-modal {
+
+/* Modals */
+.modal, .inventory-modal, .pack-modal, .profile-modal, .settings-modal, .reset-modal, .friends-modal {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0);
     backdrop-filter: blur(0px);
     display: flex; align-items: center; justify-content: center;
-    z-index: 1000; 
+    z-index: 1000;
     transition: all 0.4s ease;
     padding: 10px;
     opacity: 0;
     pointer-events: none;
 }
-.modal:not(.hidden), .inventory-modal:not(.hidden), .pack-modal:not(.hidden), .profile-modal:not(.hidden) {
+.modal:not(.hidden), .inventory-modal:not(.hidden), .pack-modal:not(.hidden), .profile-modal:not(.hidden), .settings-modal:not(.hidden), .reset-modal:not(.hidden), .friends-modal:not(.hidden) {
     background: rgba(0,0,0,0.85);
     backdrop-filter: blur(12px);
     opacity: 1;
     pointer-events: auto;
 }
-.modal.hidden, .inventory-modal.hidden, .pack-modal.hidden, .profile-modal.hidden { 
+.modal.hidden, .inventory-modal.hidden, .pack-modal.hidden, .profile-modal.hidden, .settings-modal.hidden, .reset-modal.hidden, .friends-modal.hidden {
     opacity: 0;
     pointer-events: none;
 }
-.modal-content, .inventory-content, .pack-content, .profile-content {
-    background: rgba(30, 26, 43, 0.95);
+
+.modal-content, .inventory-content, .pack-content, .profile-content, .settings-content, .reset-content, .friends-content {
+    background: var(--glass-bg);
     backdrop-filter: blur(15px);
-    padding: 25px; border-radius: 48px; border: 2px solid #ff3cac;
-    box-shadow: 0 20px 60px #ff3cac60; max-width: 900px; width: 95%;
+    padding: 25px; border-radius: 48px; border: 2px solid var(--glass-border);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5); max-width: 900px; width: 95%;
     max-height: 80vh; overflow-y: auto; color: white;
     transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     transform: scale(0.9);
     opacity: 0;
 }
-.modal:not(.hidden) .modal-content, 
+
+.profile-content {
+    border: 2px solid #2b86c5;
+    box-shadow: 0 20px 60px #2b86c560;
+    max-width: 550px;
+}
+
+.friends-content {
+    border: 2px solid #4ade80;
+    box-shadow: 0 20px 60px #4ade8060;
+    max-width: 700px;
+}
+
+.modal:not(.hidden) .modal-content,
 .inventory-modal:not(.hidden) .inventory-content,
 .pack-modal:not(.hidden) .pack-content,
-.profile-modal:not(.hidden) .profile-content {
+.profile-modal:not(.hidden) .profile-content,
+.settings-modal:not(.hidden) .settings-content,
+.reset-modal:not(.hidden) .reset-content,
+.friends-modal:not(.hidden) .friends-content {
     transform: scale(1);
     opacity: 1;
 }
-/* CUSTOM SCROLLBAR FOR INVENTORY */
+
+/* CUSTOM SCROLLBAR */
 .inventory-content::-webkit-scrollbar,
 .profile-content::-webkit-scrollbar,
 .modal-content::-webkit-scrollbar,
-.round-log::-webkit-scrollbar {
+.round-log::-webkit-scrollbar,
+.settings-content::-webkit-scrollbar,
+.friends-content::-webkit-scrollbar {
     width: 8px;
 }
 .inventory-content::-webkit-scrollbar-track,
 .profile-content::-webkit-scrollbar-track,
 .modal-content::-webkit-scrollbar-track,
-.round-log::-webkit-scrollbar-track {
+.round-log::-webkit-scrollbar-track,
+.settings-content::-webkit-scrollbar-track,
+.friends-content::-webkit-scrollbar-track {
     background: rgba(0,0,0,0.3);
     border-radius: 10px;
 }
 .inventory-content::-webkit-scrollbar-thumb,
 .profile-content::-webkit-scrollbar-thumb,
 .modal-content::-webkit-scrollbar-thumb,
-.round-log::-webkit-scrollbar-thumb {
+.round-log::-webkit-scrollbar-thumb,
+.settings-content::-webkit-scrollbar-thumb,
+.friends-content::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, #ff3cac, #784ba0);
     border-radius: 10px;
     border: 2px solid rgba(0,0,0,0.3);
@@ -612,16 +648,19 @@ body {
 .inventory-content::-webkit-scrollbar-thumb:hover,
 .profile-content::-webkit-scrollbar-thumb:hover,
 .modal-content::-webkit-scrollbar-thumb:hover,
-.round-log::-webkit-scrollbar-thumb:hover {
+.round-log::-webkit-scrollbar-thumb:hover,
+.settings-content::-webkit-scrollbar-thumb:hover,
+.friends-content::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #ff5cb8, #9060c0);
 }
+
 .inventory-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 15px; padding: 15px 0;
 }
 .inventory-card {
     aspect-ratio: 2 / 3; border-radius: 16px; background-size: cover !important;
-    background-position: center !important; border: 3px solid rgba(255,255,255,0.3);
+    background-position: center !important; border: 3px solid var(--card-border);
     display: flex; flex-direction: column; justify-content: space-between;
     align-items: center; padding: 8px; cursor: pointer;
     transition: all 0.3s ease;
@@ -630,10 +669,7 @@ body {
 .inventory-card::before {
     content: '';
     position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
+    top: -5px; left: -5px; right: -5px; bottom: -5px;
     border-radius: 16px;
     background: inherit;
     filter: blur(10px);
@@ -641,21 +677,18 @@ body {
     z-index: -1;
     transition: opacity 0.3s ease;
 }
-.inventory-card:hover::before {
-    opacity: 0.5;
-}
+.inventory-card:hover::before { opacity: 0.5; }
 .inventory-card:hover {
     transform: scale(1.05);
     box-shadow: 0 5px 20px rgba(255,255,255,0.3);
 }
-.inventory-card.selected { 
-    border: 4px solid gold; 
-    box-shadow: 0 0 25px gold, 0 5px 20px rgba(255,215,0,0.5); 
+.inventory-card.selected {
+    border: 4px solid gold;
+    box-shadow: 0 0 25px gold, 0 5px 20px rgba(255,215,0,0.5);
 }
 .inventory-card .stack-count {
     position: absolute;
-    top: -8px;
-    right: -8px;
+    top: -8px; right: -8px;
     background: linear-gradient(135deg, #ff3cac, #784ba0);
     color: white;
     font-weight: 700;
@@ -666,6 +699,8 @@ body {
     box-shadow: 0 2px 10px rgba(255,60,172,0.5);
     z-index: 10;
 }
+
+/* Market Cards - VIBRANT Borders */
 .pack-card-item {
     width: 180px; aspect-ratio: 2 / 3; border-radius: 25px;
     background-size: cover !important; background-position: center !important;
@@ -704,23 +739,25 @@ body {
     60% { opacity: 1; transform: scale(1.05) rotateY(0deg); box-shadow: 0 0 30px currentColor; }
     100% { opacity: 1; transform: scale(1) rotateY(0deg); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
 }
-/* VIBRANT Rarity border colors for PACK ONLY */
-.pack-card.common { 
-    border-color: #ffffff; 
-    box-shadow: 0 0 20px #ffffff, 0 5px 15px rgba(255,255,255,0.5); 
+
+/* VIBRANT Rarity border colors - ENHANCED BRIGHTNESS */
+.pack-card.common {
+    border-color: #ffffff;
+    box-shadow: 0 0 35px #ffffff, 0 5px 20px rgba(255,255,255,0.8);
 }
-.pack-card.rare { 
-    border-color: #3b82f6; 
-    box-shadow: 0 0 20px #3b82f6, 0 5px 15px rgba(59,130,246,0.5); 
+.pack-card.rare {
+    border-color: #60a5fa;
+    box-shadow: 0 0 35px #60a5fa, 0 5px 20px rgba(96,165,250,0.8);
 }
-.pack-card.epic { 
-    border-color: #a855f7; 
-    box-shadow: 0 0 20px #a855f7, 0 5px 15px rgba(168,85,247,0.5); 
+.pack-card.epic {
+    border-color: #c084fc;
+    box-shadow: 0 0 35px #c084fc, 0 5px 20px rgba(192,132,252,0.8);
 }
-.pack-card.mythical { 
-    border-color: #fbbf24; 
-    box-shadow: 0 0 20px #fbbf24, 0 5px 15px rgba(251,191,36,0.5); 
+.pack-card.mythical {
+    border-color: #fcd34d;
+    box-shadow: 0 0 35px #fcd34d, 0 5px 20px rgba(252,211,77,0.8);
 }
+
 .close-modal {
     display: block; margin: 20px auto 0; background: rgba(255,255,255,0.9);
     border: none; padding: 10px 30px; border-radius: 60px;
@@ -732,6 +769,7 @@ body {
     transform: scale(1.05);
     box-shadow: 0 5px 20px rgba(255,255,255,0.4);
 }
+
 /* Auth Overlay */
 .auth-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -747,26 +785,15 @@ body {
     max-width: 450px; width: 90%; color: white;
     transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
-.auth-overlay.hidden .auth-card {
-    transform: scale(0.9);
-    opacity: 0;
-}
+.auth-overlay.hidden .auth-card { transform: scale(0.9); opacity: 0; }
 .auth-card h1 {
     font-size: 2.2rem;
     background: linear-gradient(225deg, #ff3cac, #784ba0, #2b86c5);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     margin-bottom: 10px;
 }
-.auth-card .subtitle {
-    color: rgba(255,255,255,0.7);
-    font-size: 0.9rem;
-    margin-bottom: 30px;
-}
-.auth-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+.auth-card .subtitle { color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 30px; }
+.auth-form { display: flex; flex-direction: column; gap: 15px; }
 .auth-input {
     background: rgba(0,0,0,0.4);
     border: 1px solid #ff3cac80;
@@ -777,14 +804,8 @@ body {
     outline: none;
     transition: all 0.3s ease;
 }
-.auth-input:focus {
-    border-color: #ff3cac;
-    box-shadow: 0 0 15px rgba(255,60,172,0.3);
-    transform: scale(1.02);
-}
-.auth-input::placeholder {
-    color: rgba(255,255,255,0.5);
-}
+.auth-input:focus { border-color: #ff3cac; box-shadow: 0 0 15px rgba(255,60,172,0.3); transform: scale(1.02); }
+.auth-input::placeholder { color: rgba(255,255,255,0.5); }
 .auth-btn {
     background: linear-gradient(225deg, #ff3cac, #784ba0);
     border: none;
@@ -797,100 +818,28 @@ body {
     transition: all 0.3s ease;
     box-shadow: 0 6px 20px rgba(255,60,172,0.4);
 }
-.auth-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 25px rgba(255,60,172,0.6);
-}
-.auth-btn.google {
-    background: white;
-    color: #1a1a1a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-.auth-btn.google:hover {
-    background: #f0f0f0;
-}
-.auth-divider {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin: 20px 0;
-    color: rgba(255,255,255,0.5);
+.auth-btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(255,60,172,0.6); }
+.auth-btn.google { background: white; color: #1a1a1a; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.auth-btn.google:hover { background: #f0f0f0; }
+.auth-divider { display: flex; align-items: center; gap: 15px; margin: 20px 0; color: rgba(255,255,255,0.5); font-size: 0.85rem; }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.2); }
+.auth-switch { color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-top: 20px; }
+.auth-switch span { color: #ff3cac; cursor: pointer; font-weight: 700; transition: all 0.3s ease; }
+.auth-switch span:hover { text-shadow: 0 0 10px #ff3cac; }
+.auth-error { color: #ff4444; font-size: 0.85rem; margin-top: 10px; }
+.auth-loading { display: none; color: #ff3cac; font-size: 0.9rem; margin-top: 10px; }
+.forgot-password-link {
+    color: #2b86c5;
     font-size: 0.85rem;
-}
-.auth-divider::before, .auth-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: rgba(255,255,255,0.2);
-}
-.auth-switch {
-    color: rgba(255,255,255,0.7);
-    font-size: 0.9rem;
-    margin-top: 20px;
-}
-.auth-switch span {
-    color: #ff3cac;
     cursor: pointer;
-    font-weight: 700;
-    transition: all 0.3s ease;
+    text-decoration: underline;
+    margin-top: 5px;
+    display: inline-block;
 }
-.auth-switch span:hover {
-    text-shadow: 0 0 10px #ff3cac;
-}
-.auth-error {
-    color: #ff4444;
-    font-size: 0.85rem;
-    margin-top: 10px;
-}
-.auth-loading {
-    display: none;
-    color: #ff3cac;
-    font-size: 0.9rem;
-    margin-top: 10px;
-}
+.forgot-password-link:hover { color: #4ade80; }
+
 /* Profile Modal */
-.profile-modal {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0);
-    backdrop-filter: blur(0px);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 1000; transition: all 0.4s ease;
-    padding: 10px;
-    opacity: 0;
-    pointer-events: none;
-}
-.profile-modal:not(.hidden) {
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(12px);
-    opacity: 1;
-    pointer-events: auto;
-}
-.profile-modal.hidden { 
-    opacity: 0; 
-    pointer-events: none;
-}
-.profile-content {
-    background: rgba(30, 26, 43, 0.95); backdrop-filter: blur(15px);
-    padding: 30px; border-radius: 48px; border: 2px solid #2b86c5;
-    box-shadow: 0 20px 60px #2b86c560; max-width: 550px; width: 95%;
-    color: white;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    transform: scale(0.9);
-    opacity: 0;
-}
-.profile-modal:not(.hidden) .profile-content {
-    transform: scale(1);
-    opacity: 1;
-}
-.profile-stats {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin: 20px 0;
-}
+.profile-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; }
 .profile-stat {
     background: rgba(0,0,0,0.3);
     padding: 15px;
@@ -898,21 +847,14 @@ body {
     text-align: center;
     transition: all 0.3s ease;
 }
-.profile-stat:hover {
-    transform: scale(1.05);
-    background: rgba(0,0,0,0.4);
-}
-.profile-stat .value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #2b86c5;
-}
-.profile-stat .label {
-    font-size: 0.8rem;
-    color: rgba(255,255,255,0.6);
-    margin-top: 5px;
-}
-.profile-email {
+.profile-stat:hover { transform: scale(1.05); background: rgba(0,0,0,0.4); }
+.profile-stat .value { font-size: 1.5rem; font-weight: 700; color: #2b86c5; }
+.profile-stat .label { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-top: 5px; }
+.profile-email-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     background: rgba(0,0,0,0.3);
     padding: 10px 20px;
     border-radius: 30px;
@@ -921,14 +863,20 @@ body {
     margin-bottom: 15px;
     word-break: break-all;
     text-align: center;
+    max-width: 100%;
 }
-.profile-username-section {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    margin-bottom: 15px;
-    justify-content: center;
+.profile-email { transition: filter 0.3s ease; }
+.profile-email.blurred { filter: blur(5px); user-select: none; }
+.toggle-email-btn {
+    background: none;
+    border: none;
+    color: #2b86c5;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.2s;
 }
+.toggle-email-btn:hover { transform: scale(1.2); color: white; }
+.profile-username-section { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; justify-content: center; }
 .profile-username-input {
     background: rgba(0,0,0,0.4);
     border: 1px solid #2b86c5;
@@ -942,30 +890,26 @@ body {
     max-width: 250px;
     text-align: center;
 }
-.profile-username-input:focus {
-    border-color: #4ade80;
-    box-shadow: 0 0 15px rgba(74,222,128,0.3);
-}
+.profile-username-input:focus { border-color: #4ade80; box-shadow: 0 0 15px rgba(74,222,128,0.3); }
 .profile-username-save {
     background: linear-gradient(135deg, #4ade80, #22c55e);
     border: none;
-    width: 40px;
-    height: 40px;
+    width: 40px; height: 40px;
     border-radius: 50%;
     color: white;
     font-size: 1.2rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
 }
-.profile-username-save:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(74,222,128,0.5);
-}
-.profile-username-save.saved {
-    background: linear-gradient(135deg, #22c55e, #16a34a);
+.profile-username-save:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(74,222,128,0.5); }
+.profile-username-save.saved { background: linear-gradient(135deg, #22c55e, #16a34a); }
+.profile-username-save:disabled {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none;
+    box-shadow: none;
 }
 .profile-last-online {
     background: rgba(0,0,0,0.3);
@@ -976,23 +920,9 @@ body {
     margin-bottom: 20px;
     text-align: center;
 }
-.save-status {
-    text-align: center;
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 15px;
-    transition: all 0.3s ease;
-}
-.save-status.saved {
-    color: #4ade80;
-    text-shadow: 0 0 10px #4ade80;
-}
-.profile-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
+.save-status { text-align: center; font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 15px; transition: all 0.3s ease; }
+.save-status.saved { color: #4ade80; text-shadow: 0 0 10px #4ade80; }
+.profile-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 .logout-btn {
     background: rgba(255,68,68,0.2);
     border: 1px solid #ff4444;
@@ -1003,11 +933,7 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
 }
-.logout-btn:hover {
-    background: rgba(255,68,68,0.4);
-    transform: scale(1.05);
-    box-shadow: 0 5px 20px rgba(255,68,68,0.4);
-}
+.logout-btn:hover { background: rgba(255,68,68,0.4); transform: scale(1.05); box-shadow: 0 5px 20px rgba(255,68,68,0.4); }
 .save-btn {
     background: rgba(74,222,128,0.2);
     border: 1px solid #4ade80;
@@ -1018,298 +944,529 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
 }
-.save-btn:hover {
-    background: rgba(74,222,128,0.4);
-    transform: scale(1.05);
-    box-shadow: 0 5px 20px rgba(74,222,128,0.4);
+.save-btn:hover { background: rgba(74,222,128,0.4); transform: scale(1.05); box-shadow: 0 5px 20px rgba(74,222,128,0.4); }
+
+/* Settings Modal */
+.settings-content {
+    max-width: 500px;
+    text-align: center;
+}
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.3);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+.quality-toggle, .wallpaper-toggle {
+    display: flex;
+    gap: 10px;
+}
+.quality-btn, .wallpaper-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.quality-btn.active, .wallpaper-btn.active {
+    background: #2b86c5;
+    border-color: #2b86c5;
+    box-shadow: 0 0 10px #2b86c5;
+}
+.blur-slider-container {
+    margin: 20px 0;
+    text-align: left;
+}
+.blur-slider-container label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.8);
+}
+.blur-slider {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.2);
+    outline: none;
+    -webkit-appearance: none;
+}
+.blur-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff3cac, #784ba0);
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(255,60,172,0.5);
+}
+.wallpaper-preview {
+    width: 100%;
+    height: 150px;
+    border-radius: 15px;
+    background-size: cover;
+    background-position: center;
+    margin: 15px 0;
+    border: 2px solid rgba(255,255,255,0.2);
+}
+.upload-btn {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    border: none;
+    padding: 10px 25px;
+    border-radius: 30px;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+.upload-btn:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(74,222,128,0.5); }
+
+/* Reset Password Modal */
+.reset-content {
+    max-width: 400px;
+    text-align: center;
+}
+.reset-email-input {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid #ff3cac80;
+    border-radius: 30px;
+    padding: 12px 20px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 15px;
+}
+.reset-email-input:focus { border-color: #ff3cac; }
+
+/* Friends Modal */
+.friends-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+.friends-tab {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 10px 25px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 600;
+}
+.friends-tab.active {
+    background: #4ade80;
+    border-color: #4ade80;
+    box-shadow: 0 0 15px rgba(74,222,128,0.5);
+}
+.friends-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+.friend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0,0,0,0.3);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+.friend-item:hover {
+    background: rgba(0,0,0,0.4);
+    transform: translateX(5px);
+}
+.friend-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.friend-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: white;
+}
+.friend-details h4 {
+    font-size: 1rem;
+    margin-bottom: 3px;
+}
+.friend-details p {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.6);
+}
+.friend-actions {
+    display: flex;
+    gap: 10px;
+}
+.friend-action-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.85rem;
+}
+.friend-action-btn.add {
+    background: rgba(74,222,128,0.3);
+    border: 1px solid #4ade80;
+}
+.friend-action-btn.add:hover {
+    background: #4ade80;
+    box-shadow: 0 0 15px rgba(74,222,128,0.5);
+}
+.friend-action-btn.view {
+    background: rgba(43,134,197,0.3);
+    border: 1px solid #2b86c5;
+}
+.friend-action-btn.view:hover {
+    background: #2b86c5;
+    box-shadow: 0 0 15px rgba(43,134,197,0.5);
+}
+.friend-action-btn.remove {
+    background: rgba(255,68,68,0.3);
+    border: 1px solid #ff4444;
+}
+.friend-action-btn.remove:hover {
+    background: #ff4444;
+    box-shadow: 0 0 15px rgba(255,68,68,0.5);
+}
+.friend-search-container {
+    margin-bottom: 20px;
+}
+.friend-search-input {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid #4ade8080;
+    border-radius: 30px;
+    padding: 12px 20px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+}
+.friend-search-input:focus { border-color: #4ade80; box-shadow: 0 0 15px rgba(74,222,128,0.3); }
+
+/* Friend Profile View Modal */
+.friend-profile-modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0);
+    backdrop-filter: blur(0px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1500;
+    transition: all 0.4s ease;
+    padding: 10px;
+    opacity: 0;
+    pointer-events: none;
+}
+.friend-profile-modal:not(.hidden) {
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(12px);
+    opacity: 1;
+    pointer-events: auto;
+}
+.friend-profile-modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+.friend-profile-content {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    padding: 30px; border-radius: 48px; border: 2px solid #4ade80;
+    box-shadow: 0 20px 60px #4ade8060; max-width: 500px; width: 95%;
+    color: white;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transform: scale(0.9);
+    opacity: 0;
+    text-align: center;
+}
+.friend-profile-modal:not(.hidden) .friend-profile-content {
+    transform: scale(1);
+    opacity: 1;
+}
+.friend-profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: white;
+    margin: 0 auto 20px;
+    box-shadow: 0 10px 30px rgba(74,222,128,0.5);
+}
+.friend-profile-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 20px 0;
 }
 
 /* ==================== UI ADAPTATION SYSTEM ==================== */
-/* PC Default (1080p+) */
 @media (min-width: 1025px) {
-    .game-container {
-        max-width: 1300px;
-        height: 98%;
-    }
-    .ai-cards {
-        gap: 15px;
-    }
-    .ai-card {
-        width: 120px;
-        height: 180px;
-    }
-    .swiper {
-        max-width: 260px;
-        height: 390px;
-    }
+    .game-container { max-width: 1300px; height: 98%; }
+    .ai-cards { gap: 15px; }
+    .ai-card { width: 120px; height: 180px; }
+    .swiper { max-width: 280px; height: 400px; }
 }
-
-/* Tablet (768px - 1024px) */
 @media (max-width: 1024px) and (min-width: 769px) {
-    .game-container {
-        max-width: 900px;
-        height: 96%;
-    }
-    .ai-card {
-        width: 100px;
-        height: 150px;
-    }
-    .swiper {
-        max-width: 220px;
-        height: 330px;
-    }
+    .game-container { max-width: 900px; height: 96%; }
+    .ai-card { width: 100px; height: 150px; }
+    .swiper { max-width: 240px; height: 350px; }
 }
-
-/* Mobile Landscape (481px - 768px) */
 @media (max-width: 768px) and (min-width: 481px) {
-    .game-container {
-        max-width: 100%;
-        height: 100%;
-        border-radius: 0;
-        padding: 10px 15px 8px;
-    }
-    .ai-row {
-        margin-top: 30px;
-    }
-    .ai-card {
-        width: 85px;
-        height: 127px;
-    }
-    .ai-cards {
-        gap: 10px;
-        min-height: 120px;
-    }
-    .swiper {
-        max-width: 200px;
-        height: 300px;
-    }
-    .battle-bar {
-        padding: 6px 15px;
-    }
-    .score-value {
-        font-size: 1.5rem;
-    }
-    .play-btn {
-        padding: 6px 20px;
-        font-size: 1rem;
-    }
+    .game-container { max-width: 100%; height: 100%; border-radius: 0; padding: 10px 15px 8px; }
+    .ai-row { margin-top: 30px; }
+    .ai-card { width: 85px; height: 127px; }
+    .ai-cards { gap: 10px; min-height: 120px; }
+    .swiper { max-width: 220px; height: 320px; }
+    .battle-bar { padding: 6px 15px; }
+    .score-value { font-size: 1.5rem; }
+    .play-btn { padding: 6px 20px; font-size: 1rem; }
 }
-
-/* Mobile Portrait (320px - 480px) */
 @media (max-width: 480px) {
-    .game-container {
-        max-width: 100%;
-        height: 100%;
-        border-radius: 0;
-        padding: 8px 12px 6px;
-    }
-    .top-left-buttons {
-        top: 10px;
-        left: 10px;
-        gap: 10px;
-    }
-    .action-btn {
-        padding: 6px 14px;
-        font-size: 0.8rem;
-    }
-    .shards-corner {
-        top: 10px;
-        right: 10px;
-        padding: 5px 12px;
-    }
-    .shards-corner .reward-count {
-        font-size: 1.2rem;
-    }
-    .ai-row {
-        margin-top: 25px;
-    }
-    .ai-label {
-        font-size: 0.8rem;
-        padding: 3px 12px;
-    }
-    .ai-card {
-        width: 70px;
-        height: 105px;
-    }
-    .ai-cards {
-        gap: 8px;
-        min-height: 100px;
-    }
-    .battle-bar {
-        padding: 5px 12px;
-        gap: 10px;
-    }
-    .scores {
-        gap: 15px;
-    }
-    .score-value {
-        font-size: 1.3rem;
-    }
-    .round-indicator {
-        padding: 3px 10px;
-        font-size: 0.85rem;
-    }
-    .play-btn {
-        padding: 5px 16px;
-        font-size: 0.95rem;
-    }
-    .round-log {
-        padding: 10px 14px;
-        font-size: 0.85rem;
-        min-height: 60px;
-        max-height: 75px;
-    }
-    .swiper {
-        max-width: 180px;
-        height: 270px;
-    }
-    .player-label, .ai-label {
-        font-size: 0.8rem;
-    }
-    .war-card {
-        width: 130px;
-        height: 180px;
-    }
-    .war-label {
-        font-size: 1.2rem;
-    }
-    .war-vs {
-        font-size: 2rem;
-    }
-    .profile-stats {
-        grid-template-columns: 1fr;
-    }
-    .profile-buttons {
-        flex-direction: column;
-    }
-    .logout-btn, .save-btn {
-        width: 100%;
-    }
-    .profile-username-section {
-        flex-direction: column;
-    }
-    .profile-username-input {
-        max-width: 100%;
-    }
+    .game-container { max-width: 100%; height: 100%; border-radius: 0; padding: 8px 12px 6px; }
+    .top-left-buttons { top: 10px; left: 10px; gap: 10px; }
+    .action-btn { padding: 6px 14px; font-size: 0.8rem; }
+    .shards-corner { top: 10px; right: 10px; padding: 5px 12px; }
+    .shards-corner .reward-count { font-size: 1.2rem; }
+    .ai-row { margin-top: 25px; }
+    .ai-label { font-size: 0.8rem; padding: 3px 12px; }
+    .ai-card { width: 70px; height: 105px; }
+    .ai-cards { gap: 8px; min-height: 100px; }
+    .battle-bar { padding: 5px 12px; gap: 10px; }
+    .scores { gap: 15px; }
+    .score-value { font-size: 1.3rem; }
+    .round-indicator { padding: 3px 10px; font-size: 0.85rem; }
+    .play-btn { padding: 5px 16px; font-size: 0.95rem; }
+    .round-log { padding: 10px 14px; font-size: 0.85rem; min-height: 60px; max-height: 75px; }
+    .swiper { max-width: 200px; height: 290px; }
+    .player-label, .ai-label { font-size: 0.8rem; }
+    .war-card { width: 130px; height: 180px; }
+    .war-label { font-size: 1.2rem; }
+    .war-vs { font-size: 2rem; }
+    .profile-stats { grid-template-columns: 1fr; }
+    .profile-buttons { flex-direction: column; }
+    .logout-btn, .save-btn { width: 100%; }
+    .profile-username-section { flex-direction: column; }
+    .profile-username-input { max-width: 100%; }
+    .friends-tabs { flex-wrap: wrap; }
+    .friends-tab { padding: 8px 15px; font-size: 0.85rem; }
 }
-
-/* Very Small Mobile (320px and below) */
 @media (max-width: 320px) {
-    .ai-card {
-        width: 60px;
-        height: 90px;
-    }
-    .swiper {
-        max-width: 160px;
-        height: 240px;
-    }
-    .score-value {
-        font-size: 1.1rem;
-    }
+    .ai-card { width: 60px; height: 90px; }
+    .swiper { max-width: 180px; height: 260px; }
+    .score-value { font-size: 1.1rem; }
 }
 </style>
 </head>
 <body>
-<div class="version-tag">v0.1.8 · Production</div>
+<div class="wallpaper-bg" id="wallpaperBg"></div>
+<div class="version-tag">v0.2.0 · Production</div>
 
 <!-- Auth Overlay (Login/Signup) -->
 <div id="authOverlay" class="auth-overlay">
-<div class="auth-card">
-<h1>⚡ ANIME CARD BATTLE ⚡</h1>
-<p class="subtitle">Build your deck, earn shards, and defeat the adaptive AI</p>
+    <div class="auth-card">
+        <h1>⚡ ANIME CARD BATTLE ⚡</h1>
+        <p class="subtitle">Build your deck, earn shards, and defeat the adaptive AI</p>
+        
+        <!-- Login Form -->
+        <div id="loginForm" class="auth-form">
+            <input type="email" id="loginEmail" class="auth-input" placeholder="Email Address">
+            <input type="password" id="loginPassword" class="auth-input" placeholder="Password">
+            <button class="auth-btn" id="loginBtn">LOGIN</button>
+            <div class="auth-loading" id="loginLoading">Processing...</div>
+            <div class="auth-error" id="loginError"></div>
+            <div class="forgot-password-link" id="showReset">Forgot Password?</div>
+            <div class="auth-divider">OR</div>
+            <button class="auth-btn google" id="googleLoginBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
+            </button>
+            <p class="auth-switch">Don't have an account? <span id="showSignup">Sign Up</span></p>
+        </div>
 
-<!-- Login Form -->
-<div id="loginForm" class="auth-form">
-<input type="email" id="loginEmail" class="auth-input" placeholder="Email Address">
-<input type="password" id="loginPassword" class="auth-input" placeholder="Password">
-<button class="auth-btn" id="loginBtn">LOGIN</button>
-<div class="auth-loading" id="loginLoading">Processing...</div>
-<div class="auth-error" id="loginError"></div>
-
-<div class="auth-divider">OR</div>
-
-<button class="auth-btn google" id="googleLoginBtn">
-<svg width="20" height="20" viewBox="0 0 24 24">
-<path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-<path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-<path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-<path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-</svg>
-Continue with Google
-</button>
-
-<p class="auth-switch">Don't have an account? <span id="showSignup">Sign Up</span></p>
+        <!-- Signup Form -->
+        <div id="signupForm" class="auth-form" style="display:none;">
+            <input type="email" id="signupEmail" class="auth-input" placeholder="Email Address">
+            <input type="password" id="signupPassword" class="auth-input" placeholder="Password (min 6 characters)">
+            <input type="password" id="signupConfirm" class="auth-input" placeholder="Confirm Password">
+            <button class="auth-btn" id="signupBtn">CREATE ACCOUNT</button>
+            <div class="auth-loading" id="signupLoading">Creating account...</div>
+            <div class="auth-error" id="signupError"></div>
+            <div class="auth-divider">OR</div>
+            <button class="auth-btn google" id="googleSignupBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
+            </button>
+            <p class="auth-switch">Already have an account? <span id="showLogin">Login</span></p>
+        </div>
+    </div>
 </div>
 
-<!-- Signup Form -->
-<div id="signupForm" class="auth-form" style="display:none;">
-<input type="email" id="signupEmail" class="auth-input" placeholder="Email Address">
-<input type="password" id="signupPassword" class="auth-input" placeholder="Password (min 6 characters)">
-<input type="password" id="signupConfirm" class="auth-input" placeholder="Confirm Password">
-<button class="auth-btn" id="signupBtn">CREATE ACCOUNT</button>
-<div class="auth-loading" id="signupLoading">Creating account...</div>
-<div class="auth-error" id="signupError"></div>
-
-<div class="auth-divider">OR</div>
-
-<button class="auth-btn google" id="googleSignupBtn">
-<svg width="20" height="20" viewBox="0 0 24 24">
-<path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-<path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-<path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-<path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-</svg>
-Continue with Google
-</button>
-
-<p class="auth-switch">Already have an account? <span id="showLogin">Login</span></p>
-</div>
-</div>
+<!-- Reset Password Modal -->
+<div id="resetModal" class="reset-modal hidden">
+    <div class="reset-content">
+        <h2 style="margin-bottom:15px;">🔒 Reset Password</h2>
+        <p style="margin-bottom:20px; font-size:0.9rem; color:#ccc;">Enter your email to receive a reset link.</p>
+        <input type="email" id="resetEmailInput" class="reset-email-input" placeholder="Email Address">
+        <button class="auth-btn" id="sendResetBtn" style="width:100%;">SEND LINK</button>
+        <div class="auth-loading" id="resetLoading">Sending...</div>
+        <div class="auth-error" id="resetError" style="margin-top:10px;"></div>
+        <button class="close-modal" id="closeResetBtn" style="margin-top:15px;">BACK TO LOGIN</button>
+    </div>
 </div>
 
 <!-- Profile Modal -->
 <div id="profileModal" class="profile-modal hidden">
-<div class="profile-content">
-<h2 style="text-align:center; margin-bottom:10px;">👤 PLAYER PROFILE</h2>
-<div class="profile-username-section">
-    <input type="text" id="profileUsernameInput" class="profile-username-input" placeholder="Enter Username" maxlength="20">
-    <button class="profile-username-save" id="saveUsernameBtn">✓</button>
+    <div class="profile-content">
+        <h2 style="text-align:center; margin-bottom:10px;">👤 PLAYER PROFILE</h2>
+        <div class="profile-username-section">
+            <input type="text" id="profileUsernameInput" class="profile-username-input" placeholder="Enter Username" maxlength="20">
+            <button class="profile-username-save" id="saveUsernameBtn" disabled>✓</button>
+        </div>
+        <div class="profile-email-container">
+            <span class="profile-email blurred" id="profileEmail">email@example.com</span>
+            <button class="toggle-email-btn" id="toggleEmailBtn"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="profile-last-online" id="profileLastOnline">Last Online: --</div>
+        <div class="save-status" id="saveStatus">💾 Auto-save every 5 minutes</div>
+        <div class="profile-stats">
+            <div class="profile-stat">
+                <div class="value" id="profileTotalCards">0</div>
+                <div class="label">Total Cards</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="profileShards">0</div>
+                <div class="label">Current Shards</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="profileTotalEarned">0</div>
+                <div class="label">Total Earned</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="profileWins">0</div>
+                <div class="label">Total Wins</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="profileLosses">0</div>
+                <div class="label">Total Losses</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="profileRounds">0</div>
+                <div class="label">Total Rounds</div>
+            </div>
+        </div>
+        <div class="profile-buttons">
+            <button class="save-btn" id="manualSaveBtn">💾 MANUAL SAVE</button>
+            <button class="logout-btn" id="logoutBtn">🚪 LOGOUT</button>
+        </div>
+        <button class="close-modal" id="closeProfileBtn" style="margin-top:15px;">CLOSE</button>
+    </div>
 </div>
-<div class="profile-email" id="profileEmail">email@example.com</div>
-<div class="profile-last-online" id="profileLastOnline">Last Online: --</div>
-<div class="save-status" id="saveStatus">💾 Auto-save every 5 minutes</div>
-<div class="profile-stats">
-<div class="profile-stat">
-<div class="value" id="profileTotalCards">0</div>
-<div class="label">Total Cards</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="settings-modal hidden">
+    <div class="settings-content">
+        <h2 style="margin-bottom:20px;">⚙️ SETTINGS</h2>
+        <div class="setting-item">
+            <span>Visual Quality</span>
+            <div class="quality-toggle">
+                <button class="quality-btn active" data-quality="high">High</button>
+                <button class="quality-btn" data-quality="low">Low</button>
+            </div>
+        </div>
+        <div class="setting-item">
+            <span>Wallpaper</span>
+            <div class="wallpaper-toggle">
+                <button class="wallpaper-btn active" data-wallpaper="default">Default</button>
+                <button class="wallpaper-btn" data-wallpaper="space">Space</button>
+                <button class="wallpaper-btn" data-wallpaper="custom">Custom</button>
+            </div>
+        </div>
+        <div class="wallpaper-preview" id="wallpaperPreview" style="background: linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f0f23 100%);"></div>
+        <div class="blur-slider-container">
+            <label>Blur Level: <span id="blurValue">0</span>%</label>
+            <input type="range" class="blur-slider" id="blurSlider" min="0" max="100" value="0">
+        </div>
+        <input type="file" id="wallpaperUpload" accept="image/*" style="display:none;">
+        <button class="upload-btn" id="uploadWallpaperBtn">📁 Upload Custom Wallpaper</button>
+        <p style="font-size:0.8rem; color:#aaa; margin:15px 0;">Low quality disables heavy effects. Wallpaper settings save to cloud.</p>
+        <button class="close-modal" id="closeSettingsBtn">CLOSE</button>
+    </div>
 </div>
-<div class="profile-stat">
-<div class="value" id="profileShards">0</div>
-<div class="label">Current Shards</div>
+
+<!-- Friends Modal -->
+<div id="friendsModal" class="friends-modal hidden">
+    <div class="friends-content">
+        <h2 style="text-align:center; margin-bottom:15px;">👥 FRIENDS</h2>
+        <div class="friends-tabs">
+            <button class="friends-tab active" data-tab="players">Players</button>
+            <button class="friends-tab" data-tab="friends">My Friends</button>
+        </div>
+        <div class="friend-search-container" id="friendSearchContainer">
+            <input type="text" class="friend-search-input" id="friendSearchInput" placeholder="🔍 Search players...">
+        </div>
+        <div class="friends-list" id="friendsList"></div>
+        <button class="close-modal" id="closeFriendsBtn">CLOSE</button>
+    </div>
 </div>
-<div class="profile-stat">
-<div class="value" id="profileTotalEarned">0</div>
-<div class="label">Total Earned</div>
-</div>
-<div class="profile-stat">
-<div class="value" id="profileWins">0</div>
-<div class="label">Total Wins</div>
-</div>
-<div class="profile-stat">
-<div class="value" id="profileLosses">0</div>
-<div class="label">Total Losses</div>
-</div>
-<div class="profile-stat">
-<div class="value" id="profileRounds">0</div>
-<div class="label">Total Rounds</div>
-</div>
-</div>
-<div class="profile-buttons">
-<button class="save-btn" id="manualSaveBtn">💾 MANUAL SAVE</button>
-<button class="logout-btn" id="logoutBtn">🚪 LOGOUT</button>
-</div>
-<button class="close-modal" id="closeProfileBtn" style="margin-top:15px;">CLOSE</button>
-</div>
+
+<!-- Friend Profile View Modal -->
+<div id="friendProfileModal" class="friend-profile-modal hidden">
+    <div class="friend-profile-content">
+        <div class="friend-profile-avatar" id="friendProfileAvatar">F</div>
+        <h2 id="friendProfileName">Friend Name</h2>
+        <p style="color:#aaa; font-size:0.9rem;" id="friendProfileUsername">@username</p>
+        <div class="friend-profile-stats">
+            <div class="profile-stat">
+                <div class="value" id="friendProfileWins">0</div>
+                <div class="label">Total Wins</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="friendProfileLosses">0</div>
+                <div class="label">Total Losses</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="friendProfileCards">0</div>
+                <div class="label">Total Cards</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="friendProfileRounds">0</div>
+                <div class="label">Total Rounds</div>
+            </div>
+        </div>
+        <button class="close-modal" id="closeFriendProfileBtn">CLOSE</button>
+    </div>
 </div>
 
 <!-- Custom Notification -->
@@ -1317,104 +1474,105 @@ Continue with Google
 
 <!-- War Overlay -->
 <div id="warOverlay" class="war-overlay hidden">
-<div class="war-container">
-<div id="warPlayerCard" class="war-card"><span class="war-label"></span></div>
-<div class="war-vs">VS</div>
-<div id="warAiCard" class="war-card"><span class="war-label"></span></div>
-</div>
+    <div class="war-container">
+        <div id="warPlayerCard" class="war-card"><span class="war-label"></span></div>
+        <div class="war-vs">VS</div>
+        <div id="warAiCard" class="war-card"><span class="war-label"></span></div>
+    </div>
 </div>
 
 <!-- Inventory Modal -->
 <div id="inventoryModal" class="inventory-modal hidden">
-<div class="inventory-content">
-<h2 style="text-align:center;">📦 YOUR INVENTORY</h2>
-<div class="deck-size">Select up to 5 cards for your deck</div>
-<div id="inventoryGrid" class="inventory-grid"></div>
-<button class="close-modal" id="closeInventoryBtn">CLOSE & SAVE DECK</button>
-</div>
+    <div class="inventory-content">
+        <h2 style="text-align:center;">📦 YOUR INVENTORY</h2>
+        <div class="deck-size" style="text-align:center; margin-bottom:10px; color:#aaa;">Select up to 5 cards for your deck</div>
+        <div id="inventoryGrid" class="inventory-grid"></div>
+        <button class="close-modal" id="closeInventoryBtn">CLOSE & SAVE DECK</button>
+    </div>
 </div>
 
 <!-- Market Modal -->
 <div id="marketModal" class="modal hidden">
-<div class="modal-content">
-<h2 style="text-align:center;">🎴 CARD MARKET</h2>
-<div class="category-row" style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
-<div class="pack-card-item" id="pack3Card" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://res.cloudinary.com/dgzhxztx0/image/upload/v1772603856/3-Card_Pack_100_mdhkfz.jpg');">
-<div class="price">100 🪙</div>
-<div class="box-description">3 cards (weighted rarity)</div>
-</div>
-<div class="pack-card-item" id="pack1Card" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://res.cloudinary.com/dgzhxztx0/image/upload/v1772603856/1-Card_Pack_50_tjyfaf.jpg');">
-<div class="price">50 🪙</div>
-<div class="box-description">1 guaranteed rare+</div>
-</div>
-</div>
-<button class="close-modal" id="closeMarketBtn">CLOSE</button>
-</div>
+    <div class="modal-content">
+        <h2 style="text-align:center;">🎴 CARD MARKET</h2>
+        <div class="category-row" style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
+            <div class="pack-card-item" id="pack3Card" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://res.cloudinary.com/dgzhxztx0/image/upload/v1772603856/3-Card_Pack_100_mdhkfz.jpg');">
+                <div class="price">100 🪙</div>
+                <div class="box-description">3 cards (weighted rarity)</div>
+            </div>
+            <div class="pack-card-item" id="pack1Card" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://res.cloudinary.com/dgzhxztx0/image/upload/v1772603856/1-Card_Pack_50_tjyfaf.jpg');">
+                <div class="price">50 🪙</div>
+                <div class="box-description">1 guaranteed rare+</div>
+            </div>
+        </div>
+        <button class="close-modal" id="closeMarketBtn">CLOSE</button>
+    </div>
 </div>
 
 <!-- Pack Opening Modal -->
 <div id="packOpenModal" class="pack-modal hidden">
-<div class="pack-content">
-<h2 style="color:white; margin-bottom:15px;">✨ OPENING PACK... ✨</h2>
-<div class="pack-cards" id="packCardsContainer"></div>
-<button class="pack-close close-modal" id="closePackBtn">COLLECT</button>
-</div>
+    <div class="pack-content">
+        <h2 style="color:white; margin-bottom:15px;">✨ OPENING PACK... ✨</h2>
+        <div class="pack-cards" id="packCardsContainer"></div>
+        <button class="pack-close close-modal" id="closePackBtn">COLLECT</button>
+    </div>
 </div>
 
 <section class="game-section">
-<div class="game-container">
-<!-- Shards counter -->
-<div class="shards-corner">
-<span class="reward-icon"></span>
-<span class="reward-count" id="shardCount">0</span>
-</div>
+    <div class="game-container">
+        <!-- Shards counter -->
+        <div class="shards-corner">
+            <span class="reward-icon"></span>
+            <span class="reward-count" id="shardCount">0</span>
+        </div>
+        
+        <!-- Top-left buttons -->
+        <div class="top-left-buttons">
+            <div class="action-btn profile-btn" id="profileBtn">👤 PROFILE</div>
+            <div class="action-btn" id="inventoryBtn">📦 INVENTORY</div>
+            <div class="action-btn market" id="marketBtn">🎴 MARKET</div>
+            <div class="action-btn friends-btn" id="friendsBtn">👥 FRIENDS</div>
+            <div class="action-btn settings-btn" id="settingsBtn"><i class="fas fa-cog"></i></div>
+        </div>
 
-<!-- Top-left buttons -->
-<div class="top-left-buttons">
-<div class="action-btn profile-btn" id="profileBtn">👤 PROFILE</div>
-<div class="action-btn" id="inventoryBtn">📦 INVENTORY</div>
-<div class="action-btn market" id="marketBtn">🎴 MARKET</div>
-</div>
+        <!-- AI hand -->
+        <div class="ai-row">
+            <div class="ai-label">🤖 OPPONENT · <span id="aiCardsCount">5</span></div>
+            <div class="ai-last-played" id="aiLastPlayedArea" style="display: none;">
+                <span style="color:#ccc;">last played:</span>
+                <div class="last-played-card" id="aiLastPlayedCard"></div>
+                <span id="aiLastPlayedName"></span>
+            </div>
+            <div class="ai-cards" id="aiHandContainer"></div>
+        </div>
 
-<!-- AI hand -->
-<div class="ai-row">
-<div class="ai-label">🤖 OPPONENT · <span id="aiCardsCount">5</span></div>
-<div class="ai-last-played" id="aiLastPlayedArea" style="display: none;">
-<span style="color:#ccc;">last played:</span>
-<div class="last-played-card" id="aiLastPlayedCard"></div>
-<span id="aiLastPlayedName"></span>
-</div>
-<div class="ai-cards" id="aiHandContainer"></div>
-</div>
+        <!-- Battle bar -->
+        <div class="battle-bar">
+            <div class="scores">
+                <div class="score-item">😎 YOU <span class="score-value" id="playerScore">0</span></div>
+                <div class="score-item">🤖 AI <span class="score-value" id="aiScore">0</span></div>
+                <div class="round-indicator" id="roundCounter">R1</div>
+            </div>
+            <button class="play-btn" id="playBtn">⚔️ PLAY</button>
+        </div>
 
-<!-- Battle bar -->
-<div class="battle-bar">
-<div class="scores">
-<div class="score-item">😎 YOU <span class="score-value" id="playerScore">0</span></div>
-<div class="score-item">🤖 AI <span class="score-value" id="aiScore">0</span></div>
-<div class="round-indicator" id="roundCounter">R1</div>
-</div>
-<button class="play-btn" id="playBtn">⚔️ PLAY</button>
-</div>
+        <!-- Round log -->
+        <div class="round-log" id="roundLog">
+            <p style="color:#aaa;">✨ select a card and press PLAY</p>
+        </div>
 
-<!-- Round log -->
-<div class="round-log" id="roundLog">
-<p style="color:#aaa;">✨ select a card and press PLAY</p>
-</div>
-
-<!-- Player hand -->
-<div class="player-row">
-<div class="player-label">😎 YOUR HAND · <span id="playerCardsCount">5</span></div>
-<div class="swiper mySwiper" id="playerSwiper">
-<div class="swiper-wrapper" id="swiperWrapper"></div>
-</div>
-</div>
-</div>
-
-<ul class="circles">
-<li></li><li></li><li></li><li></li><li></li>
-<li></li><li></li><li></li><li></li><li></li>
-</ul>
+        <!-- Player hand -->
+        <div class="player-row">
+            <div class="player-label">😎 YOUR HAND · <span id="playerCardsCount">5</span></div>
+            <div class="swiper mySwiper" id="playerSwiper">
+                <div class="swiper-wrapper" id="swiperWrapper"></div>
+            </div>
+        </div>
+    </div>
+    <ul class="circles">
+        <li></li><li></li><li></li><li></li><li></li>
+        <li></li><li></li><li></li><li></li><li></li>
+    </ul>
 </section>
 
 <!-- Firebase SDK -->
@@ -1422,18 +1580,19 @@ Continue with Google
 // ===== FIREBASE IMPORTS =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, increment, serverTimestamp, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 // ===== FIREBASE CONFIG =====
 const firebaseConfig = {
-  apiKey: "AIzaSyAYVhlIZXLYx3Q9sOD4flNlcdLt3ahu0N0",
-  authDomain: "card-swiper-d5c0a.firebaseapp.com",
-  projectId: "card-swiper-d5c0a",
-  storageBucket: "card-swiper-d5c0a.firebasestorage.app",
-  messagingSenderId: "579825479564",
-  appId: "1:579825479564:web:f9d27ff12c7f7a5c5830a9",
-  measurementId: "G-06SRGQTE85"
+    apiKey: "AIzaSyAYVhlIZXLYx3Q9sOD4flNlcdLt3ahu0N0",
+    authDomain: "card-swiper-d5c0a.firebaseapp.com",
+    projectId: "card-swiper-d5c0a",
+    storageBucket: "card-swiper-d5c0a.firebasestorage.app",
+    messagingSenderId: "579825479564",
+    appId: "1:579825479564:web:f9d27ff12c7f7a5c5830a9",
+    measurementId: "G-06SRGQTE85"
 };
 
 // Initialize Firebase
@@ -1441,64 +1600,80 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 const googleProvider = new GoogleAuthProvider();
 
-// ===== CARD DATABASE (CLOUDINARY LINKS) =====
+// ===== CARD DATABASE =====
 const commonTier = [
-{ name: 'Takemichi', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558132/Takemichi_vwtnkn.jpg', power: 55, rarity: 'common' },
-{ name: 'Asta', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558127/Asta_vvpkxw.jpg', power: 60, rarity: 'common' },
-{ name: 'Bakugo', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558126/bakugo_bzsdkd.jpg', power: 59, rarity: 'common' },
-{ name: 'Todoroki', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558135/Todoroki_wxl7qr.jpg', power: 58, rarity: 'common' },
-{ name: 'Zenitsu', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558135/Zenitsu_fadzsq.jpg', power: 57, rarity: 'common' },
-{ name: 'Chopper', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610064/Chopper_q40ir1.jpg', power: 57, rarity: 'common' },
-{ name: 'Jean Kirstein', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610064/Jean_Kirstein_itrl3a.jpg', power: 60, rarity: 'common' },
-{ name: 'Krillin', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610065/Krillin_sbxnl9.jpg', power: 60, rarity: 'common' },
-{ name: 'Lucy Heartfilia', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610064/Lucy_Heartfilia_p8rmpa.jpg', power: 58, rarity: 'common' },
-{ name: 'Nami', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610065/Nami_pae6b3.jpg', power: 57, rarity: 'common' },
-{ name: 'Noelle Silva', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610065/Noelle_Silva_uk3lls.jpg', power: 60, rarity: 'common' },
-{ name: 'Orihime Inoue', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610065/Orihime_Inoue_ff6ptx.jpg', power: 58, rarity: 'common' },
-{ name: 'Sasha Blouse', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610066/Sasha_Blouse_plxj0x.jpg', power: 59, rarity: 'common' },
-{ name: 'Tien Shinhan', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610066/Tien_Shinhan_u33dko.jpg', power: 60, rarity: 'common' }
+    { name: 'Takemichi', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558132/Takemichi_vwtnkn.jpg', power: 55, rarity: 'common' },
+    { name: 'Asta', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558127/Asta_vvpkxw.jpg', power: 60, rarity: 'common' },
+    { name: 'Bakugo', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558126/bakugo_bzsdkd.jpg', power: 59, rarity: 'common' },
+    { name: 'Todoroki', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558135/Todoroki_wxl7qr.jpg', power: 58, rarity: 'common' },
+    { name: 'Zenitsu', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558135/Zenitsu_fadzsq.jpg', power: 57, rarity: 'common' },
+    { name: 'Chopper', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610064/Chopper_q40ir1.jpg', power: 57, rarity: 'common' },
+    { name: 'Jean Kirstein', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610064/Jean_Kirstein_itrl3a.jpg', power: 60, rarity: 'common' },
+    { name: 'Krillin', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610065/Krillin_sbxnl9.jpg', power: 60, rarity: 'common' },
+    { name: 'Lucy Heartfilia', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610064/Lucy_Heartfilia_p8rmpa.jpg', power: 58, rarity: 'common' },
+    { name: 'Nami', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610065/Nami_pae6b3.jpg', power: 57, rarity: 'common' },
+    { name: 'Noelle Silva', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610065/Noelle_Silva_uk3lls.jpg', power: 60, rarity: 'common' },
+    { name: 'Orihime Inoue', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610065/Orihime_Inoue_ff6ptx.jpg', power: 58, rarity: 'common' },
+    { name: 'Sasha Blouse', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610066/Sasha_Blouse_plxj0x.jpg', power: 59, rarity: 'common' },
+    { name: 'Tien Shinhan', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772610066/Tien_Shinhan_u33dko.jpg', power: 60, rarity: 'common' }
 ];
 const rareTier = [
-{ name: 'Rock Lee', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558131/Rock_Lee_atsmbi.jpg', power: 75, rarity: 'rare' },
-{ name: 'Mikasa', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558129/Mikasa_kujzch.jpg', power: 73, rarity: 'rare' },
-{ name: 'Yuji', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558135/Yuji_mi5xbd.jpg', power: 72, rarity: 'rare' },
-{ name: 'Killua', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558130/Killua_ugn6j3.jpg', power: 71, rarity: 'rare' },
-{ name: 'Tanjiro', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558133/Tanjiro_i4qgix.jpg', power: 70, rarity: 'rare' },
-{ name: 'Eren', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558127/Eren_Yeager_tmhmlj.jpg', power: 70, rarity: 'rare' },
-{ name: 'Nobara', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558130/Nobara_eumklm.jpg', power: 68, rarity: 'rare' },
-{ name: 'Nezuko', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558129/Nezuko_oi7laj.jpg', power: 67, rarity: 'rare' },
-{ name: 'Hinata', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558127/Hinata_fdx7dg.jpg', power: 66, rarity: 'rare' }
+    { name: 'Rock Lee', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558131/Rock_Lee_atsmbi.jpg', power: 75, rarity: 'rare' },
+    { name: 'Mikasa', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558129/Mikasa_kujzch.jpg', power: 73, rarity: 'rare' },
+    { name: 'Yuji', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558135/Yuji_mi5xbd.jpg', power: 72, rarity: 'rare' },
+    { name: 'Killua', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558130/Killua_ugn6j3.jpg', power: 71, rarity: 'rare' },
+    { name: 'Tanjiro', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558133/Tanjiro_i4qgix.jpg', power: 70, rarity: 'rare' },
+    { name: 'Eren', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558127/Eren_Yeager_tmhmlj.jpg', power: 70, rarity: 'rare' },
+    { name: 'Nobara', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558130/Nobara_eumklm.jpg', power: 68, rarity: 'rare' },
+    { name: 'Nezuko', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558129/Nezuko_oi7laj.jpg', power: 67, rarity: 'rare' },
+    { name: 'Hinata', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558127/Hinata_fdx7dg.jpg', power: 66, rarity: 'rare' }
 ];
 const epicTier = [
-{ name: 'Luffy', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558130/Luffy_qhgaaf.jpg', power: 93, rarity: 'epic' },
-{ name: 'Zoro', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558136/Zoro_pjpe20.jpg', power: 93, rarity: 'epic' },
-{ name: 'Sukuna', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558133/Sukuna_ebqhi6.jpg', power: 92, rarity: 'epic' },
-{ name: 'Itachi', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558128/Itachi_xdtwaw.jpg', power: 91, rarity: 'epic' },
-{ name: 'Yuta', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558135/Yuta_aqedjr.jpg', power: 91, rarity: 'epic' },
-{ name: 'Sasuke', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558132/Sasuke_huc4nl.jpg', power: 91, rarity: 'epic' },
-{ name: 'Kakashi', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558128/kakashi_dsoncb.jpg', power: 90, rarity: 'epic' },
-{ name: 'Yami', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558134/Yami_a9oz0l.jpg', power: 89, rarity: 'epic' },
-{ name: 'Igris', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558128/Igris_kuhjld.jpg', power: 88, rarity: 'epic' },
-{ name: 'Gaara', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558129/Gaara_mr68wx.jpg', power: 88, rarity: 'epic' },
-{ name: 'Asta Black', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558130/Asta_Black_pip017.jpg', power: 88, rarity: 'epic' },
-{ name: 'Sanji', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558132/Sanji_w7nfkm.jpg', power: 87, rarity: 'epic' },
-{ name: 'Toji', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558134/Toji_rg4w92.jpg', power: 85, rarity: 'epic' }
+    { name: 'Luffy', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558130/Luffy_qhgaaf.jpg', power: 93, rarity: 'epic' },
+    { name: 'Zoro', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558136/Zoro_pjpe20.jpg', power: 93, rarity: 'epic' },
+    { name: 'Sukuna', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558133/Sukuna_ebqhi6.jpg', power: 92, rarity: 'epic' },
+    { name: 'Itachi', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558128/Itachi_xdtwaw.jpg', power: 91, rarity: 'epic' },
+    { name: 'Yuta', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558135/Yuta_aqedjr.jpg', power: 91, rarity: 'epic' },
+    { name: 'Sasuke', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558132/Sasuke_huc4nl.jpg', power: 91, rarity: 'epic' },
+    { name: 'Kakashi', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558128/kakashi_dsoncb.jpg', power: 90, rarity: 'epic' },
+    { name: 'Yami', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558134/Yami_a9oz0l.jpg', power: 89, rarity: 'epic' },
+    { name: 'Igris', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558128/Igris_kuhjld.jpg', power: 88, rarity: 'epic' },
+    { name: 'Gaara', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558129/Gaara_mr68wx.jpg', power: 88, rarity: 'epic' },
+    { name: 'Asta Black', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558130/Asta_Black_pip017.jpg', power: 88, rarity: 'epic' },
+    { name: 'Sanji', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558132/Sanji_w7nfkm.jpg', power: 87, rarity: 'epic' },
+    { name: 'Toji', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558134/Toji_rg4w92.jpg', power: 85, rarity: 'epic' }
 ];
 const mythicalTier = [
-{ name: 'Goku', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558135/Goku_rsafc4.jpg', power: 98, rarity: 'mythical' },
-{ name: 'Gojo', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558127/Gojo_cvuof0.jpg', power: 96, rarity: 'mythical' },
-{ name: 'Madara', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558130/Madara_n6imes.jpg', power: 95, rarity: 'mythical' },
-{ name: 'Sung Jin-Woo', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558135/Sung-Jin-Woo_sx1aln.jpg', power: 94, rarity: 'mythical' }
+    { name: 'Goku', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558135/Goku_rsafc4.jpg', power: 98, rarity: 'mythical' },
+    { name: 'Gojo', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558127/Gojo_cvuof0.jpg', power: 96, rarity: 'mythical' },
+    { name: 'Madara', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558130/Madara_n6imes.jpg', power: 95, rarity: 'mythical' },
+    { name: 'Sung Jin-Woo', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772558135/Sung-Jin-Woo_sx1aln.jpg', power: 94, rarity: 'mythical' },
+    // NEW MYTHICAL CARDS - UPDATE 1.0
+    { name: 'Naruto', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1773499429/Naruto_ecn9cr.png', power: 105, rarity: 'mythical' },
+    { name: 'Anos Voldigoad', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1773499423/Anos_Voldigoad_e7tjal.jpg', power: 110, rarity: 'mythical' },
+    { name: 'Saitama', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1773499421/Saitama_xh9rca.jpg', power: 112, rarity: 'mythical' },
+    { name: 'Beerus', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1773499420/Beerus_rxypk0.jpg', power: 111, rarity: 'mythical' },
+    { name: 'Kaido', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1773499420/Kaido_awgupa.jpg', power: 98, rarity: 'mythical' },
+    { name: 'Meliodas', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1773499420/Meliodas_wuuci9.jpg', power: 101, rarity: 'mythical' },
+    { name: 'Vegeta', img: 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1773499419/Vegeta_ntcnl9.jpg', power: 108, rarity: 'mythical' }
 ];
 const allCards = [...commonTier, ...rareTier, ...epicTier, ...mythicalTier];
 const rarityWeights = [
-{ rarity: 'common', weight: 60, pool: commonTier },
-{ rarity: 'rare', weight: 25, pool: rareTier },
-{ rarity: 'epic', weight: 10, pool: epicTier },
-{ rarity: 'mythical', weight: 5, pool: mythicalTier }
+    { rarity: 'common', weight: 60, pool: commonTier },
+    { rarity: 'rare', weight: 25, pool: rareTier },
+    { rarity: 'epic', weight: 10, pool: epicTier },
+    { rarity: 'mythical', weight: 5, pool: mythicalTier }
 ];
+
+// ===== WALLPAPERS =====
+const wallpapers = {
+    default: 'linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f0f23 100%)',
+    space: 'url("https://res.cloudinary.com/dgzhxztx0/image/upload/v1773501301/background_1_auwd54.jpg") center/cover',
+    custom: ''
+};
 
 // ===== GAME STATE =====
 let playerCollection = [];
@@ -1515,8 +1690,14 @@ let lastOnline = '--';
 let autoSaveInterval = null;
 let savePending = false;
 let swiperInstance = null;
+let emailVisible = false;
+let friendList = [];
+let currentFriendsTab = 'players';
+let wallpaperSetting = 'default';
+let blurLevel = 0;
+let customWallpaperUrl = '';
 
-// ===== CHEAT CODE (HIDDEN - FOR TESTING) =====
+// ===== CHEAT CODE =====
 let typedKeys = '';
 window.addEventListener('keydown', (e) => {
     typedKeys += e.key;
@@ -1539,6 +1720,7 @@ const googleLoginBtn = document.getElementById('googleLoginBtn');
 const googleSignupBtn = document.getElementById('googleSignupBtn');
 const showSignup = document.getElementById('showSignup');
 const showLogin = document.getElementById('showLogin');
+const showReset = document.getElementById('showReset');
 const loginLoading = document.getElementById('loginLoading');
 const signupLoading = document.getElementById('signupLoading');
 const loginError = document.getElementById('loginError');
@@ -1551,6 +1733,8 @@ const manualSaveBtn = document.getElementById('manualSaveBtn');
 const saveUsernameBtn = document.getElementById('saveUsernameBtn');
 const profileUsernameInput = document.getElementById('profileUsernameInput');
 const saveStatus = document.getElementById('saveStatus');
+const toggleEmailBtn = document.getElementById('toggleEmailBtn');
+const profileEmail = document.getElementById('profileEmail');
 const swiperWrapper = document.getElementById('swiperWrapper');
 const playerScoreSpan = document.getElementById('playerScore');
 const aiScoreSpan = document.getElementById('aiScore');
@@ -1565,6 +1749,8 @@ const roundCounter = document.getElementById('roundCounter');
 const playBtn = document.getElementById('playBtn');
 const inventoryBtn = document.getElementById('inventoryBtn');
 const marketBtn = document.getElementById('marketBtn');
+const friendsBtn = document.getElementById('friendsBtn');
+const settingsBtn = document.getElementById('settingsBtn');
 const inventoryModal = document.getElementById('inventoryModal');
 const closeInventoryBtn = document.getElementById('closeInventoryBtn');
 const inventoryGrid = document.getElementById('inventoryGrid');
@@ -1580,7 +1766,6 @@ const warOverlay = document.getElementById('warOverlay');
 const warPlayerCard = document.getElementById('warPlayerCard');
 const warAiCard = document.getElementById('warAiCard');
 const shardSpan = document.getElementById('shardCount');
-const profileEmail = document.getElementById('profileEmail');
 const profileTotalCards = document.getElementById('profileTotalCards');
 const profileShards = document.getElementById('profileShards');
 const profileTotalEarned = document.getElementById('profileTotalEarned');
@@ -1588,8 +1773,39 @@ const profileWins = document.getElementById('profileWins');
 const profileLossesEl = document.getElementById('profileLosses');
 const profileRounds = document.getElementById('profileRounds');
 const profileLastOnline = document.getElementById('profileLastOnline');
+const resetModal = document.getElementById('resetModal');
+const closeResetBtn = document.getElementById('closeResetBtn');
+const sendResetBtn = document.getElementById('sendResetBtn');
+const resetEmailInput = document.getElementById('resetEmailInput');
+const resetLoading = document.getElementById('resetLoading');
+const resetError = document.getElementById('resetError');
+const settingsModal = document.getElementById('settingsModal');
+const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+const qualityBtns = document.querySelectorAll('.quality-btn');
+const wallpaperBtns = document.querySelectorAll('.wallpaper-btn');
+const blurSlider = document.getElementById('blurSlider');
+const blurValue = document.getElementById('blurValue');
+const wallpaperPreview = document.getElementById('wallpaperPreview');
+const uploadWallpaperBtn = document.getElementById('uploadWallpaperBtn');
+const wallpaperUpload = document.getElementById('wallpaperUpload');
+const wallpaperBg = document.getElementById('wallpaperBg');
+const friendsModal = document.getElementById('friendsModal');
+const closeFriendsBtn = document.getElementById('closeFriendsBtn');
+const friendsList = document.getElementById('friendsList');
+const friendsTabs = document.querySelectorAll('.friends-tab');
+const friendSearchInput = document.getElementById('friendSearchInput');
+const friendSearchContainer = document.getElementById('friendSearchContainer');
+const friendProfileModal = document.getElementById('friendProfileModal');
+const closeFriendProfileBtn = document.getElementById('closeFriendProfileBtn');
+const friendProfileAvatar = document.getElementById('friendProfileAvatar');
+const friendProfileName = document.getElementById('friendProfileName');
+const friendProfileUsername = document.getElementById('friendProfileUsername');
+const friendProfileWins = document.getElementById('friendProfileWins');
+const friendProfileLosses = document.getElementById('friendProfileLosses');
+const friendProfileCards = document.getElementById('friendProfileCards');
+const friendProfileRounds = document.getElementById('friendProfileRounds');
 
-// ===== AUTH FUNCTIONS =====
+// ===== NOTIFICATION =====
 function showNotification(msg, type = 'info') {
     notification.textContent = msg;
     notification.classList.add('show');
@@ -1597,6 +1813,7 @@ function showNotification(msg, type = 'info') {
     setTimeout(() => notification.classList.remove('show'), 2500);
 }
 
+// ===== FIREBASE SAVE/LOAD =====
 async function savePlayerData(instant = false) {
     if (!currentUser || savePending) return;
     savePending = true;
@@ -1612,6 +1829,10 @@ async function savePlayerData(instant = false) {
             totalWins: totalWins,
             totalLosses: totalLosses,
             totalRounds: totalRounds,
+            friendList: friendList,
+            wallpaperSetting: wallpaperSetting,
+            blurLevel: blurLevel,
+            customWallpaperUrl: customWallpaperUrl,
             lastOnline: serverTimestamp(),
             updatedAt: serverTimestamp()
         }, { merge: true });
@@ -1625,37 +1846,9 @@ async function savePlayerData(instant = false) {
         }
     } catch (error) {
         console.error('Save error:', error);
-        if (instant) {
-            showNotification('Failed to save data', 'error');
-        }
+        if (instant) showNotification('Failed to save data', 'error');
     } finally {
         savePending = false;
-    }
-}
-
-async function saveUsername() {
-    if (!currentUser) return;
-    const newUsername = profileUsernameInput.value.trim();
-    if (newUsername.length < 3 || newUsername.length > 20) {
-        showNotification('Username must be 3-20 characters', 'error');
-        return;
-    }
-    try {
-        const playerRef = doc(db, 'players', currentUser.uid);
-        await updateDoc(playerRef, {
-            username: newUsername,
-            updatedAt: serverTimestamp()
-        });
-        username = newUsername;
-        saveUsernameBtn.classList.add('saved');
-        showNotification('Username saved!', 'success');
-        setTimeout(() => {
-            saveUsernameBtn.classList.remove('saved');
-        }, 2000);
-        await savePlayerData(true);
-    } catch (error) {
-        console.error('Username save error:', error);
-        showNotification('Failed to save username', 'error');
     }
 }
 
@@ -1674,7 +1867,12 @@ async function loadPlayerData() {
             totalLosses = data.totalLosses || 0;
             totalRounds = data.totalRounds || 0;
             username = data.username || 'Player';
+            friendList = data.friendList || [];
+            wallpaperSetting = data.wallpaperSetting || 'default';
+            blurLevel = data.blurLevel || 0;
+            customWallpaperUrl = data.customWallpaperUrl || '';
             lastOnline = data.lastOnline ? formatTimestamp(data.lastOnline) : '--';
+            applyWallpaper();
             if (playerCollection.length === 0) {
                 playerCollection = commonTier.slice(0, 5).map(c => ({ ...c, id: crypto.randomUUID(), count: 1 }));
                 activeDeckIds = playerCollection.map(c => c.id);
@@ -1686,7 +1884,7 @@ async function loadPlayerData() {
             await savePlayerData(true);
         }
     } catch (error) {
-        console.error('Error loading player ', error);
+        console.error('Error loading player data:', error);
         showNotification('Failed to load save data', 'error');
     }
 }
@@ -1695,27 +1893,23 @@ function formatTimestamp(timestamp) {
     if (!timestamp) return '--';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
     return date.toLocaleString('en-US', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
     });
 }
 
 function startAutoSave() {
     if (autoSaveInterval) clearInterval(autoSaveInterval);
     autoSaveInterval = setInterval(() => {
-        if (currentUser && gameActive) {
-            savePlayerData(false);
-        }
+        if (currentUser && gameActive) savePlayerData(false);
     }, 300000);
 }
 
+// ===== AUTH FUNCTIONS =====
 function showAuthForm(form) {
     loginError.textContent = '';
     signupError.textContent = '';
+    resetError.textContent = '';
     if (form === 'login') {
         loginForm.style.display = 'flex';
         signupForm.style.display = 'none';
@@ -1772,9 +1966,7 @@ signupBtn.addEventListener('click', async () => {
 
 async function handleGoogleSignIn() {
     try {
-        googleProvider.setCustomParameters({
-            prompt: 'select_account'
-        });
+        googleProvider.setCustomParameters({ prompt: 'select_account' });
         await signInWithPopup(auth, googleProvider);
     } catch (error) {
         console.error('Google sign-in error:', error);
@@ -1784,9 +1976,46 @@ async function handleGoogleSignIn() {
 
 googleLoginBtn.addEventListener('click', handleGoogleSignIn);
 googleSignupBtn.addEventListener('click', handleGoogleSignIn);
-
 showSignup.addEventListener('click', () => showAuthForm('signup'));
 showLogin.addEventListener('click', () => showAuthForm('login'));
+
+// ===== FORGOT PASSWORD - FIXED =====
+showReset.addEventListener('click', () => {
+    resetModal.classList.remove('hidden');
+    resetError.textContent = '';
+    resetEmailInput.value = '';
+});
+
+closeResetBtn.addEventListener('click', () => {
+    resetModal.classList.add('hidden');
+});
+
+sendResetBtn.addEventListener('click', async () => {
+    const email = resetEmailInput.value.trim();
+    if (!email) {
+        resetError.textContent = 'Please enter your email';
+        return;
+    }
+    resetLoading.style.display = 'block';
+    resetError.textContent = '';
+    try {
+        await sendPasswordResetEmail(auth, email);
+        showNotification('✅ Reset link sent! Check your email.', 'success');
+        resetModal.classList.add('hidden');
+    } catch (error) {
+        let errorMsg = error.message.replace('Firebase: ', '');
+        if (error.code === 'auth/user-not-found') {
+            errorMsg = 'No account found with this email';
+        } else if (error.code === 'auth/invalid-email') {
+            errorMsg = 'Please enter a valid email address';
+        } else if (error.code === 'auth/too-many-requests') {
+            errorMsg = 'Too many attempts. Please try again later.';
+        }
+        resetError.textContent = errorMsg;
+    } finally {
+        resetLoading.style.display = 'none';
+    }
+});
 
 onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -1819,15 +2048,41 @@ manualSaveBtn.addEventListener('click', async () => {
     await savePlayerData(true);
 });
 
-saveUsernameBtn.addEventListener('click', saveUsername);
-
-profileBtn.addEventListener('click', () => {
-    if (!currentUser) {
-        showNotification('Please login first', 'error');
+saveUsernameBtn.addEventListener('click', async () => {
+    if (!currentUser) return;
+    const newUsername = profileUsernameInput.value.trim();
+    if (newUsername.length < 3 || newUsername.length > 20) {
+        showNotification('Username must be 3-20 characters', 'error');
         return;
     }
+    try {
+        const playerRef = doc(db, 'players', currentUser.uid);
+        await updateDoc(playerRef, { username: newUsername, updatedAt: serverTimestamp() });
+        username = newUsername;
+        saveUsernameBtn.classList.add('saved');
+        saveUsernameBtn.disabled = true;
+        showNotification('Username saved!', 'success');
+        setTimeout(() => saveUsernameBtn.classList.remove('saved'), 2000);
+        await savePlayerData(true);
+    } catch (error) {
+        console.error('Username save error:', error);
+        showNotification('Failed to save username', 'error');
+    }
+});
+
+profileUsernameInput.addEventListener('input', () => {
+    const currentVal = profileUsernameInput.value.trim();
+    saveUsernameBtn.disabled = !(currentVal !== username && currentVal.length >= 3);
+});
+
+profileBtn.addEventListener('click', () => {
+    if (!currentUser) { showNotification('Please login first', 'error'); return; }
     profileEmail.textContent = currentUser.email;
+    profileEmail.classList.add('blurred');
+    emailVisible = false;
+    toggleEmailBtn.innerHTML = '<i class="fas fa-eye"></i>';
     profileUsernameInput.value = username;
+    saveUsernameBtn.disabled = true;
     profileTotalCards.textContent = playerCollection.length;
     profileShards.textContent = animeShards;
     profileTotalEarned.textContent = totalMoneyEarned;
@@ -1838,9 +2093,228 @@ profileBtn.addEventListener('click', () => {
     profileModal.classList.remove('hidden');
 });
 
-closeProfileBtn.addEventListener('click', () => {
-    profileModal.classList.add('hidden');
+closeProfileBtn.addEventListener('click', () => profileModal.classList.add('hidden'));
+
+toggleEmailBtn.addEventListener('click', () => {
+    if (emailVisible) {
+        profileEmail.classList.add('blurred');
+        toggleEmailBtn.innerHTML = '<i class="fas fa-eye"></i>';
+        emailVisible = false;
+    } else {
+        profileEmail.classList.remove('blurred');
+        toggleEmailBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+        emailVisible = true;
+    }
 });
+
+// ===== SETTINGS & QUALITY =====
+settingsBtn.addEventListener('click', () => {
+    settingsModal.classList.remove('hidden');
+});
+
+closeSettingsBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+
+qualityBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        qualityBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (btn.dataset.quality === 'low') {
+            document.body.classList.add('low-quality');
+        } else {
+            document.body.classList.remove('low-quality');
+        }
+    });
+});
+
+// ===== WALLPAPER SYSTEM =====
+wallpaperBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        wallpaperBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        wallpaperSetting = btn.dataset.wallpaper;
+        applyWallpaper();
+    });
+});
+
+blurSlider.addEventListener('input', () => {
+    blurLevel = blurSlider.value;
+    blurValue.textContent = blurLevel;
+    document.documentElement.style.setProperty('--wallpaper-blur', `${blurLevel / 100 * 10}px`);
+});
+
+uploadWallpaperBtn.addEventListener('click', () => wallpaperUpload.click());
+
+wallpaperUpload.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file || !currentUser) return;
+    if (file.size > 5 * 1024 * 1024) {
+        showNotification('File too large (max 5MB)', 'error');
+        return;
+    }
+    try {
+        const storageRef = ref(storage, `wallpapers/${currentUser.uid}_${Date.now()}`);
+        await uploadBytes(storageRef, file);
+        customWallpaperUrl = await getDownloadURL(storageRef);
+        wallpaperSetting = 'custom';
+        wallpaperBtns.forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-wallpaper="custom"]').classList.add('active');
+        applyWallpaper();
+        showNotification('Wallpaper uploaded!', 'success');
+        await savePlayerData(true);
+    } catch (error) {
+        console.error('Upload error:', error);
+        showNotification('Upload failed', 'error');
+    }
+});
+
+function applyWallpaper() {
+    let bg;
+    if (wallpaperSetting === 'default') {
+        bg = wallpapers.default;
+    } else if (wallpaperSetting === 'space') {
+        bg = wallpapers.space;
+    } else if (wallpaperSetting === 'custom' && customWallpaperUrl) {
+        bg = `url("${customWallpaperUrl}") center/cover`;
+    } else {
+        bg = wallpapers.default;
+    }
+    wallpaperBg.style.background = bg;
+    wallpaperPreview.style.background = bg;
+    blurSlider.value = blurLevel;
+    blurValue.textContent = blurLevel;
+    document.documentElement.style.setProperty('--wallpaper-blur', `${blurLevel / 100 * 10}px`);
+}
+
+// ===== FRIENDS SYSTEM =====
+friendsBtn.addEventListener('click', async () => {
+    if (!currentUser) { showNotification('Please login first', 'error'); return; }
+    friendsModal.classList.remove('hidden');
+    await loadFriendsList();
+});
+
+closeFriendsBtn.addEventListener('click', () => friendsModal.classList.add('hidden'));
+
+friendsTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        friendsTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentFriendsTab = tab.dataset.tab;
+        friendSearchContainer.style.display = currentFriendsTab === 'players' ? 'block' : 'none';
+        loadFriendsList();
+    });
+});
+
+friendSearchInput.addEventListener('input', loadFriendsList);
+
+async function loadFriendsList() {
+    friendsList.innerHTML = '<p style="text-align:center; color:#aaa;">Loading...</p>';
+    try {
+        if (currentFriendsTab === 'players') {
+            const playersRef = collection(db, 'players');
+            const snapshot = await getDocs(playersRef);
+            const players = [];
+            snapshot.forEach(doc => {
+                if (doc.id !== currentUser.uid) {
+                    const data = doc.data();
+                    players.push({ uid: doc.id, ...data });
+                }
+            });
+            const search = friendSearchInput.value.toLowerCase();
+            const filtered = players.filter(p => p.username?.toLowerCase().includes(search));
+            renderFriendsList(filtered, false);
+        } else {
+            const friendData = [];
+            for (const friendUid of friendList) {
+                const friendRef = doc(db, 'players', friendUid);
+                const friendSnap = await getDoc(friendRef);
+                if (friendSnap.exists()) {
+                    friendData.push({ uid: friendUid, ...friendSnap.data() });
+                }
+            }
+            renderFriendsList(friendData, true);
+        }
+    } catch (error) {
+        console.error('Load friends error:', error);
+        friendsList.innerHTML = '<p style="text-align:center; color:#ff4444;">Failed to load</p>';
+    }
+}
+
+function renderFriendsList(list, isFriends) {
+    if (list.length === 0) {
+        friendsList.innerHTML = '<p style="text-align:center; color:#aaa;">No players found</p>';
+        return;
+    }
+    friendsList.innerHTML = '';
+    list.forEach(player => {
+        const item = document.createElement('div');
+        item.className = 'friend-item';
+        const initial = (player.username || 'P')[0].toUpperCase();
+        const isFriend = friendList.includes(player.uid);
+        item.innerHTML = `
+            <div class="friend-info">
+                <div class="friend-avatar">${initial}</div>
+                <div class="friend-details">
+                    <h4>${player.username || 'Unknown'}</h4>
+                    <p>${player.totalWins || 0} wins · ${player.collection?.length || 0} cards</p>
+                </div>
+            </div>
+            <div class="friend-actions">
+                <button class="friend-action-btn view" data-uid="${player.uid}">View</button>
+                ${isFriends ? (isFriend ? 
+                    `<button class="friend-action-btn remove" data-uid="${player.uid}">Remove</button>` : 
+                    `<button class="friend-action-btn add" data-uid="${player.uid}">Add</button>`) : ''}
+            </div>
+        `;
+        friendsList.appendChild(item);
+    });
+    document.querySelectorAll('.friend-action-btn.view').forEach(btn => {
+        btn.addEventListener('click', (e) => viewFriendProfile(e.target.dataset.uid));
+    });
+    document.querySelectorAll('.friend-action-btn.add').forEach(btn => {
+        btn.addEventListener('click', (e) => addFriend(e.target.dataset.uid));
+    });
+    document.querySelectorAll('.friend-action-btn.remove').forEach(btn => {
+        btn.addEventListener('click', (e) => removeFriend(e.target.dataset.uid));
+    });
+}
+
+async function addFriend(uid) {
+    if (friendList.includes(uid)) { showNotification('Already friends!', 'error'); return; }
+    friendList.push(uid);
+    await savePlayerData(true);
+    loadFriendsList();
+    showNotification('Friend added!', 'success');
+}
+
+async function removeFriend(uid) {
+    friendList = friendList.filter(id => id !== uid);
+    await savePlayerData(true);
+    loadFriendsList();
+    showNotification('Friend removed', 'info');
+}
+
+async function viewFriendProfile(uid) {
+    try {
+        const friendRef = doc(db, 'players', uid);
+        const friendSnap = await getDoc(friendRef);
+        if (friendSnap.exists()) {
+            const data = friendSnap.data();
+            friendProfileAvatar.textContent = (data.username || 'F')[0].toUpperCase();
+            friendProfileName.textContent = data.username || 'Unknown';
+            friendProfileUsername.textContent = `@${data.username || 'player'}`;
+            friendProfileWins.textContent = data.totalWins || 0;
+            friendProfileLosses.textContent = data.totalLosses || 0;
+            friendProfileCards.textContent = data.collection?.length || 0;
+            friendProfileRounds.textContent = data.totalRounds || 0;
+            friendProfileModal.classList.remove('hidden');
+        }
+    } catch (error) {
+        console.error('View profile error:', error);
+        showNotification('Failed to load profile', 'error');
+    }
+}
+
+closeFriendProfileBtn.addEventListener('click', () => friendProfileModal.classList.add('hidden'));
 
 // ===== GAME FUNCTIONS =====
 function log(msg) {
@@ -1861,15 +2335,10 @@ function getAIDifficultyLevel() {
 function drawAIHand() {
     const level = getAIDifficultyLevel();
     let pool = [];
-    if (level === 'easy') {
-        pool = [...commonTier, ...rareTier.slice(0, 2)];
-    } else if (level === 'medium') {
-        pool = [...commonTier, ...rareTier, ...epicTier.slice(0, 2)];
-    } else if (level === 'hard') {
-        pool = [...rareTier, ...epicTier.slice(0, 4)];
-    } else {
-        pool = [...epicTier, ...mythicalTier.slice(0, 2)];
-    }
+    if (level === 'easy') pool = [...commonTier, ...rareTier.slice(0, 2)];
+    else if (level === 'medium') pool = [...commonTier, ...rareTier, ...epicTier.slice(0, 2)];
+    else if (level === 'hard') pool = [...rareTier, ...epicTier.slice(0, 4)];
+    else pool = [...epicTier, ...mythicalTier.slice(0, 2)];
     while (pool.length < 5) pool.push(...commonTier);
     return [...pool].sort(() => Math.random() - 0.5).slice(0, 5).map(c => ({ ...c }));
 }
@@ -1897,27 +2366,15 @@ function renderPlayerHand() {
     playerHand.forEach(card => {
         const slide = document.createElement('div');
         slide.className = 'swiper-slide';
-        slide.style.background = `linear-gradient(to top, rgba(15,32,39,0.8), transparent, transparent), url('${card.img}') center/cover`;
+        slide.style.background = `url('${card.img}') center/cover`;
         slide.innerHTML = `<span class="power-badge">⚡${card.power}</span><h4>${card.name}</h4>`;
         swiperWrapper.appendChild(slide);
     });
-    if (swiperInstance) {
-        swiperInstance.destroy(true, true);
-        swiperInstance = null;
-    }
+    if (swiperInstance) { swiperInstance.destroy(true, true); swiperInstance = null; }
     setTimeout(() => {
-        swiperInstance = new Swiper(".mySwiper", { 
-            effect: "cards", 
-            grabCursor: true, 
-            initialSlide: 0, 
-            loop: false, 
-            rotate: true, 
-            speed: 400,
-            cardsEffect: {
-                perSlideOffset: 10,
-                perSlideRotate: 2,
-                slideShadows: false
-            }
+        swiperInstance = new Swiper(".mySwiper", {
+            effect: "cards", grabCursor: true, initialSlide: 0, loop: false, rotate: true, speed: 400,
+            cardsEffect: { perSlideOffset: 10, perSlideRotate: 2, slideShadows: false }
         });
     }, 50);
     playerCardsCount.textContent = playerHand.length;
@@ -1936,6 +2393,8 @@ function setButtonsEnabled(enabled) {
     inventoryBtn.disabled = !enabled;
     marketBtn.disabled = !enabled;
     profileBtn.disabled = !enabled;
+    friendsBtn.disabled = !enabled;
+    settingsBtn.disabled = !enabled;
     playBtn.disabled = !enabled;
 }
 
@@ -1950,34 +2409,19 @@ function animateWar(playerCard, aiCard, playerWon) {
         aiLabel.textContent = playerWon ? 'DEFEAT' : 'VICTORY';
         warPlayerCard.className = 'war-card';
         warAiCard.className = 'war-card';
-        setTimeout(() => {
-            warPlayerCard.classList.add('revealed');
-            warAiCard.classList.add('revealed');
-        }, 50);
-        setTimeout(() => {
-            if (playerWon) warPlayerCard.classList.add('winner');
-            else warAiCard.classList.add('winner');
-        }, 900);
-        setTimeout(() => {
-            warOverlay.classList.add('hidden');
-            setTimeout(resolve, 500);
-        }, 3500);
+        setTimeout(() => { warPlayerCard.classList.add('revealed'); warAiCard.classList.add('revealed'); }, 50);
+        setTimeout(() => { if (playerWon) warPlayerCard.classList.add('winner'); else warAiCard.classList.add('winner'); }, 900);
+        setTimeout(() => { warOverlay.classList.add('hidden'); setTimeout(resolve, 500); }, 3500);
     });
 }
 
 async function playRound() {
     if (!gameActive || isAITurn || warInProgress) return;
-    if (!playerHand.length || !aiHand.length) {
-        autoRestartMatch();
-        return;
-    }
+    if (!playerHand.length || !aiHand.length) { autoRestartMatch(); return; }
     const activeIndex = swiperInstance?.activeIndex ?? 0;
     const playerCard = playerHand[activeIndex];
     if (!playerCard) return;
-    isAITurn = true;
-    warInProgress = true;
-    playBtn.disabled = true;
-    setButtonsEnabled(false);
+    isAITurn = true; warInProgress = true; playBtn.disabled = true; setButtonsEnabled(false);
     const aiCardElements = document.querySelectorAll('.ai-card');
     aiCardElements.forEach(el => el.classList.add('swapping'));
     await new Promise(r => setTimeout(r, 500));
@@ -1990,35 +2434,20 @@ async function playRound() {
     const higher = sorted.find(c => c.power >= playerCard.power);
     let aiIndex;
     if (level === 'easy') {
-        if (Math.random() < 0.4) {
-            aiIndex = Math.floor(Math.random() * aiHand.length);
-        } else {
+        if (Math.random() < 0.4) aiIndex = Math.floor(Math.random() * aiHand.length);
+        else {
             const lower = sorted.filter(c => c.power < playerCard.power);
             if (lower.length && Math.random() < 0.7) {
                 const r = lower[Math.floor(Math.random() * lower.length)];
                 aiIndex = aiHand.findIndex(c => c.name === r.name);
-            } else {
-                aiIndex = aiHand.findIndex(c => c.name === sorted[0].name);
-            }
+            } else aiIndex = aiHand.findIndex(c => c.name === sorted[0].name);
         }
     } else if (level === 'medium') {
-        if (higher && Math.random() < 0.7) {
-            aiIndex = aiHand.findIndex(c => c.name === higher.name);
-        } else {
-            aiIndex = Math.floor(Math.random() * aiHand.length);
-        }
-    } else if (level === 'hard') {
-        if (higher) {
-            aiIndex = aiHand.findIndex(c => c.name === higher.name);
-        } else {
-            aiIndex = aiHand.findIndex(c => c.name === sorted[sorted.length-1].name);
-        }
+        if (higher && Math.random() < 0.7) aiIndex = aiHand.findIndex(c => c.name === higher.name);
+        else aiIndex = Math.floor(Math.random() * aiHand.length);
     } else {
-        if (higher) {
-            aiIndex = aiHand.findIndex(c => c.name === higher.name);
-        } else {
-            aiIndex = aiHand.findIndex(c => c.name === sorted[sorted.length-1].name);
-        }
+        if (higher) aiIndex = aiHand.findIndex(c => c.name === higher.name);
+        else aiIndex = aiHand.findIndex(c => c.name === sorted[sorted.length-1].name);
     }
     const aiCard = aiHand[aiIndex];
     const playerWon = playerCard.power >= aiCard.power;
@@ -2029,64 +2458,40 @@ async function playRound() {
     aiLastPlayedCard.classList.add('spin-reveal');
     setTimeout(() => aiLastPlayedCard.classList.remove('spin-reveal'), 800);
     if (playerWon) {
-        playerWins++;
-        totalWins++;
-        animeShards += 10;
-        totalMoneyEarned += 10;
+        playerWins++; totalWins++; animeShards += 10; totalMoneyEarned += 10;
         playerScoreSpan.classList.add('score-change');
         setTimeout(() => playerScoreSpan.classList.remove('score-change'), 500);
         log(`✅ R${currentRound} WIN +10 · ${playerCard.name} (${playerCard.power}) vs ${aiCard.name} (${aiCard.power})`);
     } else {
-        aiWins++;
-        totalLosses++;
-        animeShards += 5;
-        totalMoneyEarned += 5;
+        aiWins++; totalLosses++; animeShards += 5; totalMoneyEarned += 5;
         aiScoreSpan.classList.add('score-change');
         setTimeout(() => aiScoreSpan.classList.remove('score-change'), 500);
         log(`❌ R${currentRound} LOSE +5 · ${aiCard.name} (${aiCard.power}) vs ${playerCard.name} (${playerCard.power})`);
     }
-    playerHand.splice(activeIndex, 1);
-    aiHand.splice(aiIndex, 1);
-    totalRounds++;
-    currentRound++;
-    renderPlayerHand();
-    renderAIHand();
-    refreshUI();
+    playerHand.splice(activeIndex, 1); aiHand.splice(aiIndex, 1);
+    totalRounds++; currentRound++;
+    renderPlayerHand(); renderAIHand(); refreshUI();
     roundCounter.classList.add('round-change');
     setTimeout(() => roundCounter.classList.remove('round-change'), 500);
     roundCounter.textContent = `R${currentRound}`;
     await savePlayerData(true);
     setTimeout(() => {
         aiLastPlayedArea.style.display = 'none';
-        isAITurn = false;
-        warInProgress = false;
-        playBtn.disabled = false;
-        setButtonsEnabled(true);
-        if (!playerHand.length || !aiHand.length) {
-            autoRestartMatch();
-        }
+        isAITurn = false; warInProgress = false; playBtn.disabled = false; setButtonsEnabled(true);
+        if (!playerHand.length || !aiHand.length) autoRestartMatch();
     }, 1000);
 }
 
 function autoRestartMatch() {
     log("⚔️ Match over! Starting new match...");
-    playerWins = 0;
-    aiWins = 0;
-    currentRound = 1;
-    playerHand = drawPlayerHand();
-    aiHand = drawAIHand();
-    renderPlayerHand();
-    renderAIHand();
-    refreshUI();
+    playerWins = 0; aiWins = 0; currentRound = 1;
+    playerHand = drawPlayerHand(); aiHand = drawAIHand();
+    renderPlayerHand(); renderAIHand(); refreshUI();
     roundCounter.textContent = `R${currentRound}`;
     aiLastPlayedArea.style.display = 'none';
-    isAITurn = false;
-    warInProgress = false;
-    playBtn.disabled = false;
-    setButtonsEnabled(true);
+    isAITurn = false; warInProgress = false; playBtn.disabled = false; setButtonsEnabled(true);
 }
 
-// CARD STACKING SYSTEM
 function getStackedInventory() {
     const cardMap = new Map();
     playerCollection.forEach(card => {
@@ -2094,9 +2499,7 @@ function getStackedInventory() {
         if (cardMap.has(key)) {
             const existing = cardMap.get(key);
             existing.count = (existing.count || 1) + (card.count || 1);
-        } else {
-            cardMap.set(key, { ...card, count: card.count || 1 });
-        }
+        } else cardMap.set(key, { ...card, count: card.count || 1 });
     });
     return Array.from(cardMap.values());
 }
@@ -2107,23 +2510,15 @@ function openInventory() {
     stackedCards.forEach(card => {
         const div = document.createElement('div');
         div.className = `inventory-card ${activeDeckIds.includes(card.id) ? 'selected' : ''}`;
-        div.style.background = `linear-gradient(145deg, rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${card.img}') center/cover`;
-        div.innerHTML = `
-            <span class="power-badge">⚡${card.power}</span>
-            <h4>${card.name}</h4>
-            ${card.count > 1 ? `<span class="stack-count">x${card.count}</span>` : ''}
-        `;
+        div.style.background = `url('${card.img}') center/cover`;
+        div.innerHTML = `<span class="power-badge">⚡${card.power}</span><h4>${card.name}</h4>${card.count > 1 ? `<span class="stack-count">x${card.count}</span>` : ''}`;
         div.onclick = () => {
             if (activeDeckIds.includes(card.id)) {
-                if (activeDeckIds.length > 1) {
-                    activeDeckIds = activeDeckIds.filter(id => id !== card.id);
-                    div.classList.remove('selected');
-                } else showNotification('Deck must have at least 1 card', 'error');
+                if (activeDeckIds.length > 1) { activeDeckIds = activeDeckIds.filter(id => id !== card.id); div.classList.remove('selected'); }
+                else showNotification('Deck must have at least 1 card', 'error');
             } else {
-                if (activeDeckIds.length < 5) {
-                    activeDeckIds.push(card.id);
-                    div.classList.add('selected');
-                } else showNotification('Deck max 5 cards', 'error');
+                if (activeDeckIds.length < 5) { activeDeckIds.push(card.id); div.classList.add('selected'); }
+                else showNotification('Deck max 5 cards', 'error');
             }
         };
         inventoryGrid.appendChild(div);
@@ -2132,18 +2527,13 @@ function openInventory() {
 }
 
 function openPack(cardCount, price) {
-    if (animeShards < price) {
-        showNotification(`Need ${price} 🪙`, 'error');
-        return;
-    }
-    animeShards -= price;
-    refreshUI();
+    if (animeShards < price) { showNotification(`Need ${price} 🪙`, 'error'); return; }
+    animeShards -= price; refreshUI();
     const newCards = [];
     for (let i = 0; i < cardCount; i++) {
         const rarity = getRandomRarity();
         const card = getRandomCardFromRarity(rarity);
-        newCards.push(card);
-        playerCollection.push(card);
+        newCards.push(card); playerCollection.push(card);
     }
     packCardsContainer.innerHTML = '';
     newCards.forEach(c => {
@@ -2160,47 +2550,28 @@ function openPack(cardCount, price) {
 function getRandomRarity() {
     const totalWeight = rarityWeights.reduce((sum, r) => sum + r.weight, 0);
     let rand = Math.random() * totalWeight;
-    for (let r of rarityWeights) {
-        if (rand < r.weight) return r;
-        rand -= r.weight;
-    }
+    for (let r of rarityWeights) { if (rand < r.weight) return r; rand -= r.weight; }
     return rarityWeights[0];
 }
 
 function getRandomCardFromRarity(rarityObj) {
     const pool = rarityObj.pool;
-    if (pool.length === 0) {
-        return { ...commonTier[Math.floor(Math.random() * commonTier.length)], id: crypto.randomUUID(), count: 1 };
-    }
+    if (pool.length === 0) return { ...commonTier[Math.floor(Math.random() * commonTier.length)], id: crypto.randomUUID(), count: 1 };
     return { ...pool[Math.floor(Math.random() * pool.length)], id: crypto.randomUUID(), count: 1 };
 }
 
-// PRELOAD IMAGES
 function preloadImages(urls) {
-    urls.forEach(url => {
-        if (url) {
-            const img = new Image();
-            img.onerror = () => {};
-            img.src = url;
-        }
-    });
+    urls.forEach(url => { if (url) { const img = new Image(); img.onerror = () => {}; img.src = url; } });
 }
 preloadImages(allCards.map(c => c.img));
-preloadImages([
-    'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772603856/3-Card_Pack_100_mdhkfz.jpg',
-    'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772603856/1-Card_Pack_50_tjyfaf.jpg'
-]);
+preloadImages(['https://res.cloudinary.com/dgzhxztx0/image/upload/v1772603856/3-Card_Pack_100_mdhkfz.jpg', 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1772603856/1-Card_Pack_50_tjyfaf.jpg', 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1773501301/background_1_auwd54.jpg']);
 
 // EVENT LISTENERS
 playBtn.addEventListener('click', playRound);
 inventoryBtn.addEventListener('click', openInventory);
 closeInventoryBtn.addEventListener('click', async () => {
     inventoryModal.classList.add('hidden');
-    if (gameActive) {
-        playerHand = drawPlayerHand();
-        renderPlayerHand();
-        await savePlayerData(true);
-    }
+    if (gameActive) { playerHand = drawPlayerHand(); renderPlayerHand(); await savePlayerData(true); }
 });
 marketBtn.addEventListener('click', () => marketModal.classList.remove('hidden'));
 closeMarketBtn.addEventListener('click', () => marketModal.classList.add('hidden'));
@@ -2208,11 +2579,7 @@ pack3Card.addEventListener('click', () => { openPack(3, 100); marketModal.classL
 pack1Card.addEventListener('click', () => { openPack(1, 50); marketModal.classList.add('hidden'); });
 closePackBtn.addEventListener('click', async () => {
     packOpenModal.classList.add('hidden');
-    if (gameActive) {
-        playerHand = drawPlayerHand();
-        renderPlayerHand();
-        await savePlayerData(true);
-    }
+    if (gameActive) { playerHand = drawPlayerHand(); renderPlayerHand(); await savePlayerData(true); }
 });
 
 // INITIALIZE
@@ -2222,6 +2589,7 @@ aiHand = drawAIHand();
 renderPlayerHand();
 renderAIHand();
 refreshUI();
+applyWallpaper();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 </body>
