@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ANIME CARD BATTLE · v0.2.0</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="main.css">
+</head>
+<body>
+<div class="wallpaper-bg" id="wallpaperBg"></div>
+<div class="version-tag">v0.2.0 · Production</div>
+
+<!-- Auth Overlay (Login/Signup) -->
+<div id="authOverlay" class="auth-overlay">
+    <div class="auth-card">
+        <h1>⚡ ANIME CARD BATTLE ⚡</h1>
+        <p class="subtitle">Build your deck, earn shards, and defeat the adaptive AI</p>
+        
+        <!-- Login Form -->
+        <div id="loginForm" class="auth-form">
+            <input type="email" id="loginEmail" class="auth-input" placeholder="Email Address">
+            <input type="password" id="loginPassword" class="auth-input" placeholder="Password">
+            <button class="auth-btn" id="loginBtn">LOGIN</button>
+            <div class="auth-loading" id="loginLoading">Processing...</div>
+            <div class="auth-error" id="loginError"></div>
+            <div class="forgot-password-link" id="showReset">Forgot Password?</div>
+            <div class="auth-divider">OR</div>
+            <button class="auth-btn google" id="googleLoginBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
+            </button>
+            <p class="auth-switch">Don't have an account? <span id="showSignup">Sign Up</span></p>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signupForm" class="auth-form" style="display:none;">
+            <input type="email" id="signupEmail" class="auth-input" placeholder="Email Address">
+            <input type="password" id="signupPassword" class="auth-input" placeholder="Password (min 6 characters)">
+            <input type="password" id="signupConfirm" class="auth-input" placeholder="Confirm Password">
+            <button class="auth-btn" id="signupBtn">CREATE ACCOUNT</button>
+            <div class="auth-loading" id="signupLoading">Creating account...</div>
+            <div class="auth-error" id="signupError"></div>
+            <div class="auth-divider">OR</div>
+            <button class="auth-btn google" id="googleSignupBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
+            </button>
+            <p class="auth-switch">Already have an account? <span id="showLogin">Login</span></p>
+        </div>
+    </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div id="resetModal" class="reset-modal hidden">
+    <div class="reset-content">
+        <h2 style="margin-bottom:15px;">🔒 Reset Password</h2>
+        <p style="margin-bottom:20px; font-size:0.9rem; color:#ccc;">Enter your email to receive a reset link.</p>
+        <input type="email" id="resetEmailInput" class="reset-email-input" placeholder="Email Address">
+        <button class="auth-btn" id="sendResetBtn" style="width:100%;">SEND LINK</button>
+        <div class="auth-loading" id="resetLoading">Sending...</div>
+        <div class="auth-error" id="resetError" style="margin-top:10px;"></div>
+        <button class="close-modal" id="closeResetBtn" style="margin-top:15px;">BACK TO LOGIN</button>
+    </div>
+</div>
+
+<!-- Profile Modal -->
+<div id="profileModal" class="profile-modal hidden">
+    <div class="profile-content">
+        <h2 style="text-align:center; margin-bottom:10px;">👤 PLAYER PROFILE</h2>
+        <div class="profile-username-section">
+            <input type="text" id="profileUsernameInput" class="profile-username-input" placeholder="Enter Username" maxlength="20">
+            <button class="profile-username-save" id="saveUsernameBtn" disabled>✓</button>
+        </div>
+        <div class="profile-email-container">
+            <span class="profile-email blurred" id="profileEmail">email@example.com</span>
+            <button class="toggle-email-btn" id="toggleEmailBtn"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="profile-last-online" id="profileLastOnline">Last Online: --</div>
+        <div class="save-status" id="saveStatus">💾 Auto-save every 5 minutes</div>
+        <div class="profile-stats">
+            <div class="profile-stat">
+                <div class="value" id="profileTotalCards">0</div>
+                <div class="label">Total Cards</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="profileShards">0</div>
+                <div class="label">Current Shards</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="profileTotalEarned">0</div>
+                <div class="label">Total Earned</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="profileWins">0</div>
+                <div class="label">Total Wins</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="profileLosses">0</div>
+                <div class="label">Total Losses</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="profileRounds">0</div>
+                <div class="label">Total Rounds</div>
+            </div>
+        </div>
+        <div class="profile-buttons">
+            <button class="save-btn" id="manualSaveBtn">💾 MANUAL SAVE</button>
+            <button class="logout-btn" id="logoutBtn">🚪 LOGOUT</button>
+        </div>
+        <button class="close-modal" id="closeProfileBtn" style="margin-top:15px;">CLOSE</button>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="settings-modal hidden">
+    <div class="settings-content">
+        <h2 style="margin-bottom:20px;">⚙️ SETTINGS</h2>
+        <div class="setting-item">
+            <span>Visual Quality</span>
+            <div class="quality-toggle">
+                <button class="quality-btn active" data-quality="high">High</button>
+                <button class="quality-btn" data-quality="low">Low</button>
+            </div>
+        </div>
+        <div class="setting-item">
+            <span>Wallpaper</span>
+            <div class="wallpaper-toggle">
+                <button class="wallpaper-btn active" data-wallpaper="default">Default</button>
+                <button class="wallpaper-btn" data-wallpaper="space">Space</button>
+                <button class="wallpaper-btn" data-wallpaper="custom">Custom</button>
+            </div>
+        </div>
+        <div class="wallpaper-preview" id="wallpaperPreview"></div>
+        <div class="blur-slider-container">
+            <label>Blur Level: <span id="blurValue">0</span>%</label>
+            <input type="range" class="blur-slider" id="blurSlider" min="0" max="100" value="0">
+        </div>
+        <input type="file" id="wallpaperUpload" accept="image/*" style="display:none;">
+        <button class="upload-btn" id="uploadWallpaperBtn">📁 Upload Custom Wallpaper</button>
+        <div class="setting-item" style="margin-top:15px;">
+            <span>✨ Particles</span>
+            <div class="particles-toggle">
+                <button class="particle-btn active" data-particles="on">On</button>
+                <button class="particle-btn" data-particles="off">Off</button>
+            </div>
+        </div>
+        <p style="font-size:0.8rem; color:#aaa; margin:15px 0;">Low quality disables heavy effects. All settings save to cloud.</p>
+        <button class="close-modal" id="closeSettingsBtn">CLOSE</button>
+    </div>
+</div>
+
+<!-- Friends Modal -->
+<div id="friendsModal" class="friends-modal hidden">
+    <div class="friends-content">
+        <h2 style="text-align:center; margin-bottom:15px;">👥 FRIENDS</h2>
+        <div class="friends-tabs">
+            <button class="friends-tab active" data-tab="players">Players</button>
+            <button class="friends-tab" data-tab="friends">My Friends</button>
+        </div>
+        <div class="friend-search-container" id="friendSearchContainer">
+            <input type="text" class="friend-search-input" id="friendSearchInput" placeholder="🔍 Search players...">
+        </div>
+        <div class="friends-list" id="friendsList"></div>
+        <button class="close-modal" id="closeFriendsBtn">CLOSE</button>
+    </div>
+</div>
+
+<!-- Friend Profile View Modal -->
+<div id="friendProfileModal" class="friend-profile-modal hidden">
+    <div class="friend-profile-content">
+        <div class="friend-profile-avatar" id="friendProfileAvatar">F</div>
+        <h2 id="friendProfileName">Friend Name</h2>
+        <p style="color:#aaa; font-size:0.9rem;" id="friendProfileUsername">@username</p>
+        <div class="friend-profile-stats">
+            <div class="profile-stat">
+                <div class="value" id="friendProfileWins">0</div>
+                <div class="label">Total Wins</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="friendProfileLosses">0</div>
+                <div class="label">Total Losses</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="friendProfileCards">0</div>
+                <div class="label">Total Cards</div>
+            </div>
+            <div class="profile-stat">
+                <div class="value" id="friendProfileRounds">0</div>
+                <div class="label">Total Rounds</div>
+            </div>
+        </div>
+        <button class="close-modal" id="closeFriendProfileBtn">CLOSE</button>
+    </div>
+</div>
+
+<!-- Custom Notification -->
+<div id="notification" class="notification"></div>
+
+<!-- War Overlay -->
+<div id="warOverlay" class="war-overlay hidden">
+    <div class="war-container">
+        <div id="warPlayerCard" class="war-card"><span class="war-label"></span></div>
+        <div class="war-vs">VS</div>
+        <div id="warAiCard" class="war-card"><span class="war-label"></span></div>
+    </div>
+</div>
+
+<!-- Inventory Modal -->
+<div id="inventoryModal" class="inventory-modal hidden">
+    <div class="inventory-content">
+        <h2 style="text-align:center;">📦 YOUR INVENTORY</h2>
+        <div class="deck-size" style="text-align:center; margin-bottom:10px; color:#aaa;">Select up to 5 cards for your deck</div>
+        <div id="inventoryGrid" class="inventory-grid"></div>
+        <button class="close-modal" id="closeInventoryBtn">CLOSE & SAVE DECK</button>
+    </div>
+</div>
+
+<!-- Market Modal -->
+<div id="marketModal" class="modal hidden">
+    <div class="modal-content">
+        <h2 style="text-align:center;">🎴 CARD MARKET</h2>
+        <div class="category-row" style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
+            <div class="pack-card-item" id="pack3Card" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://res.cloudinary.com/dgzhxztx0/image/upload/v1772603856/3-Card_Pack_100_mdhkfz.jpg');">
+                <div class="price">100 🪙</div>
+                <div class="box-description">3 cards (weighted rarity)</div>
+            </div>
+            <div class="pack-card-item" id="pack1Card" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://res.cloudinary.com/dgzhxztx0/image/upload/v1772603856/1-Card_Pack_50_tjyfaf.jpg');">
+                <div class="price">50 🪙</div>
+                <div class="box-description">1 guaranteed rare+</div>
+            </div>
+        </div>
+        <button class="close-modal" id="closeMarketBtn">CLOSE</button>
+    </div>
+</div>
+
+<!-- Pack Opening Modal -->
+<div id="packOpenModal" class="pack-modal hidden">
+    <div class="pack-content">
+        <h2 style="color:white; margin-bottom:15px;">✨ OPENING PACK... ✨</h2>
+        <div class="pack-cards" id="packCardsContainer"></div>
+        <button class="pack-close close-modal" id="closePackBtn">COLLECT</button>
+    </div>
+</div>
+
+<section class="game-section">
+    <div class="game-container">
+        <!-- Shards counter -->
+        <div class="shards-corner">
+            <span class="reward-icon"></span>
+            <span class="reward-count" id="shardCount">0</span>
+        </div>
+        
+        <!-- Top-left buttons -->
+        <div class="top-left-buttons">
+            <div class="action-btn profile-btn" id="profileBtn">👤 PROFILE</div>
+            <div class="action-btn" id="inventoryBtn">📦 INVENTORY</div>
+            <div class="action-btn market" id="marketBtn">🎴 MARKET</div>
+            <div class="action-btn friends-btn" id="friendsBtn">👥 FRIENDS</div>
+            <div class="action-btn settings-btn" id="settingsBtn"><i class="fas fa-cog"></i></div>
+        </div>
+
+        <!-- AI hand -->
+        <div class="ai-row">
+            <div class="ai-label">🤖 OPPONENT · <span id="aiCardsCount">5</span></div>
+            <div class="ai-last-played" id="aiLastPlayedArea" style="display: none;">
+                <span style="color:#ccc;">last played:</span>
+                <div class="last-played-card" id="aiLastPlayedCard"></div>
+                <span id="aiLastPlayedName"></span>
+            </div>
+            <div class="ai-cards" id="aiHandContainer"></div>
+        </div>
+
+        <!-- Battle bar -->
+        <div class="battle-bar">
+            <div class="scores">
+                <div class="score-item">😎 YOU <span class="score-value" id="playerScore">0</span></div>
+                <div class="score-item">🤖 AI <span class="score-value" id="aiScore">0</span></div>
+                <div class="round-indicator" id="roundCounter">R1</div>
+            </div>
+            <button class="play-btn" id="playBtn">⚔️ PLAY</button>
+        </div>
+
+        <!-- Round log -->
+        <div class="round-log" id="roundLog">
+            <p style="color:#aaa;">✨ select a card and press PLAY</p>
+        </div>
+
+        <!-- Player hand -->
+        <div class="player-row">
+            <div class="player-label">😎 YOUR HAND · <span id="playerCardsCount">5</span></div>
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper" id="swiperWrapper"></div>
+            </div>
+        </div>
+
+        <!-- Background circles -->
+        <ul class="circles">
+            <li></li><li></li><li></li><li></li><li></li>
+            <li></li><li></li><li></li><li></li><li></li>
+        </ul>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script type="module" src="game.js"></script>
+</body>
+</html>
