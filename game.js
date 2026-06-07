@@ -6,6 +6,8 @@ import { getFirestore, doc, setDoc, getDoc, updateDoc, increment, serverTimestam
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 // ===== FIREBASE CONFIG =====
+// Firebase config is intentionally public. API key is domain-restricted
+// via Google Cloud Console. See: https://firebase.google.com/docs/projects/api-keys
 const firebaseConfig = {
     apiKey: "AIzaSyAYVhlIZXLYx3Q9sOD4flNlcdLt3ahu0N0",
     authDomain: "card-swiper-d5c0a.firebaseapp.com",
@@ -110,25 +112,9 @@ let autoSaveInterval = null;
 let savePending = false;
 let swiperInstance = null;
 let emailVisible = false;
-let friendList = [];
-let currentFriendsTab = 'players';
 let wallpaperSetting = 'default';
 let blurLevel = 0;
 let customWallpaperUrl = '';
-let particlesEnabled = true;
-
-// ===== CHEAT CODE =====
-let typedKeys = '';
-window.addEventListener('keydown', (e) => {
-    typedKeys += e.key;
-    if (typedKeys.length > 10) typedKeys = typedKeys.slice(-10);
-    if (typedKeys.toLowerCase().includes('godmode')) {
-        animeShards += 1000000;
-        refreshUI();
-        showNotification('🔧 DEV MODE: +1,000,000 🪙', 'success');
-        typedKeys = '';
-    }
-});
 
 // ===== DOM ELEMENTS =====
 const authOverlay = document.getElementById('authOverlay');
@@ -169,7 +155,6 @@ const roundCounter = document.getElementById('roundCounter');
 const playBtn = document.getElementById('playBtn');
 const inventoryBtn = document.getElementById('inventoryBtn');
 const marketBtn = document.getElementById('marketBtn');
-const friendsBtn = document.getElementById('friendsBtn');
 const settingsBtn = document.getElementById('settingsBtn');
 const inventoryModal = document.getElementById('inventoryModal');
 const closeInventoryBtn = document.getElementById('closeInventoryBtn');
@@ -209,22 +194,10 @@ const wallpaperPreview = document.getElementById('wallpaperPreview');
 const uploadWallpaperBtn = document.getElementById('uploadWallpaperBtn');
 const wallpaperUpload = document.getElementById('wallpaperUpload');
 const wallpaperBg = document.getElementById('wallpaperBg');
-const particleBtns = document.querySelectorAll('.particle-btn');
-const friendsModal = document.getElementById('friendsModal');
-const closeFriendsBtn = document.getElementById('closeFriendsBtn');
-const friendsList = document.getElementById('friendsList');
-const friendsTabs = document.querySelectorAll('.friends-tab');
-const friendSearchInput = document.getElementById('friendSearchInput');
-const friendSearchContainer = document.getElementById('friendSearchContainer');
-const friendProfileModal = document.getElementById('friendProfileModal');
-const closeFriendProfileBtn = document.getElementById('closeFriendProfileBtn');
-const friendProfileAvatar = document.getElementById('friendProfileAvatar');
-const friendProfileName = document.getElementById('friendProfileName');
-const friendProfileUsername = document.getElementById('friendProfileUsername');
-const friendProfileWins = document.getElementById('friendProfileWins');
-const friendProfileLosses = document.getElementById('friendProfileLosses');
-const friendProfileCards = document.getElementById('friendProfileCards');
-const friendProfileRounds = document.getElementById('friendProfileRounds');
+const matchResultOverlay = document.getElementById('matchResultOverlay');
+const matchResultTitle = document.getElementById('matchResultTitle');
+const matchResultScore = document.getElementById('matchResultScore');
+const matchResultSub = document.getElementById('matchResultSub');
 
 // ===== NOTIFICATION =====
 function showNotification(msg, type = 'info') {
@@ -250,11 +223,9 @@ async function savePlayerData(instant = false) {
             totalWins: totalWins,
             totalLosses: totalLosses,
             totalRounds: totalRounds,
-            friendList: friendList,
             wallpaperSetting: wallpaperSetting,
             blurLevel: blurLevel,
             customWallpaperUrl: customWallpaperUrl,
-            particlesEnabled: particlesEnabled,
             lastOnline: serverTimestamp(),
             updatedAt: serverTimestamp()
         }, { merge: true });
@@ -289,14 +260,11 @@ async function loadPlayerData() {
             totalLosses = data.totalLosses || 0;
             totalRounds = data.totalRounds || 0;
             username = data.username || 'Player';
-            friendList = data.friendList || [];
             wallpaperSetting = data.wallpaperSetting || 'default';
             blurLevel = data.blurLevel || 0;
             customWallpaperUrl = data.customWallpaperUrl || '';
-            particlesEnabled = data.particlesEnabled !== undefined ? data.particlesEnabled : true;
             lastOnline = data.lastOnline ? formatTimestamp(data.lastOnline) : '--';
             applyWallpaper();
-            applyParticles();
             if (playerCollection.length === 0) {
                 playerCollection = commonTier.slice(0, 5).map(c => ({ ...c, id: crypto.randomUUID(), count: 1 }));
                 activeDeckIds = playerCollection.map(c => c.id);
@@ -550,14 +518,6 @@ qualityBtns.forEach(btn => {
     });
 });
 
-particleBtns.forEach(btn => {
-    btn.addEventListener('click', async () => {
-        particlesEnabled = btn.dataset.particles === 'on';
-        applyParticles();
-        await savePlayerData(true);
-    });
-});
-
 // ===== WALLPAPER SYSTEM =====
 wallpaperBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -585,49 +545,44 @@ wallpaperUpload.addEventListener('change', async (e) => {
         return;
     }
     showNotification('⏳ Uploading wallpaper...', 'info');
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-        customWallpaperUrl = evt.target.result;
-        wallpaperSetting = 'custom';
-        wallpaperBtns.forEach(b => b.classList.remove('active'));
-        document.querySelector('[data-wallpaper="custom"]').classList.add('active');
-        applyWallpaper();
-    };
-    reader.readAsDataURL(file);
     try {
         const storageRef = ref(storage, `wallpapers/${currentUser.uid}_${Date.now()}`);
         await uploadBytes(storageRef, file);
         const downloadUrl = await getDownloadURL(storageRef);
         customWallpaperUrl = downloadUrl;
         wallpaperSetting = 'custom';
+        wallpaperBtns.forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-wallpaper="custom"]').classList.add('active');
         applyWallpaper();
         showNotification('✅ Wallpaper saved!', 'success');
         await savePlayerData(true);
     } catch (error) {
         console.error('Upload error:', error);
-        showNotification('⚠️ Preview shown, cloud save failed', 'error');
+        showNotification('❌ Upload failed. Check your connection.', 'error');
     }
     wallpaperUpload.value = '';
 });
 
 function setElWallpaper(el, setting, url) {
-    el.style.backgroundImage = '';
-    el.style.backgroundSize = '';
-    el.style.backgroundPosition = '';
-    el.style.background = '';
+    el.style.cssText = '';
+    el.style.backgroundRepeat = 'no-repeat';
+    el.style.backgroundSize = 'cover';
+    el.style.backgroundPosition = 'center center';
     if (setting === 'default') {
-        el.style.background = wallpapers.default;
+        el.style.background = 'linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f0f23 100%)';
     } else if (setting === 'space') {
         const spaceUrl = 'https://res.cloudinary.com/dgzhxztx0/image/upload/v1773501301/background_1_auwd54.jpg';
         el.style.backgroundImage = `url("${spaceUrl}")`;
         el.style.backgroundSize = 'cover';
-        el.style.backgroundPosition = 'center';
+        el.style.backgroundPosition = 'center center';
+        el.style.backgroundRepeat = 'no-repeat';
     } else if (setting === 'custom' && url) {
         el.style.backgroundImage = `url("${url}")`;
         el.style.backgroundSize = 'cover';
-        el.style.backgroundPosition = 'center';
+        el.style.backgroundPosition = 'center center';
+        el.style.backgroundRepeat = 'no-repeat';
     } else {
-        el.style.background = wallpapers.default;
+        el.style.background = 'linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f0f23 100%)';
     }
 }
 
@@ -643,149 +598,6 @@ function applyWallpaper() {
         wallpaperBtnActive.classList.add('active');
     }
 }
-
-function applyParticles() {
-    if (particlesEnabled) {
-        document.body.classList.remove('no-particles');
-    } else {
-        document.body.classList.add('no-particles');
-    }
-    particleBtns.forEach(btn => {
-        const isOn = btn.dataset.particles === 'on';
-        btn.classList.toggle('active', particlesEnabled ? isOn : !isOn);
-    });
-}
-
-// ===== FRIENDS SYSTEM =====
-friendsBtn.addEventListener('click', async () => {
-    if (!currentUser) { showNotification('Please login first', 'error'); return; }
-    friendsModal.classList.remove('hidden');
-    await loadFriendsList();
-});
-
-closeFriendsBtn.addEventListener('click', () => friendsModal.classList.add('hidden'));
-
-friendsTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-        friendsTabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        currentFriendsTab = tab.dataset.tab;
-        friendSearchContainer.style.display = currentFriendsTab === 'players' ? 'block' : 'none';
-        loadFriendsList();
-    });
-});
-
-friendSearchInput.addEventListener('input', loadFriendsList);
-
-async function loadFriendsList() {
-    friendsList.innerHTML = '<p style="text-align:center; color:#aaa;">Loading...</p>';
-    try {
-        if (currentFriendsTab === 'players') {
-            const playersRef = collection(db, 'players');
-            const snapshot = await getDocs(playersRef);
-            const players = [];
-            snapshot.forEach(docSnap => {
-                if (docSnap.id !== currentUser.uid) {
-                    const data = docSnap.data();
-                    players.push({ uid: docSnap.id, ...data });
-                }
-            });
-            const search = friendSearchInput.value.toLowerCase();
-            const filtered = players.filter(p => p.username?.toLowerCase().includes(search));
-            renderFriendsList(filtered, false);
-        } else {
-            const friendData = [];
-            for (const friendUid of friendList) {
-                const friendRef = doc(db, 'players', friendUid);
-                const friendSnap = await getDoc(friendRef);
-                if (friendSnap.exists()) {
-                    friendData.push({ uid: friendUid, ...friendSnap.data() });
-                }
-            }
-            renderFriendsList(friendData, true);
-        }
-    } catch (error) {
-        console.error('Load friends error:', error);
-        friendsList.innerHTML = '<p style="text-align:center; color:#ff4444;">Failed to load</p>';
-    }
-}
-
-function renderFriendsList(list, isFriends) {
-    if (list.length === 0) {
-        friendsList.innerHTML = '<p style="text-align:center; color:#aaa;">No players found</p>';
-        return;
-    }
-    friendsList.innerHTML = '';
-    list.forEach(player => {
-        const item = document.createElement('div');
-        item.className = 'friend-item';
-        const initial = (player.username || 'P')[0].toUpperCase();
-        const isFriend = friendList.includes(player.uid);
-        item.innerHTML = `
-            <div class="friend-info">
-                <div class="friend-avatar">${initial}</div>
-                <div class="friend-details">
-                    <h4>${player.username || 'Unknown'}</h4>
-                    <p>${player.totalWins || 0} wins · ${player.collection?.length || 0} cards</p>
-                </div>
-            </div>
-            <div class="friend-actions">
-                <button class="friend-action-btn view" data-uid="${player.uid}">View</button>
-                ${isFriends ? (isFriend ? 
-                    `<button class="friend-action-btn remove" data-uid="${player.uid}">Remove</button>` : 
-                    `<button class="friend-action-btn add" data-uid="${player.uid}">Add</button>`) : ''}
-            </div>
-        `;
-        friendsList.appendChild(item);
-    });
-    document.querySelectorAll('.friend-action-btn.view').forEach(btn => {
-        btn.addEventListener('click', (e) => viewFriendProfile(e.target.dataset.uid));
-    });
-    document.querySelectorAll('.friend-action-btn.add').forEach(btn => {
-        btn.addEventListener('click', (e) => addFriend(e.target.dataset.uid));
-    });
-    document.querySelectorAll('.friend-action-btn.remove').forEach(btn => {
-        btn.addEventListener('click', (e) => removeFriend(e.target.dataset.uid));
-    });
-}
-
-async function addFriend(uid) {
-    if (friendList.includes(uid)) { showNotification('Already friends!', 'error'); return; }
-    friendList.push(uid);
-    await savePlayerData(true);
-    loadFriendsList();
-    showNotification('Friend added!', 'success');
-}
-
-async function removeFriend(uid) {
-    friendList = friendList.filter(id => id !== uid);
-    await savePlayerData(true);
-    loadFriendsList();
-    showNotification('Friend removed', 'info');
-}
-
-async function viewFriendProfile(uid) {
-    try {
-        const friendRef = doc(db, 'players', uid);
-        const friendSnap = await getDoc(friendRef);
-        if (friendSnap.exists()) {
-            const data = friendSnap.data();
-            friendProfileAvatar.textContent = (data.username || 'F')[0].toUpperCase();
-            friendProfileName.textContent = data.username || 'Unknown';
-            friendProfileUsername.textContent = `@${data.username || 'player'}`;
-            friendProfileWins.textContent = data.totalWins || 0;
-            friendProfileLosses.textContent = data.totalLosses || 0;
-            friendProfileCards.textContent = data.collection?.length || 0;
-            friendProfileRounds.textContent = data.totalRounds || 0;
-            friendProfileModal.classList.remove('hidden');
-        }
-    } catch (error) {
-        console.error('View profile error:', error);
-        showNotification('Failed to load profile', 'error');
-    }
-}
-
-closeFriendProfileBtn.addEventListener('click', () => friendProfileModal.classList.add('hidden'));
 
 // ===== GAME FUNCTIONS =====
 function log(msg) {
@@ -864,7 +676,6 @@ function setButtonsEnabled(enabled) {
     inventoryBtn.disabled = !enabled;
     marketBtn.disabled = !enabled;
     profileBtn.disabled = !enabled;
-    friendsBtn.disabled = !enabled;
     settingsBtn.disabled = !enabled;
     playBtn.disabled = !enabled;
 }
@@ -929,12 +740,12 @@ async function playRound() {
     aiLastPlayedCard.classList.add('spin-reveal');
     setTimeout(() => aiLastPlayedCard.classList.remove('spin-reveal'), 800);
     if (playerWon) {
-        playerWins++; totalWins++; animeShards += 10; totalMoneyEarned += 10;
+        playerWins++; animeShards += 10; totalMoneyEarned += 10;
         playerScoreSpan.classList.add('score-change');
         setTimeout(() => playerScoreSpan.classList.remove('score-change'), 500);
         log(`✅ R${currentRound} WIN +10 · ${playerCard.name} (${playerCard.power}) vs ${aiCard.name} (${aiCard.power})`);
     } else {
-        aiWins++; totalLosses++; animeShards += 5; totalMoneyEarned += 5;
+        aiWins++; animeShards += 5; totalMoneyEarned += 5;
         aiScoreSpan.classList.add('score-change');
         setTimeout(() => aiScoreSpan.classList.remove('score-change'), 500);
         log(`❌ R${currentRound} LOSE +5 · ${aiCard.name} (${aiCard.power}) vs ${playerCard.name} (${playerCard.power})`);
@@ -945,7 +756,7 @@ async function playRound() {
     roundCounter.classList.add('round-change');
     setTimeout(() => roundCounter.classList.remove('round-change'), 500);
     roundCounter.textContent = `R${currentRound}`;
-    await savePlayerData(true);
+    await savePlayerData(false);
     setTimeout(() => {
         aiLastPlayedArea.style.display = 'none';
         isAITurn = false; warInProgress = false; playBtn.disabled = false; setButtonsEnabled(true);
@@ -953,14 +764,38 @@ async function playRound() {
     }, 1000);
 }
 
-function autoRestartMatch() {
-    log("⚔️ Match over! Starting new match...");
+function showMatchResult(playerWon, pScore, aScore) {
+    return new Promise(resolve => {
+        matchResultTitle.textContent = playerWon ? 'YOU WIN!' : 'YOU LOSE';
+        matchResultTitle.className = 'match-result-title' + (playerWon ? '' : ' loss');
+        matchResultScore.textContent = `${pScore} — ${aScore}`;
+        const bonus = playerWon ? 25 : 10;
+        animeShards += bonus;
+        totalMoneyEarned += bonus;
+        matchResultSub.textContent = `+${bonus} 🪙 match bonus`;
+        matchResultOverlay.classList.remove('hidden');
+        setTimeout(() => {
+            matchResultOverlay.classList.add('hidden');
+            resolve();
+        }, 2500);
+    });
+}
+
+async function autoRestartMatch() {
+    const playerWon = playerWins > aiWins;
+    if (currentRound > 1) {
+        if (playerWon) totalWins++;
+        else totalLosses++;
+        await showMatchResult(playerWon, playerWins, aiWins);
+    }
+    log('⚔️ New match started!');
     playerWins = 0; aiWins = 0; currentRound = 1;
     playerHand = drawPlayerHand(); aiHand = drawAIHand();
     renderPlayerHand(); renderAIHand(); refreshUI();
-    roundCounter.textContent = `R${currentRound}`;
+    roundCounter.textContent = 'R1';
     aiLastPlayedArea.style.display = 'none';
     isAITurn = false; warInProgress = false; playBtn.disabled = false; setButtonsEnabled(true);
+    await savePlayerData(false);
 }
 
 function getStackedInventory() {
@@ -976,6 +811,10 @@ function getStackedInventory() {
 }
 
 function openInventory() {
+    if (currentRound > 1 && playerHand.length > 0) {
+        showNotification('⚠️ Cannot change deck during a match!', 'error');
+        return;
+    }
     inventoryGrid.innerHTML = '';
     const stackedCards = getStackedInventory();
     stackedCards.forEach(card => {
@@ -988,8 +827,8 @@ function openInventory() {
                 if (activeDeckIds.length > 1) { activeDeckIds = activeDeckIds.filter(id => id !== card.id); div.classList.remove('selected'); }
                 else showNotification('Deck must have at least 1 card', 'error');
             } else {
-                if (activeDeckIds.length < 5) { activeDeckIds.push(card.id); div.classList.add('selected'); }
-                else showNotification('Deck max 5 cards', 'error');
+                if (activeDeckIds.length < 10) { activeDeckIds.push(card.id); div.classList.add('selected'); }
+                else showNotification('Deck max 10 cards', 'error');
             }
         };
         inventoryGrid.appendChild(div);
@@ -1043,18 +882,30 @@ preloadImages([
 
 // ===== EVENT LISTENERS =====
 playBtn.addEventListener('click', playRound);
-inventoryBtn.addEventListener('click', openInventory);
+inventoryBtn.addEventListener('click', () => {
+    if (currentRound > 1 && playerHand.length > 0) {
+        showNotification('⚠️ Cannot change deck during a match!', 'error');
+        return;
+    }
+    openInventory();
+});
 closeInventoryBtn.addEventListener('click', async () => {
     inventoryModal.classList.add('hidden');
-    if (gameActive) { playerHand = drawPlayerHand(); renderPlayerHand(); await savePlayerData(true); }
+    await savePlayerData(true);
 });
-marketBtn.addEventListener('click', () => marketModal.classList.remove('hidden'));
+marketBtn.addEventListener('click', () => {
+    if (currentRound > 1 && playerHand.length > 0) {
+        showNotification('⚠️ Cannot buy cards during a match!', 'error');
+        return;
+    }
+    marketModal.classList.remove('hidden');
+});
 closeMarketBtn.addEventListener('click', () => marketModal.classList.add('hidden'));
 pack3Card.addEventListener('click', () => { openPack(3, 100); marketModal.classList.add('hidden'); });
 pack1Card.addEventListener('click', () => { openPack(1, 50); marketModal.classList.add('hidden'); });
 closePackBtn.addEventListener('click', async () => {
     packOpenModal.classList.add('hidden');
-    if (gameActive) { playerHand = drawPlayerHand(); renderPlayerHand(); await savePlayerData(true); }
+    await savePlayerData(true);
 });
 
 // ===== INITIALIZE =====
@@ -1065,4 +916,3 @@ renderPlayerHand();
 renderAIHand();
 refreshUI();
 applyWallpaper();
-applyParticles();
