@@ -150,59 +150,8 @@
         </div>
         <input type="file" id="wallpaperUpload" accept="image/*" style="display:none;">
         <button class="upload-btn" id="uploadWallpaperBtn">📁 Upload Custom Wallpaper</button>
-        <div class="setting-item" style="margin-top:15px;">
-            <span>✨ Particles</span>
-            <div class="particles-toggle">
-                <button class="particle-btn active" data-particles="on">On</button>
-                <button class="particle-btn" data-particles="off">Off</button>
-            </div>
-        </div>
         <p style="font-size:0.8rem; color:#aaa; margin:15px 0;">Low quality disables heavy effects. All settings save to cloud.</p>
         <button class="close-modal" id="closeSettingsBtn">CLOSE</button>
-    </div>
-</div>
-
-<!-- Friends Modal -->
-<div id="friendsModal" class="friends-modal hidden">
-    <div class="friends-content">
-        <h2 style="text-align:center; margin-bottom:15px;">👥 FRIENDS</h2>
-        <div class="friends-tabs">
-            <button class="friends-tab active" data-tab="players">Players</button>
-            <button class="friends-tab" data-tab="friends">My Friends</button>
-        </div>
-        <div class="friend-search-container" id="friendSearchContainer">
-            <input type="text" class="friend-search-input" id="friendSearchInput" placeholder="🔍 Search players...">
-        </div>
-        <div class="friends-list" id="friendsList"></div>
-        <button class="close-modal" id="closeFriendsBtn">CLOSE</button>
-    </div>
-</div>
-
-<!-- Friend Profile View Modal -->
-<div id="friendProfileModal" class="friend-profile-modal hidden">
-    <div class="friend-profile-content">
-        <div class="friend-profile-avatar" id="friendProfileAvatar">F</div>
-        <h2 id="friendProfileName">Friend Name</h2>
-        <p style="color:#aaa; font-size:0.9rem;" id="friendProfileUsername">@username</p>
-        <div class="friend-profile-stats">
-            <div class="profile-stat">
-                <div class="value" id="friendProfileWins">0</div>
-                <div class="label">Total Wins</div>
-            </div>
-            <div class="profile-stat">
-                <div class="value" id="friendProfileLosses">0</div>
-                <div class="label">Total Losses</div>
-            </div>
-            <div class="profile-stat">
-                <div class="value" id="friendProfileCards">0</div>
-                <div class="label">Total Cards</div>
-            </div>
-            <div class="profile-stat">
-                <div class="value" id="friendProfileRounds">0</div>
-                <div class="label">Total Rounds</div>
-            </div>
-        </div>
-        <button class="close-modal" id="closeFriendProfileBtn">CLOSE</button>
     </div>
 </div>
 
@@ -222,7 +171,7 @@
 <div id="inventoryModal" class="inventory-modal hidden">
     <div class="inventory-content">
         <h2 style="text-align:center;">📦 YOUR INVENTORY</h2>
-        <div class="deck-size" style="text-align:center; margin-bottom:10px; color:#aaa;">Select up to 5 cards for your deck</div>
+        <div class="deck-size" style="text-align:center; margin-bottom:10px; color:#aaa;">Select up to 10 cards for your battle deck</div>
         <div id="inventoryGrid" class="inventory-grid"></div>
         <button class="close-modal" id="closeInventoryBtn">CLOSE & SAVE DECK</button>
     </div>
@@ -255,6 +204,15 @@
     </div>
 </div>
 
+<!-- Match Result Overlay -->
+<div id="matchResultOverlay" class="match-result-overlay hidden">
+    <div class="match-result-content">
+        <div class="match-result-title" id="matchResultTitle">YOU WIN!</div>
+        <div class="match-result-score" id="matchResultScore">3 — 2</div>
+        <div class="match-result-sub" id="matchResultSub">+25 🪙 match bonus</div>
+    </div>
+</div>
+
 <section class="game-section">
     <div class="game-container">
         <!-- Shards counter -->
@@ -268,7 +226,6 @@
             <div class="action-btn profile-btn" id="profileBtn">👤 PROFILE</div>
             <div class="action-btn" id="inventoryBtn">📦 INVENTORY</div>
             <div class="action-btn market" id="marketBtn">🎴 MARKET</div>
-            <div class="action-btn friends-btn" id="friendsBtn">👥 FRIENDS</div>
             <div class="action-btn settings-btn" id="settingsBtn"><i class="fas fa-cog"></i></div>
         </div>
 
@@ -305,12 +262,6 @@
                 <div class="swiper-wrapper" id="swiperWrapper"></div>
             </div>
         </div>
-
-        <!-- Background circles -->
-        <ul class="circles">
-            <li></li><li></li><li></li><li></li><li></li>
-            <li></li><li></li><li></li><li></li><li></li>
-        </ul>
     </div>
 </section>
 
