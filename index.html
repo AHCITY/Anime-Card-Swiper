@@ -155,52 +155,111 @@
     </div>
 </div>
 
-<!-- Custom Notification -->
-<div id="notification" class="notification"></div>
+<!-- Game Section -->
+<div class="game-section">
+    <div class="game-container">
+        <!-- Shards Counter (Top Right) -->
+        <div class="shards-corner" id="shardsCorner">
+            <div class="reward-icon"></div>
+            <div class="reward-count" id="shardsCount">0</div>
+        </div>
 
-<!-- War Overlay -->
-<div id="warOverlay" class="war-overlay hidden">
-    <div class="war-container">
-        <div id="warPlayerCard" class="war-card"><span class="war-label"></span></div>
-        <div class="war-vs">VS</div>
-        <div id="warAiCard" class="war-card"><span class="war-label"></span></div>
+        <!-- Top Left Buttons -->
+        <div class="top-left-buttons">
+            <div class="action-btn profile-btn" id="profileBtn">👤 PROFILE</div>
+            <div class="action-btn settings-btn" id="settingsBtn">⚙️ SETTINGS</div>
+            <div class="action-btn" id="inventoryBtn">📦 INVENTORY</div>
+            <div class="action-btn market" id="marketBtn">🏪 MARKET</div>
+        </div>
+
+        <!-- AI Cards -->
+        <div class="ai-row">
+            <div class="ai-label">🤖 OPPONENT HAND</div>
+            <div class="ai-last-played" id="aiLastPlayedArea" style="display:none;">
+                <span style="color:#ffb3ff; font-size:0.8rem;">Last Played:</span>
+                <div class="last-played-card" id="lastPlayedCard"></div>
+            </div>
+            <div class="ai-cards" id="aiCardsContainer"></div>
+        </div>
+
+        <!-- Battle Info -->
+        <div class="battle-bar">
+            <div class="scores">
+                <div class="score-item">
+                    <span>You</span>
+                    <div class="score-value" id="playerScore">0</div>
+                </div>
+                <div class="round-indicator" id="roundCounter">R1</div>
+                <div class="score-item">
+                    <span>Opponent</span>
+                    <div class="score-value" id="aiScore">0</div>
+                </div>
+            </div>
+            <button class="play-btn" id="playBtn" disabled>▶ PLAY</button>
+        </div>
+
+        <!-- Round Log -->
+        <div class="round-log" id="roundLog"></div>
+
+        <!-- Player Hand -->
+        <div class="player-row">
+            <div class="player-label">🎮 YOUR HAND</div>
+            <div class="swiper" id="swiperContainer">
+                <div class="swiper-wrapper" id="swiperWrapper"></div>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Inventory Modal -->
-<div id="inventoryModal" class="inventory-modal hidden">
-    <div class="inventory-content">
-        <h2 style="text-align:center;">📦 YOUR INVENTORY</h2>
-        <div class="deck-size" style="text-align:center; margin-bottom:10px; color:#aaa;">Select up to 10 cards for your battle deck</div>
-        <div id="inventoryGrid" class="inventory-grid"></div>
-        <button class="close-modal" id="closeInventoryBtn">CLOSE & SAVE DECK</button>
+<div class="inventory-modal hidden" id="inventoryModal">
+    <div class="inventory-content" id="inventoryContent">
+        <h2 style="text-align:center; margin-bottom:20px;">📦 INVENTORY</h2>
+        <div class="deck-size" style="text-align:center; color:#ffb3ff; margin-bottom:15px; font-size:0.9rem;">Select up to 10 cards for your battle deck</div>
+        <div id="deckStats" style="display:flex; justify-content:space-around; margin-bottom:20px; text-align:center;">
+            <div style="flex:1;">
+                <div style="font-size:0.8rem; color:#aaa;">Deck Size</div>
+                <div style="font-size:1.3rem; font-weight:700; color:#ff3cac;" id="deckSizeCount">0/10</div>
+            </div>
+            <div style="flex:1;">
+                <div style="font-size:0.8rem; color:#aaa;">Total Cards</div>
+                <div style="font-size:1.3rem; font-weight:700; color:#2b86c5;" id="totalCardsCount">0</div>
+            </div>
+        </div>
+        <div class="inventory-grid" id="inventoryGrid"></div>
+        <button class="close-modal" id="closeInventoryBtn" style="margin-top:20px;">CLOSE</button>
     </div>
 </div>
 
 <!-- Market Modal -->
-<div id="marketModal" class="modal hidden">
-    <div class="modal-content">
-        <h2 style="text-align:center;">🎴 CARD MARKET</h2>
-        <div class="category-row" style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
-            <div class="pack-card-item" id="pack3Card" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://res.cloudinary.com/dgzhxztx0/image/upload/v1772603856/3-Card_Pack_100_mdhkfz.jpg');">
-                <div class="price">100 🪙</div>
-                <div class="box-description">3 cards (weighted rarity)</div>
-            </div>
-            <div class="pack-card-item" id="pack1Card" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://res.cloudinary.com/dgzhxztx0/image/upload/v1772603856/1-Card_Pack_50_tjyfaf.jpg');">
-                <div class="price">50 🪙</div>
-                <div class="box-description">1 guaranteed rare+</div>
-            </div>
-        </div>
-        <button class="close-modal" id="closeMarketBtn">CLOSE</button>
+<div class="modal hidden" id="marketModal">
+    <div class="modal-content" id="marketContent">
+        <h2 style="text-align:center; margin-bottom:20px;">🏪 MARKET - BUY PACKS</h2>
+        <div id="marketPackList" style="display:flex; flex-direction:column; gap:15px;"></div>
+        <button class="close-modal" id="closeMarketBtn" style="margin-top:20px;">CLOSE</button>
     </div>
 </div>
 
 <!-- Pack Opening Modal -->
-<div id="packOpenModal" class="pack-modal hidden">
+<div class="pack-modal hidden" id="packOpenModal">
     <div class="pack-content">
-        <h2 style="color:white; margin-bottom:15px;">✨ OPENING PACK... ✨</h2>
-        <div class="pack-cards" id="packCardsContainer"></div>
-        <button class="pack-close close-modal" id="closePackBtn">COLLECT</button>
+        <h2 style="text-align:center; margin-bottom:20px;">✨ OPENING PACK...</h2>
+        <div class="pack-cards" id="packCardsDisplay"></div>
+        <div id="packRewardInfo" style="text-align:center; margin-top:20px; color:#ffb3ff;"></div>
+        <button class="close-modal" id="closePackBtn" style="margin-top:20px;">CLOSE</button>
+    </div>
+</div>
+
+<!-- War Overlay -->
+<div class="war-overlay hidden" id="warOverlay">
+    <div class="war-container">
+        <div class="war-card" id="playerCard">
+            <div class="war-label" id="playerCardLabel">?</div>
+        </div>
+        <div class="war-vs" id="warVs">⚔️</div>
+        <div class="war-card" id="aiCard">
+            <div class="war-label" id="aiCardLabel">?</div>
+        </div>
     </div>
 </div>
 
@@ -213,59 +272,7 @@
     </div>
 </div>
 
-<section class="game-section">
-    <div class="game-container">
-        <!-- Shards counter -->
-        <div class="shards-corner">
-            <span class="reward-icon"></span>
-            <span class="reward-count" id="shardCount">0</span>
-        </div>
-        
-        <!-- Top-left buttons -->
-        <div class="top-left-buttons">
-            <div class="action-btn profile-btn" id="profileBtn">👤 PROFILE</div>
-            <div class="action-btn" id="inventoryBtn">📦 INVENTORY</div>
-            <div class="action-btn market" id="marketBtn">🎴 MARKET</div>
-            <div class="action-btn settings-btn" id="settingsBtn"><i class="fas fa-cog"></i></div>
-        </div>
-
-        <!-- AI hand -->
-        <div class="ai-row">
-            <div class="ai-label">🤖 OPPONENT · <span id="aiCardsCount">5</span></div>
-            <div class="ai-last-played" id="aiLastPlayedArea" style="display: none;">
-                <span style="color:#ccc;">last played:</span>
-                <div class="last-played-card" id="aiLastPlayedCard"></div>
-                <span id="aiLastPlayedName"></span>
-            </div>
-            <div class="ai-cards" id="aiHandContainer"></div>
-        </div>
-
-        <!-- Battle bar -->
-        <div class="battle-bar">
-            <div class="scores">
-                <div class="score-item">😎 YOU <span class="score-value" id="playerScore">0</span></div>
-                <div class="score-item">🤖 AI <span class="score-value" id="aiScore">0</span></div>
-                <div class="round-indicator" id="roundCounter">R1</div>
-            </div>
-            <button class="play-btn" id="playBtn">⚔️ PLAY</button>
-        </div>
-
-        <!-- Round log -->
-        <div class="round-log" id="roundLog">
-            <p style="color:#aaa;">✨ select a card and press PLAY</p>
-        </div>
-
-        <!-- Player hand -->
-        <div class="player-row">
-            <div class="player-label">😎 YOUR HAND · <span id="playerCardsCount">5</span></div>
-            <div class="swiper mySwiper">
-                <div class="swiper-wrapper" id="swiperWrapper"></div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<!-- Firebase & Swiper Scripts -->
 <script type="module" src="game.js"></script>
 </body>
 </html>
